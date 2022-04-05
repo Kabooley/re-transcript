@@ -1,0 +1,37 @@
+{
+    "manifest_version": 3,
+    "name": "chrome extension playground",
+    "version": "0.0.1",
+
+    "action": {
+        "default_title": "playground",
+        "default_popup": "popup.html",
+        "default_icon": "Orion_brush.svg"
+    },
+    "description": "A plain text description",
+    "icons": {
+        "16": "Orion_brush.svg",
+        "48": "Orion_brush.svg",
+        "128": "Orion_brush.svg"
+    },
+    "background": {
+        "service_worker": "background.js",
+        "type": "module"
+    },
+    "permissions": [
+        "search",
+        "tabs",
+        "storage",
+        "tts",
+        "activeTab",
+        "scripting"
+    ],
+    "content_security_policy": {},
+    "content_scripts": [
+        {
+            "matches": ["https://developer.mozilla.org/ja/*"],
+            "js": ["contentScript.js"],
+            "run_at": "document_idle"
+        }
+    ]
+}

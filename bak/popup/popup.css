@@ -1,0 +1,72 @@
+/***************************************
+
+TODO: あとで比率で長さを取得できるように修正すること
+
+
+***************************************/
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Roboto';
+    width: 400px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    width: auto;
+    background-color: #000;
+}
+
+.container-image {
+}
+
+.image-icon {
+    width: 128px;
+    height: auto;
+    background: black;
+    padding-left: 20px;
+}
+
+.extension-title-container {
+    background-color: #000;
+    height: 118px;
+    flex: 2;
+    padding-left: 30px;
+    padding-top: 10px;
+}
+
+.extension-title-container span {
+    color: #fff;
+    font-size: 36px;
+}
+
+.middle {
+    display: flex;
+    flex-direction: row;
+    height: 24px;
+}
+
+.middle-message-container {
+    flex: 4;
+}
+
+.message-middle {
+}
+
+.footer {
+    flex: 3;
+    display: flex;
+    flex-direction: row;
+    height: auto;
+    width: 40%;
+}

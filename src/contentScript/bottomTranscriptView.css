@@ -1,0 +1,48 @@
+/* これがどこに配置されるのか確認しないと... */
+.ex--dashboard-transcript-wrapper {
+    z-index: 3;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+.ex--dashboard-transcript--header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 0.8rem 0.8rem 1.6rem;
+    border: 1 px solid orange;
+    /* background-color: #fff; */
+
+    /* dev */
+    background-color: red;
+
+    box-shadow: 0 0 1px 1px rgb(28 29 31 / 10%), 0 3px 1px 0 rgb(28 29 31 / 10%);
+    margin-bottom: 3px;
+}
+
+.ex--dashboard-transcript--transcript-panel {
+    /* max-height: 300px; */
+    height: 300px;
+    overflow-y: auto;
+    /* dev */
+    background-color: red;
+}
+
+.ex--dashboard-transcript--autoscroll-wrapper {
+    padding: 8px 16px;
+    border-left: 1px solid orange;
+    border-right: 1px solid orange;
+    /* background: #f7f9fa; */
+    /* dev */
+    background-color: red;
+}
+
+.ex--dashboard-transcript--cue-container {
+    padding: 4px 4px;
+    margin: 1px;
+}
+
+.--highlight-- {
+    background-color: #fff;
+}

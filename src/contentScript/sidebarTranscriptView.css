@@ -1,0 +1,62 @@
+.ex--sidebar-column {
+    position: fixed;
+    right: 0;
+    /* 
+      975px < window.innerWidth =< 1182px でwidth: 300px
+      window.innerWidth > 1182pxでwidth: 25%;
+      なのでセレクタを追加したほうがいいかも
+      */
+    /* width: 25%; */
+    /* top: specified by JavaScript */
+    /* 重ね合わせコンテキストがあったら埋もれないようにひとまず2にした */
+    z-index: 2;
+}
+
+.ex--sidebar--wideview {
+    width: 25%;
+}
+
+.ex--sidebar--middleview {
+    width: 300px;
+}
+
+.ex--sidebar--sidebar {
+}
+
+.ex--sidebar--sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8rem 0.8rem 0.8rem 1.6rem;
+    border: 1px solid #d1d7dc;
+    border-right: 0;
+    /* background-color: #fff; */
+
+    /* dev */
+    background-color: red;
+}
+
+.ex--sidebar--content {
+    z-index: 1;
+    background-color: #fff;
+    border: 1px solid #f7f9fa;
+    overflow-x: hidden;
+    overflow-y: auto;
+    /* height:  */
+    /* dev */
+    background-color: red;
+}
+
+.ex--sidebar-transcript--autoscroll-wrapper {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+
+    padding: 8px 16px;
+    border-left: 1px solid #f7f9fa;
+    border-right: 1px solid #f7f9fa;
+    background: #f7f9fa;
+
+    /* dev */
+    background-color: red;
+}
