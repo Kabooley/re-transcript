@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            * {
+                padding: 0;
+                margin: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+
+                /* color: #fff; */
+                color: black;
+            }
+
+            div {
+                display: block;
+            }
+
+            .has-sidebar {
+            }
+            .app--no-sidebar {
+            }
+
+            .app--row {
+                display: flex;
+                justify-content: center;
+            }
+
+            .app--header {
+                height: 56px;
+                color: #fff;
+                background-color: #1c1d1f;
+                align-items: center;
+                border-bottom: 1px solid #3e4143;
+            }
+
+            main.app--column-container {
+                display: flex;
+            }
+
+            /* Depend on Window width */
+            .app--content-column {
+                /* width: 75%; */
+                /* width: 100%; */
+            }
+
+            .app--body-container {
+                background-color: #1c1d1f;
+            }
+
+            .movie {
+                max-height: 80vh;
+                min-height: 400px;
+                color: #fff;
+            }
+
+            .app--dashboard {
+            }
+
+            .app--row-content {
+                padding: 0;
+                width: 100%;
+            }
+
+            .app--sidebar-column {
+                position: fixed;
+                right: 0;
+                width: 25%;
+                top: 56px;
+            }
+
+            section.sidebar--sidebar {
+            }
+
+            .sidebar--sidebar-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0.8rem 0.8rem 0.8rem 1.6rem;
+                border: 1px solid #d1d7dc;
+                background-color: #fff;
+                border-right: 0;
+            }
+
+            .sidebar--content {
+                z-index: 1;
+                background-color: #fff;
+                border: 1px solid #f7f9fa;
+                overflow-x: hidden;
+                overflow-y: auto;
+                /* height:  */
+            }
+
+            .transcript--autoscroll-wrapper.transcript--bottom {
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+
+                padding: 8px 16px;
+                background: #f7f9fa;
+                border-left: 1px solid #f7f9fa;
+                border-right: 1px solid #f7f9fa;
+            }
+
+            .dashboard-transcript--container {
+                /* No specification */
+            }
+
+            .dashboard-transcript--header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0.8rem 0.8rem 0.8rem 1.6rem;
+                border: 1 px solid #d1d7dc;
+                background-color: #fff;
+
+                box-shadow: 0 0 1px 1px rgb(28 29 31 / 10%),
+                    0 3px 1px 0 rgb(28 29 31 / 10%);
+                margin-bottom: 3px;
+            }
+
+            .dashboard-transcript--content--scroll {
+                max-height: 300px;
+                overflow-y: auto;
+            }
+
+            .dashboard-transcript--footer {
+                padding: 8px 16px;
+                background: #f7f9fa;
+                border-left: 1px solid #f7f9fa;
+                border-right: 1px solid #f7f9fa;
+            }
+
+            section.dashboard-tabs-container {
+                margin-bottom: 9.6rem;
+                color: #d8d8d8;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="">
+            <div class="app--row app--header">HEADER</div>
+            <main class="app--column-container">
+                <div class="app--content-column">
+                    <div class="app--row app--body-container">
+                        <div class="app--row-content">
+                            <div class="movie">MOVIE</div>
+                        </div>
+                    </div>
+                    <div class="app--row app--dashboard">
+                        <div class="app--row-content">
+                            <div class="app--dashboard-content">
+                                <!-- dashboard-transcript will be replaced here -->
+                                <section class="dashboard-tabs-container">
+                                    <p>DASH BOARD TABS</p>
+                                </section>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+        <script>
+            'use strict';
+            /*
+              処理の順序
+
+              */
+
+            const CONSTANTS = {
+                status: {
+                    key: 'status',
+                    sidebar: 'sidebar',
+                    noSidebar: 'no-sidebar',
+                },
+                selector: {
+                    sidebarParent: '.app--content-column',
+                    noSidebarParent: '.app--dashboard-content',
+                    // 動画コンテナ
+                    movieContainer: '.app--body-container',
+                    //   sidebarアリの時の、sidebarコンテナ
+                    sidebarColumn: '.app--sidebar-column',
+                    //   no sidebarの時のdashboardに追加されているtranscriptパーツ
+                    dashboardTranscriptHeader: '.dashboard-transcript--header',
+                    dashboardTranscriptPanel:
+                        '.dashboard-transcript--transcript-panel',
+                    dashboardTranscriptBottom: '.transcript--bottom',
+                },
+                events: {},
+                wait: 200,
+            };
+
+            var timerQueue = null;
+
+            const state = (() => {
+                var _state = {};
+
+                return {
+                    setState: (o) => {
+                        // shallow copy and merge object
+                        // spread構文によるオブジェクトの上書きは、順番が大事！！
+                        // 従来のオブジェクトを先(...state)、上書きしたい値を後(...o)
+                        // https://stackoverflow.com/questions/49491393/using-spread-operator-to-update-an-object-value
+                        _state = {
+                            ..._state,
+                            ...o,
+                        };
+                    },
+                    getState: (key = undefined) => {
+                        if (key === undefined) {
+                            return _state;
+                        }
+                        if (Object.keys(_state).includes(key)) {
+                            return _state[key];
+                        } else {
+                            return undefined;
+                        }
+                    },
+                    deleteState: (key = undefined) => {
+                        if (key === undefined) {
+                            return;
+                        }
+                        if (Object.keys(_state).includes(key)) {
+                            delete _state[key];
+                        }
+                    },
+                };
+            })();
+
+            const getTemplate = (status) => {
+                const sidebar = `
+                <div class="app--sidebar-column">
+                          <section class="sidebar--sidebar">
+                              <div class="sidebar--sidebar-header">Transcript</div>
+                              <div class="sidebar--content">
+                                  <p>
+                                  </p>
+                              </div>
+                              <div class="transcript--autoscroll-wrapper transcript--bottom">Auto Scroll</div>
+                          </section>
+                      </div>
+                `;
+                const noSidebar = `
+                      <div class="dashboard-transcript--header">Transcript</div>
+                      <div class="dashboard-transcript--transcript-panel"></div>
+                      <div class="transcript--autoscroll-wrapper transcript--bottom"></div>
+                `;
+                if (status === CONSTANTS.status.sidebar) {
+                    return sidebar;
+                } else if (status === CONSTANTS.status.noSidebar) {
+                    return noSidebar;
+                }
+            };
+
+            //   transcript要素の再配置に関する他の要素のstyle変更はこちら
+            const resetLayout = (status) => {
+                const acc = document.querySelector('.app--content-column');
+                acc.style.width =
+                    status === CONSTANTS.status.sidebar ? 75 + '%' : 100 + '%';
+            };
+
+            const deleteSidebar = () => {
+                console.log('delete sidebar');
+                const e = document.querySelector(
+                    CONSTANTS.selector.sidebarColumn
+                );
+                if (e) e.remove();
+            };
+
+            const deleteBottomTranscript = () => {
+                [
+                    CONSTANTS.selector.dashboardTranscriptHeader,
+                    CONSTANTS.selector.dashboardTranscriptPanel,
+                    CONSTANTS.selector.dashboardTranscriptBottom,
+                ].forEach((s) => {
+                    const e = document.querySelector(s);
+                    if (e) e.remove();
+                });
+            };
+            //   status: deleteしたくないほう
+            const deletePreviousTranscript = (status) => {
+                status === CONSTANTS.status.sidebar
+                    ? deleteBottomTranscript()
+                    : deleteSidebar();
+            };
+
+            const insertTranscript = (status, at) => {
+                const position =
+                    status === CONSTANTS.status.sidebar
+                        ? 'afterend'
+                        : 'afterbegin';
+
+                const e = document.querySelector(at);
+                e.insertAdjacentHTML(position, getTemplate(status));
+            };
+
+            const replaceTranscriptContainer = (selector) => {
+                const status = state.getState('status');
+
+                // 削除処理
+                deletePreviousTranscript(status);
+                // 挿入処理
+                insertTranscript(status, selector);
+                // レイアウトリセット
+                resetLayout(status);
+            };
+
+            const setLayoutStatus = (status) => {
+                const s = Object.create({});
+                s[CONSTANTS.status.key] = status;
+                state.setState(s);
+            };
+
+            const onWindowResizeHandler = (ev) => {
+                const w = window.innerWidth;
+                // no-sidebr から sidebarへ更新する
+                console.log(state.getState(CONSTANTS.status.key));
+                if (
+                    w > 975 &&
+                    state.getState(CONSTANTS.status.key) !==
+                        CONSTANTS.status.sidebar
+                ) {
+                    setLayoutStatus(CONSTANTS.status.sidebar);
+                    replaceTranscriptContainer(
+                        CONSTANTS.selector.movieContainer
+                    );
+                }
+                // sidebar　から　no-sidebarへ変更する
+                if (
+                    w < 975 &&
+                    state.getState(CONSTANTS.status.key) !==
+                        CONSTANTS.status.noSidebar
+                ) {
+                    setLayoutStatus(CONSTANTS.status.noSidebar);
+                    replaceTranscriptContainer(
+                        CONSTANTS.selector.noSidebarParent
+                    );
+                }
+            };
+
+            const init = () => {
+                const s =
+                    window.innerWidth > 975
+                        ? CONSTANTS.status.sidebar
+                        : CONSTANTS.status.noSidebar;
+                setLayoutStatus(s);
+                const selector =
+                    s === CONSTANTS.status.sidebar
+                        ? CONSTANTS.selector.movieContainer
+                        : CONSTANTS.selector.noSidebarParent;
+                // 挿入処理
+                insertTranscript(s, selector);
+                // レイアウトリセット
+                resetLayout(s);
+                onWindowResizeHandler();
+            };
+
+            window.addEventListener('DOMContentLoaded', () => {
+                init();
+                window.addEventListener('resize', function () {
+                    clearTimeout(timerQueue);
+                    timerQueue = setTimeout(
+                        onWindowResizeHandler,
+                        CONSTANTS.wait
+                    );
+                });
+            });
+        </script>
+    </body>
+</html>
+
+<!-- 
+Udemyの講義ページのtranscriptの挙動を再現する
+transcriptがサイドバーではなく動画の株に配置されているときを再現
+
+条件：
+- window.innerWidth < 975px === trueの時にno-sidebarとなる
+なのでここでも幅975px以下の時に再現できているようにする
+
+
+
+sidebarの時の骨組み
+```
+div.has-sidebar
+  div.app--row.app--header
+  main.app--column-container
+    div.app--content-column
+      div.app--row.app--body-container  // movie
+      div.app--sidebar-column   // transcript
+        section.sidebar--sidebar
+      div.app--row.app--dashboard  // dashboard
+        div.app--row-content
+          div.app--dashboard-content
+            section.dashboard-tabs-container
+```
+
+no-sidebarの時の骨組み
+```
+div.app--no-sidebar   // classNameの変更
+  div.app--row.app--header  // 変わりなし
+  main.app--column-container  // 変わりなし
+    div.app--content-column // 変わりなし
+      div.app--row.app--body-container  // movie 変わりなし
+      // transcript container が消えた
+      div.app--row.app--dashboard   // dashboard 変わりなし
+        div.app--row-content  // 変わりなし
+          div.app--dashboard-content  // 変わりなし
+            transcript-header   // 追加
+            transcript-content  // 追加
+            transcript-footer   // 追加
+            section.dashboard-tabs-container
+```
+要は`div.app--content-column`の直下に存在していたtranscriptのラッパーが
+`div.app--dashboard-content`の中に移動したわけである
+
+今回
+```
+div.app--no-sidebar
+    app--header
+    main.app--column-container
+        div.app--content-column
+            div.movie-container
+                div.movie
+            div.dashboard
+                div.app--row-content
+                    div.app--dashboard-content
+                        div.dashboard-transcript--container
+                            section
+                                div.dashboard-transcript--header
+                                div.dashboard-transcript--content--scroll
+                                div.dashboard-transcript--footer
+                        section.dashboard-tabs-container
+```
+
+
+## 独自のイベントを発行・発火する機能を作りたい
+
+reactみたいなstateをvanillaJSで実装するとして
+そのstateが変更されたら関連する関数が発火するようにしたい
+
+
+#### ひとまず動くようになった
+
+あとは
+- dashboard transcriptが正しく表示されていない：低
+- この機能をReact + TypeScriptで実現する：中
+- 機能の分離：中
+- 抽出した字幕の取得、transcriptへ挿入：高
+- 自動スクロール連動：高
+- dnd-resize window機能（動画の字幕表示部分に持ってくるパターンの追加）
+- transcriptウィンドウの削除、再表示（ショートカットもあると直よし）：中
+- 拡張機能との連携（なんも考えていない）：低
+
+他
+- VSCodeにdrawio拡張機能をインストールする
+
+-->

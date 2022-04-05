@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            .panel {
+                position: absolute;
+                top: 400px;
+                width: 100%;
+                height: 500px;
+                overflow-y: auto;
+            }
+
+            .list {
+                width: 80%;
+                height: 60px;
+                border: 2px solid black;
+                border-radius: 4px;
+                background-color: cyan;
+                margin: 4px 4px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <button class="scroll">scroll</button>
+            <div class="panel">
+                <div class="list" data-id="1" style="background-color: blue">
+                    list
+                </div>
+                <div class="list" data-id="2">list</div>
+                <div class="list" data-id="3">list</div>
+                <div class="list" data-id="4">list</div>
+                <div class="list" data-id="5">list</div>
+                <div class="list" data-id="6">list</div>
+                <div class="list" data-id="7">list</div>
+                <div class="list" data-id="8">list</div>
+                <div class="list" data-id="9">list</div>
+                <div class="list" data-id="10">list</div>
+                <div class="list" data-id="11">list</div>
+                <div class="list" data-id="12">list</div>
+                <div class="list" data-id="13">list</div>
+                <div class="list" data-id="14">list</div>
+                <div class="list" data-id="15">list</div>
+                <div class="list" data-id="16">list</div>
+                <div class="list" data-id="17">list</div>
+                <div class="list" data-id="18">list</div>
+                <div class="list" data-id="19">list</div>
+                <div class="list" data-id="20">list</div>
+                <div class="list" data-id="21">list</div>
+                <div class="list" data-id="22">list</div>
+                <div class="list" data-id="23">list</div>
+                <div class="list" data-id="24" style="background-color: red">
+                    list
+                </div>
+                <div class="list" data-id="25">list</div>
+                <div class="list" data-id="26">list</div>
+                <div class="list" data-id="27">list</div>
+                <div class="list" data-id="28">list</div>
+                <div class="list" data-id="29">list</div>
+                <div class="list" data-id="30">list</div>
+                <div class="list" data-id="31">list</div>
+                <div class="list" data-id="32">list</div>
+                <div class="list" data-id="33" style="background-color: blue">
+                    list
+                </div>
+            </div>
+        </div>
+        <script>
+            'use strict';
+
+            const btn = document.querySelector('.scroll');
+            const panel = document.querySelector('.panel');
+            const twentyFour = document.querySelector('.list[data-id="24"]');
+            const one = document.querySelector('.list[data-id="1"]');
+            const thirtyThree = document.querySelector('.list[data-id="33"]');
+
+            var timerQueue = null;
+            panel.addEventListener('scroll', function (ev) {
+                clearTimeout(timerQueue);
+                timerQueue = setTimeout(function () {
+                    scrollHandler(ev);
+                }, 200);
+            });
+
+            const scrollHandler = (ev) => {
+                const panelRect = panel.getBoundingClientRect();
+                const tfRect = twentyFour.getBoundingClientRect();
+                const oneRect = one.getBoundingClientRect();
+                const thirtyThreeRect = thirtyThree.getBoundingClientRect();
+
+                console.log('- gBCR ---------------------------');
+                console.log(panelRect);
+                console.log(tfRect);
+                console.log(oneRect);
+                console.log(thirtyThreeRect);
+                console.log('- scrollTop -----------------------');
+                console.log(panel.scrollTop);
+                console.log('-----------------------------------');
+            };
+
+            btn.addEventListener('click', function () {
+                const currentPanelScrollTop = panel.scrollTop;
+                // どんな要素でも自動スクロールできる
+                // const currentTFRectY = twentyFour.getBoundingClientRect().y;
+                const currentTFRectY = one.getBoundingClientRect().y;
+
+                // panel可視領域の上辺より表示させたい要素が下にいるとき
+                if (currentTFRectY > 400) {
+                    const distance = currentTFRectY - 400;
+                    // いまスクロールバーがいる位置より下方向へ移動させるので
+                    panel.scrollTop = distance + currentPanelScrollTop;
+                } else {
+                    // 負数をあつかうので計算方法が異なる条件分岐
+                    if (currentTFRectY > 0) {
+                        const distance = 400 - currentTFRectY;
+                        panel.scrollTop = currentPanelScrollTop - distance;
+                    } else {
+                        const distance = 400 + Math.abs(currentTFRectY);
+                        panel.scrollTop = currentPanelScrollTop - distance;
+                    }
+                }
+            });
+        </script>
+    </body>
+</html>
+
+<!-- 
+# 自動スクロールを実現するために
+
+要素twentyFourをボタンクリックで要素panelのスクロール領域の一番上に表示させる
+
+#### 理解しておくべきポイント
+
+- getBoundingClientRect()のwidthとheight以外は、その座標の基準となる座標はviewportの左上である
+- element.scrollTop = 400pxだと、400pxはどこからの長さなのかは、場合による
+ 今回のプログラムだと、panelのtop座標からの長さだった
+ なので
+
+#### 
+
+PANELの実際の長さと、PANEL.scrollTopで取得できる長さから推定できるPANELの長さは同じか？
+
+同じである
+
+1748pxだった
+
+0 < PANEL.scrollTop < 1748
+241 < PANEL.getBoundingClientRect().y < -1507
+
+getBoundingClientRect()はviewportの左上を原点とする
+一方
+scrollTopはpanel要素の可視領域の上辺を0として一番下を1748としていた
+
+なので
+
+一番上に表示したいlist要素を持ってくるには
+その要素が今いる位置~panel可視領域の上辺までの距離をスクロールさせればいいわけである
+
+
+windowはy軸方向にスクロールしないとして
+panel可視領域の上辺: 237px
+表示させたいlist要素のgBCRy軸座標：yとして
+
+const currentPanelScrollTop = panel.scrollTop;
+const currentListRectY = listElement.getBoundingClientRect().y;
+
+// panel可視領域の上辺より表示させたい要素が下にいるとき
+if(currentListRectY > 237) {
+  const distance = currentListRectY - 237;
+  // いまスクロールバーがいる位置より下方向へ移動させるので
+  panel.scrollTop = distance + currentPanelScrollTop;
+}
+
+できた!!
+ -->

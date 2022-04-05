@@ -1,0 +1,97 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-weight: 400;
+  line-height: 1.4;
+  font-size: 1.2rem;
+  color: #1c1d1f;
+  font-family: sans-serif;
+  display: flex;
+}
+
+.main {
+  height: 200vh;
+}
+
+.draggable.sidebar {
+  position: fixed;
+  right: 0;
+  width: 34%;
+  /* height is specified by JavaScript */
+}
+
+.draggable.around {
+  position: fixed;
+  width: 34%;
+
+  /* "positioned elements" are specified by JavaScript */
+
+  /* RESIZE */
+  resize: both;
+  overflow: hidden;
+}
+
+.transcript-cotainer {
+  /* 
+    Nothing specified 
+
+    draggable  : position fixed
+        container : 
+            header
+            main
+            footer
+    
+    ということで.draggable以下はdisplay: blockと同じならびになる
+    */
+}
+
+.transcript-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 0.8rem 0.8rem 1.6rem;
+  border: 1px solid #d1d7dc;
+  background-color: #fff;
+}
+
+.transcript-main {
+  z-index: 1;
+  background-color: #fff;
+  border: 1px solid #f7f9fa;
+  overflow-x: hidden;
+  overflow-y: auto;
+  /* height specified by JavaScript */
+}
+
+.transcript-order {
+  background-color: #f7f9fa;
+  flex: 1;
+}
+
+.transcript-list {
+  padding: 4px 6px;
+}
+
+/* 包含ブロックはroot要素かも */
+.transcript-footer.sidebar {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  padding: 8px 16px;
+  background: #f7f9fa;
+  border-left: 1px solid #f7f9fa;
+  border-right: 1px solid #f7f9fa;
+}
+
+.transcript-footer.around {
+  /* position: fixed; */
+  /* "positioned elements" are specified by JavaScript */
+  padding: 8px 16px;
+  background: #f7f9fa;
+  border-left: 1px solid #f7f9fa;
+  border-right: 1px solid #f7f9fa;
+}

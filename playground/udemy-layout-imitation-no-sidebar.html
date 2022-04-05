@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+
+        /* color: #fff; */
+        color: black;
+      }
+
+      div {
+        display: block;
+      }
+
+      .app--header {
+        height: 56px;
+        color: #fff;
+        background-color: #1c1d1f;
+        align-items: center;
+        border-bottom: 1px solid #3e4143;
+      }
+
+      main.app--column-container {
+        display: flex;
+      }
+
+      .app--content-column {
+        width: 100%;
+      }
+
+      .movie-container {
+        background-color: #1c1d1f;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .movie {
+        max-height: 80vh;
+        min-height: 400px;
+        color: #fff;
+      }
+
+      .dashboard {
+        display: flex;
+        justify-content: center;
+      }
+
+      .app--row-content {
+        padding: 0;
+        width: 100%;
+      }
+
+      .dashboard-transcript--container {
+          /* No specification */
+      }
+
+      .dashboard-transcript--header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.8rem 0.8rem 0.8rem 1.6rem;
+        border: 1 px solid #d1d7dc;
+        background-color: #fff;
+
+        box-shadow: 0 0 1px 1px rgb(28 29 31 / 10%),
+          0 3px 1px 0 rgb(28 29 31 / 10%);
+        margin-bottom: 3px;
+      }
+
+      .dashboard-transcript--content--scroll {
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .dashboard-transcript--footer {
+        padding: 8px 16px;
+        background: #f7f9fa;
+        border-left: 1px solid #f7f9fa;
+        border-right: 1px solid #f7f9fa;
+      }
+
+      section.dashboard-tabs-container {
+        margin-bottom: 9.6rem;
+        color: #d8d8d8;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app--no-sidebar">
+      <div class="app--header">HEADER</div>
+      <main class="app--column-container">
+        <div class="app--content-column">
+          <div class="movie-container">
+            <div class="movie">MOVIE</div>
+          </div>
+          <div class="dashboard">
+            <div class="app--row-content">
+              <div class="app--dashboard-content">
+                <div class="dashboard-transcript--container">
+                  <section>
+                    <div class="dashboard-transcript--header">Transcript</div>
+                    <div class="dashboard-transcript--content--scroll">
+                      <p>
+                        Lorem ipsum dolor sit amet, consectetuer adipiscing
+                        elit. Aenean commodo ligula eget dolor. Aenean massa.
+                        Cum sociis natoque penatibus et magnis dis parturient
+                        montes, nascetur ridiculus mus. Donec quam felis,
+                        ultricies nec, pellentesque eu, pretium quis, sem. Nulla
+                        consequat massa quis enim. Donec pede justo, fringilla
+                        vel, aliquet nec, vulputate eget, arcu. In enim justo,
+                        rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam
+                        dictum felis eu pede mollis pretium. Integer tincidunt.
+                        Cras dapibus. Vivamus elementum semper nisi. Aenean
+                        vulputate eleifend tellus. Aenean leo ligula, porttitor
+                        eu, consequat vitae, eleifend ac, enim. Aliquam lorem
+                        ante, dapibus in, viverra quis, feugiat a, tellus.
+                        Phasellus viverra nulla ut metus varius laoreet. Quisque
+                        rutrum. Aenean imperdiet. Etiam ultricies nisi vel
+                        augue. Curabitur ullamcorper ultricies nisi. Nam eget
+                        dui. Etiam rhoncus. Maecenas tempus, tellus eget
+                        condimentum rhoncus, sem quam semper libero, sit amet
+                        adipiscing sem neque sed ipsum. Nam quam nunc, blandit
+                        vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec
+                        odio et ante tincidunt tempus. Donec vitae sapien ut
+                        libero venenatis faucibus. Nullam quis ante. Etiam sit
+                        amet orci eget eros faucibus tincidunt. Duis leo. Sed
+                        fringilla mauris sit amet nibh. Donec sodales sagittis
+                        magna. Sed consequat, leo eget bibendum sodales, augue
+                        velit cursus nunc, Lorem ipsum dolor sit amet,
+                        consectetuer adipiscing elit. Aenean commodo ligula eget
+                        dolor. Aenean massa. Cum sociis natoque penatibus et
+                        magnis dis parturient montes, nascetur ridiculus mus.
+                        Donec quam felis, ultricies nec, pellentesque eu,
+                        pretium quis, sem. Nulla consequat massa quis enim.
+                        Donec pede justo, fringilla vel, aliquet nec, vulputate
+                        eget, arcu. In enim justo, rhoncus ut, imperdiet a,
+                        venenatis vitae, justo. Nullam dictum felis eu pede
+                        mollis pretium. Integer tincidunt. Cras dapibus. Vivamus
+                        elementum semper nisi. Aenean vulputate eleifend tellus.
+                        Aenean leo ligula, porttitor eu, consequat vitae,
+                        eleifend ac, enim. Aliquam lorem ante, dapibus in,
+                        viverra quis, feugiat a, tellus. Phasellus viverra nulla
+                        ut metus varius laoreet. Quisque rutrum. Aenean
+                        imperdiet. Etiam ultricies nisi vel augue. Curabitur
+                        ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus.
+                        Maecenas tempus, tellus eget condimentum rhoncus, sem
+                        quam semper libero, sit amet adipiscing sem neque sed
+                        ipsum. Nam quam nunc, blandit vel, luctus pulvinar,
+                        hendrerit id, lorem. Maecenas nec odio et ante tincidunt
+                        tempus. Donec vitae sapien ut libero venenatis faucibus.
+                        Nullam quis ante. Etiam sit amet orci eget eros faucibus
+                        tincidunt. Duis leo. Sed fringilla mauris sit amet nibh.
+                        Donec sodales sagittis magna. Sed consequat, leo eget
+                        bibendum sodales, augue velit cursus nunc, Lorem ipsum
+                        dolor sit amet, consectetuer adipiscing elit. Aenean
+                        commodo ligula eget dolor. Aenean massa. Cum sociis
+                        natoque penatibus et magnis dis parturient montes,
+                        nascetur ridiculus mus. Donec quam felis, ultricies nec,
+                        pellentesque eu, pretium quis, sem. Nulla consequat
+                        massa quis enim. Donec pede justo, fringilla vel,
+                        aliquet nec, vulputate eget, arcu. In enim justo,
+                        rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam
+                        dictum felis eu pede mollis pretium. Integer tincidunt.
+                        Cras dapibus. Vivamus elementum semper nisi. Aenean
+                        vulputate eleifend tellus. Aenean leo ligula, porttitor
+                        eu, consequat vitae, eleifend ac, enim. Aliquam lorem
+                        ante, dapibus in, viverra quis, feugiat a, tellus.
+                        Phasellus viverra nulla ut metus varius laoreet. Quisque
+                        rutrum. Aenean imperdiet. Etiam ultricies nisi vel
+                        augue. Curabitur ullamcorper ultricies nisi. Nam eget
+                        dui. Etiam rhoncus. Maecenas tempus, tellus eget
+                        condimentum rhoncus, sem quam semper libero, sit amet
+                        adipiscing sem neque sed ipsum. Nam quam nunc, blandit
+                        vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec
+                        odio et ante tincidunt tempus. Donec vitae sapien ut
+                        libero venenatis faucibus. Nullam quis ante. Etiam sit
+                        amet orci eget eros faucibus tincidunt. Duis leo. Sed
+                        fringilla mauris sit amet nibh. Donec sodales sagittis
+                        magna. Sed consequat, leo eget bibendum sodales, augue
+                        velit cursus nunc, Lorem ipsum dolor sit amet,
+                        consectetuer adipiscing elit. Aenean commodo ligula eget
+                        dolor. Aenean massa. Cum sociis natoque penatibus et
+                        magnis dis parturient montes, nascetur ridiculus mus.
+                        Donec quam felis, ultricies nec, pellentesque eu,
+                        pretium quis, sem. Nulla consequat massa quis enim.
+                        Donec pede justo, fringilla vel, aliquet nec, vulputate
+                        eget, arcu. In enim justo, rhoncus ut, imperdiet a,
+                        venenatis vitae, justo. Nullam dictum felis eu pede
+                        mollis pretium. Integer tincidunt. Cras dapibus. Vivamus
+                        elementum semper nisi. Aenean vulputate eleifend tellus.
+                        Aenean leo ligula, porttitor eu, consequat vitae,
+                        eleifend ac, enim. Aliquam lorem ante, dapibus in,
+                        viverra quis, feugiat a, tellus. Phasellus viverra nulla
+                        ut metus varius laoreet. Quisque rutrum. Aenean
+                        imperdiet. Etiam ultricies nisi vel augue. Curabitur
+                        ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus.
+                        Maecenas tempus, tellus eget condimentum rhoncus, sem
+                        quam semper libero, sit amet adipiscing sem neque sed
+                        ipsum. Nam quam nunc, blandit vel, luctus pulvinar,
+                        hendrerit id, lorem. Maecenas nec odio et ante tincidunt
+                        tempus. Donec vitae sapien ut libero venenatis faucibus.
+                        Nullam quis ante. Etiam sit amet orci eget eros faucibus
+                        tincidunt. Duis leo. Sed fringilla mauris sit amet nibh.
+                        Donec sodales sagittis magna. Sed consequat, leo eget
+                        bibendum sodales, augue velit cursus nunc, Lorem ipsum
+                        dolor sit amet, consectetuer adipiscing elit. Aenean
+                        commodo ligula eget dolor. Aenean massa. Cum sociis
+                        natoque penatibus et magnis dis parturient montes,
+                        nascetur ridiculus mus. Donec quam felis, ultricies nec,
+                        pellentesque eu, pretium quis, sem. Nulla consequat
+                        massa quis enim. Donec pede justo, fringilla vel,
+                        aliquet nec, vulputate eget, arcu. In enim justo,
+                        rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam
+                        dictum felis eu pede mollis pretium. Integer tincidunt.
+                        Cras dapibus. Vivamus elementum semper nisi. Aenean
+                        vulputate eleifend tellus. Aenean leo ligula, porttitor
+                        eu, consequat vitae, eleifend ac, enim. Aliquam lorem
+                        ante, dapibus in, viverra quis, feugiat a, tellus.
+                        Phasellus viverra nulla ut metus varius laoreet. Quisque
+                        rutrum. Aenean imperdiet. Etiam ultricies nisi vel
+                        augue. Curabitur ullamcorper ultricies nisi. Nam eget
+                        dui. Etiam rhoncus. Maecenas tempus, tellus eget
+                        condimentum rhoncus, sem quam semper libero, sit amet
+                        adipiscing sem neque sed ipsum. Nam quam nunc, blandit
+                        vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec
+                        odio et ante tincidunt tempus. Donec vitae sapien ut
+                        libero venenatis faucibus. Nullam quis ante. Etiam sit
+                        amet orci eget eros faucibus tincidunt. Duis leo. Sed
+                        fringilla mauris sit amet nibh. Donec sodales sagittis
+                        magna. Sed consequat, leo eget bibendum sodales, augue
+                        velit cursus nunc,
+                      </p>
+                    </div>
+                    <div class="dashboard-transcript--footer">Auto Scroll</div>
+                  </section>
+                </div>
+                <section class="dashboard-tabs-container">
+                  <p>
+                    So, in order to become a confident and independent
+                    developer, capable of building your own websites in the
+                    future, you will learn: The fundamentals of modern and
+                    semantic HTML, CSS, and building layouts in a small separate
+                    project, which will prepare you for the main course project
+                    (www.omnifood.dev). This includes modern flexbox and CSS
+                    Grid! How to design beautiful websites, by learning a web
+                    design framework I created just for this course. It consists
+                    of easy-to-use guidelines for design aspects like
+                    typography, colors, images, spacing, and more (this is like
+                    a small standalone course!). How to use well-established
+                    website components and layout patterns in order to come up
+                    with professional-looking designs How to make any website
+                    work on any mobile device, no matter the design and layout
+                    (responsive design) How to use the 7 steps of building a
+                    professional website in practice: planning, sketching,
+                    designing, building, testing, optimizing, and launching How
+                    to find and use free design assets such as images, fonts,
+                    and icons Important developer skills such as reading
+                    documentation, fixing code errors on your own, and using
+                    professional web development tools Does this sound like fun?
+                    Then join me and 200,000+ other developers and start
+                    building websites today! Or are you not sold yet and need to
+                    know more? No problem, just keep reading... [01] Why should
+                    you learn HTML and CSS in the first place? Building websites
+                    allows you to do fun and creative work, from anywhere in the
+                    world, and it even pays well. Web development is one of the
+                    most future-proof and highest-paying industries in the
+                    world. And HTML and CSS is the entry point to this world!
+                    But you already know all this, that's why you want to learn
+                    HTML and CSS too. Well, you came to the right place! This is
+                    the best and most complete course for starting your web
+                    development journey that you will find on Udemy. It's an
+                    all-in-one package that takes you from knowing nothing about
+                    HTML and CSS, to building beautiful websites using tools and
+                    technologies that professional web developers use every
+                    single day. [02] Why is this course so unique and popular?
+                    Reason #1: The course is completely project-based Simple
+                    demos are boring, and therefore you're gonna learn
+                    everything by building actual projects! In the final project
+                    (www.omnifood.dev), together we hand-code a beautiful and
+                    responsive landing page for a fictional company that I made
+                    up just for the course. Reason #2: You will not just learn
+                    how to code Coding is great, but it's not everything! That's
+                    why we will go through the entire 7-step process of building
+                    and launching our website project. So the huge Omnifood
+                    project will teach you real-world skills to build real-world
+                    HTML and CSS websites: how to plan projects and page
+                    layouts, how to implement designs using HTML and CSS
+                    techniques, how to write clean and organized code, how to
+                    optimize websites for good speed performance, and many more.
+                    On top of that, this course has a huge focus on beautiful
+                    design. In fact, this is the only course on the market that
+                    focuses on both coding and designing, together. Reason #3:
+                    I'm the right teacher for you With the right guidance and a
+                    well-structured curriculum, building websites can be quite
+                    easy and fun to learn. With a bunch of random tutorials and
+                    YouTube videos? Not so much. And that's where I come in. My
+                    name is Jonas, I'm an experienced web developer and
+                    designer, and one of Udemy's top instructors. I have been
+                    teaching this bestselling course since 2015 to over 200,000
+                    developers, always listening to feedback and understanding
+                    exactly how students actually learn. Using that feedback, I
+                    recently rebuilt this course from scratch and designed the
+                    ideal course curriculum for every type of student. It's a
+                    unique blend of projects, deep explanations, theory
+                    lectures, and challenges. I'm sure you're gonna love it!
+                    [03] Why is this course so long? Reason #1: I take time to
+                    explain every single concept that I teach, so that you
+                    actually learn, and not just copy code from the screen (this
+                    is a course, not a tutorial) Reason #2: I go into topics
+                    that other HTML and CSS courses shy away from: professional
+                    web design, component and layout patterns, some CSS theory,
+                    website planning in theory and practice, and developer
+                    skills. I believe you need all of this to be successful!
+                    Reason #3: There is a lot of repetition, so that you
+                    actually assimilate and practice what you learn. Practice is
+                    the single most important ingredient to learning, and
+                    therefore I provide plenty of opportunities for you to
+                    sharpen your skills
+                  </p>
+                </section>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script>
+      "use strict";
+    </script>
+  </body>
+</html>
+
+<!-- 
+Udemyの講義ページのtranscriptの挙動を再現する
+transcriptがサイドバーではなく動画の株に配置されているときを再現
+
+条件：
+- window.innerWidth < 975px === trueの時にno-sidebarとなる
+なのでここでも幅975px以下の時に再現できているようにする
+
+
+
+sidebarの時の骨組み
+```
+div.has-sidebar
+  div.app--row.app--header
+  main.app--column-container
+    div.app--content-column
+      div.app--row.app--body-container  // movie
+      div.app--sidebar-column   // transcript
+        section.sidebar--sidebar
+      div.app--row.app--dashboard  // dashboard
+        div.app--row-content
+          div.app--dashboard-content
+            section.dashboard-tabs-container
+```
+
+no-sidebarの時の骨組み
+```
+div.app--no-sidebar   // classNameの変更
+  div.app--row.app--header  // 変わりなし
+  main.app--column-container  // 変わりなし
+    div.app--content-column // 変わりなし
+      div.app--row.app--body-container  // movie 変わりなし
+      // transcript container が消えた
+      div.app--row.app--dashboard   // dashboard 変わりなし
+        div.app--row-content  // 変わりなし
+          div.app--dashboard-content  // 変わりなし
+            transcript-header   // 追加
+            transcript-content  // 追加
+            transcript-footer   // 追加
+            section.dashboard-tabs-container
+```
+要は`div.app--content-column`の直下に存在していたtranscriptのラッパーが
+`div.app--dashboard-content`の中に移動したわけである
+
+今回
+```
+div.app--no-sidebar
+    app--header
+    main.app--column-container
+        div.app--content-column
+            div.movie-container
+                div.movie
+            div.dashboard
+                div.app--row-content
+                    div.app--dashboard-content
+                        div.dashboard-transcript--container
+                            section
+                                div.dashboard-transcript--header
+                                div.dashboard-transcript--content--scroll
+                                div.dashboard-transcript--footer
+                        section.dashboard-tabs-container
+```
+
+CSSを見たところ、
+
+
+-->

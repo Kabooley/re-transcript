@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            html {
+                background-color: #d7d7d9;
+            }
+
+            *[draggable='true'] {
+                cursor: pointer;
+            }
+
+            .p {
+                display: block;
+                width: 200px;
+                height: 50ps;
+                border-radius: 10px;
+            }
+
+            #p1 {
+                border: 10px solid #5d8aa6;
+                background-color: #5d8aa6;
+            }
+
+            #p2 {
+                border: 10px solid #bf7e45;
+                background-color: #bf7e45;
+            }
+            #p3 {
+                border: 10px solid #a6411c;
+                background-color: #a6411c;
+            }
+
+            #d {
+                width: 360px;
+                height: 240px;
+                border-radius: 10px;
+                border: 10px solid #8c311c;
+                background-color: #8c311c;
+            }
+        </style>
+    </head>
+    <body>
+        <p class="p" id="p1" draggable="true">DRAGGABLE</p>
+        <p class="p" id="p2">NOT DRAGGABLE</p>
+        <p class="p" id="p3">NOT DRAGGABLE</p>
+        <div id="d">DROP ZONE</div>
+        <script>
+            'use strict';
+            const effect = 'move';
+
+            // Draggable要素の初期化 --------------------------------------
+
+            function dragstart_handler(ev) {
+                console.log('[dragging data] drag start');
+                //   ev: DragEvent
+                // 異なる種類のドラッグデータを追加する
+                ev.dataTransfer.setData('text/plain', ev.target.id);
+                // これだと先の'text/plain'に対して上書きされてしまうくさい
+                // ev.dataTransfer.setData('text/plain', ev.target.innerText);
+                // ev.dataTransfer.setData('text/html', ev.target.outerHTML);
+                // ev.dataTransfer.setData(
+                //     'text/uri-list',
+                //     ev.target.ownerDocument.location.href
+                // );
+
+                // drag effect: copy
+                ev.dataTransfer.effectAllowed = 'move';
+                // ev.dataTransfer.dropEffect = 'move';
+            }
+
+            // onDragend: dragオペレーションが終了したら発生する
+            function dragend_handler(ev) {
+                console.log('[dragging data] drag end');
+            }
+
+            // onDragover: dragしているかぎり発生するイベント
+            function dragover_handler(ev) {
+                ev.preventDefault();
+                console.log('[dragging data] drag over');
+                console.log(
+                    'dragOver: dropEffect = ' +
+                        ev.dataTransfer.dropEffect +
+                        ' ; effectAllowed = ' +
+                        ev.dataTransfer.effectAllowed
+                );
+            }
+
+            // onDragleave: 有効なdropターゲットから離れたときに発火する
+            function dragleave_handler(ev) {
+                console.log('[dragging data] drag leave');
+            }
+
+            // onDragenter: 有効なdropターゲットに侵入したときに発火する
+            function dragenter_handler(ev) {
+                ev.preventDefault();
+                console.log('[dragging data] drag enter');
+                console.log(
+                    'dragenter: dropEffect = ' +
+                        ev.dataTransfer.dropEffect +
+                        ' ; effectAllowed = ' +
+                        ev.dataTransfer.effectAllowed
+                );
+            }
+
+            // drag要素側に設定するのは意味がない模様(当然drag要素がdropゾーンも兼ねるならば話は別)
+            // function drop_handler(ev) {
+            //     ev.preventDefault();
+            //     console.log('[dragging data] dropped');
+            //     ev.dataTransfer.dropEffect = 'move';
+            //     console.log(ev);
+            // }
+
+            // dragされる要素の初期化
+            function draggable_init(element) {
+                element.addEventListener('dragstart', dragstart_handler);
+                element.addEventListener('dragend', dragend_handler);
+                element.addEventListener('dragover', dragover_handler);
+                element.addEventListener('dragenter', dragenter_handler);
+                element.addEventListener('dragleave', dragleave_handler);
+                // element.addEventListener('drop', drop_handler);
+            }
+
+            // Dropゾーン要素の初期化 --------------------------------
+
+            // onDragover: dragしているかぎり発生するイベント
+            function _dragover_handler(ev) {
+                ev.preventDefault();
+                console.log('[droppable zone] drag over');
+            }
+
+            // onDragleave: 有効なdropターゲットから離れたときに発火する
+            function _dragleave_handler(ev) {
+                console.log('[droppable zone] drag leave');
+            }
+
+            // onDragenter: 有効なdropターゲットに侵入したときに発火する
+            function _dragenter_handler(ev) {
+                ev.preventDefault();
+                console.log('[droppable zone] drag enter');
+            }
+
+            // onDrop: 有効なdropターゲットにdropされたときに発火する
+            function _drop_handler(ev) {
+                ev.preventDefault();
+                console.log('[droppable zone] dropped');
+                // console.logだとdataTransferは何も持っていないように出力されるけれど
+                console.log(ev.dataTransfer);
+                // ev.dataTransfer.dropEffect = 'move';
+                // dataTransfer.getData()でアクセスするとちゃんとアクセスできる
+                var data = ev.dataTransfer.getData('text/plain');
+                console.log(data); // DRAGGABLE
+                ev.target.appendChild(document.getElementById(data));
+            }
+
+            // dragされる要素の初期化
+            function droppable_init(element) {
+                element.addEventListener('dragover', _dragover_handler);
+                element.addEventListener('dragenter', _dragenter_handler);
+                element.addEventListener('dragleave', _dragleave_handler);
+                element.addEventListener('drop', _drop_handler);
+            }
+
+            // dragされた場所から要素を消して、drop場所に要素を移動する場合
+
+            // リスナの初期化 ---------------------------------------------
+            window.addEventListener('DOMContentLoaded', () => {
+                // Get the element by id
+                const draggable = document.getElementById('p1');
+                const droppable = document.getElementById('d');
+                // Add the ondragstart event listener
+                draggable_init(draggable);
+                droppable_init(droppable);
+            });
+        </script>
+    </body>
+</html>
+
+<!-- 
+
+https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/Drag_operations#draggableattribute
+
+
+## Drag and Dropを実現するために最低限度すること
+
+## HTML要素をdraggableにするために
+
+1. `draggable="true"`属性をdragしたい要素に付ける
+2. `dragstart`イベントをリスンするリスナーを定義する
+3. 上記のリスナーで`DataTransfer.setData()`を呼び出す
+
+```html
+<p draggable="true" ondragstart="event.dataTransfer.setData('text/plain', 'This text may be dragged')">
+  This text <strong>may</strong> be dragged.
+</p>
+```
+
+[draggable='true']属性の要素をdragするとdragstartイベントが発火する
+
+> ドラッグスタートイベント内で、ドラッグデータ、フィードバックイメージ、およびドラッグエフェクトを指定できます
+
+## Drag Dataと関連付ける
+
+`drag event`は`dataTransfer`というdragしているものに関するデータを持つプロパティを持つ
+dragが起こった場合、何がdragされているのか識別しているdragと、データは関連付けられていないとならない
+
+たとえばtextがdragされているならばdragデータはテキストと関連付けられていないといかん
+
+こんな感じ: `text/plain`
+type/valueのように指定する
+これをdrag dataに登録することで関連付けの完了である
+
+どうtype/valueを関連付けるかの推奨がMDNに載っているのでそれみろ
+
+具体的に何と何を関連付ければいいのかわからん...
+要素が含むすべてを関連付ければいいのだろうか
+
+`event.dataTransfer.clearData()`でdataを消すことができる
+
+
+## Dragしたときの見た目のフィードバック
+
+
+ここは必ず定義しないといかんわけじゃない
+見た目を操作したいならば`setDragImage()`を使う
+
+```TypeScript
+// Syntax
+void dataTransfer.setDragImage(img | element, xOffset, yOffset);
+```
+img | element : 
+
+dragしている要素の見た目を表現した要素
+これはdragされる前の要素でなくてもいいみたいで、なにかしらの画像とかしていしてもいい
+とくに指定されない場合はdragされる前の要素のbitmapimageがあてがわれるみたい
+
+xOffset, yOffset:
+
+drag中のマウスポインタからの位置座標
+
+
+
+## Drag Effects
+
+**NOTE**
+
+dropEffectを指定しても実際にdropした先で要素が移動するわけではない
+あくまで視覚効果の話である
+実際に要素を移動する場合はcreateElementしてappendChildするなりしなくてはならない
+
+----
+
+今度はDragしたときの効果
+Dragしたときにいくつかの処理がなされる
+
+- copy はドラッグしたデータが現在の場所からドロップされる場所にコピーされることを示します。
+- move はドラッグデータが現在の場所からドロップされる場所に移動されることを示します。
+- link はドラッグデータが元からドロップ先にある種の関連や接続が作成されることを示します。
+
+dragされる要素に対して: DragEvent.dataTransfer.effectAllowed @onDragstartイベントリスナで定義できる
+drop zoneに対して：DragEvent.dataTransfer.dropEffect: @onDragoverとonDragenterイベントリスナで
+
+明示していないけれど、
+drag要素がcopyを指定しているならばdropzone要素もcopyで一致させておかないといけない気がする
+
+例:
+```html
+<script>
+function dragstart_handler(ev) {
+ // 対象となる要素の id を DataTransfer オブジェクトに追加する
+ ev.dataTransfer.setData("application/my-app", ev.target.id);
+ ev.dataTransfer.dropEffect = "move";
+}
+function dragover_handler(ev) {
+ ev.preventDefault();
+ ev.dataTransfer.dropEffect = "move"
+}
+function drop_handler(ev) {
+ ev.preventDefault();
+ // 移動された要素の id を取得して、その要素を target の DOM に追加する
+ const data = ev.dataTransfer.getData("application/my-app");
+ ev.target.appendChild(document.getElementById(data));
+}
+</script>
+
+<p id="p1" draggable="true" ondragstart="dragstart_handler(event)">This element is draggable.</p>
+<div id="target" ondrop="drop_handler(event)" ondragover="dragover_handler(event)">Drop Zone</div>
+```
+
+#### DropEvent.dataTransfer.effectAllowed()
+
+> DataTransfer.effectAllowedプロパティは、ドラッグ操作で許可される効果を指定します。
+> コピー操作は、ドラッグされているデータが現在の場所からドロップ場所にコピーされることを示すために使用されます。
+> 移動操作は、ドラッグされているデータが移動されることを示すために使用され、
+> リンク操作は、ソースとドロップの場所の間に何らかの形の関係または接続が作成されることを示すために使用されます。
+
+視覚効果を出すにはeffectAllowed()をとにもかくにも指定しなくてはならない
+
+使用条件：dragする要素のonDragstartで指定することが必須である
+
+以降、onDragenter, onDragoverでdataTransfer.effectAllowed()を通じて設定された値にアクセスできる
+
+
+#### DropEvent.dataTransfer.dropEffect()
+
+> DataTransfer.dropEffect プロパティは、ドラッグ＆ドロップ操作中にユーザに与えられるフィードバック (通常は視覚的) を制御します。
+> これは、ドラッグ中に表示されるカーソルに影響します。例えば、ユーザがターゲットのドロップ要素の上にカーソルを置くと、ブラウザのカーソルは、どのタイプの操作が発生するかを示すことができます。
+
+ユーザへの視覚効果を指定するために指定するもの
+effectAllowedで指定された効果を指定できる
+
+dropゾーン要素の、onDragover, onDragenter, onDropで
+
+## Specify Drop zone
+
+**NOTE**
+ここからはdropされる要素の話である
+つまり後述するe.preventDefault()しなくてはならないのはdropゾーンの要素の方であって
+dropする要素のことではない
+
+
+`onDragover`と`onDragenter`のイベントハンドラ内部でドロップ有効ゾーンなのかどうか判定させる
+有効ならばdropできるようにする
+
+> ドラッグエンターイベントとドラッグオーバーイベントのリスナーは、有効なドロップターゲット、つまりドラッグされたアイテムがドロップされる可能性のある場所を示すために使用されます。 
+> Webページまたはアプリケーションのほとんどの領域は、データをドロップするための有効な場所ではありません。
+> したがって、これらのイベントのデフォルトの処理では、ドロップは許可されません。 
+> ドロップを許可する場合は、dragenterイベントとdragoverイベントの両方をキャンセルして、デフォルトの処理を防ぐ必要があります。
+> これを行うには、属性定義のイベントリスナーからfalseを返すか、イベントのpreventDefault（）メソッドを呼び出します。
+> 後者は、別のスクリプトで定義された関数でより実行可能である可能性があります。
+
+ということで
+条件:
+
+drop先の要素は`onDrop`, `onDragover`リスナがついていなくてはならない
+デフォルトのdrop処理を無効にさせる：`onDragenter`と`onDragover`で`event.preventDefault()`または属性定義のイベントリスナーから`return false`することで無効にする
+
+
+```HTML
+<div ondragover="return false">
+<div ondragover="event.preventDefault()">
+```
+
+```HTML
+<script>
+function dragover_handler(ev) {
+ ev.preventDefault();
+ ev.dataTransfer.dropEffect = "move";
+}
+function drop_handler(ev) {
+ ev.preventDefault();
+ // 移動された要素のidを取得して、その要素をtargetのDOMに追加する
+ var data = ev.dataTransfer.getData("text/plain");
+ ev.target.appendChild(document.getElementById(data));
+}
+</script>
+
+<p id="target" ondrop="drop_handler(event)" ondragover="dragover_handler(event)">Drop Zone</p>
+```
+
+## drag処理が終了したのを知るには
+
+dragする要素に対して`onDragend`イベントリスナを設定すること
+
+> ドラッグ操作の終わりに、 dragend イベントがドラッグ元の要素で発生します。 — ドラッグが開始された対象の要素です。
+> このイベントはドラッグの完了とキャンセルのどちらでも発生します。 dragend イベントハンドラーは dropEffect プロパティの値をチェックしてドラッグ操作が成功したか否かを決定できます。
+
+
+## 具体的なdrag and dropの条件
+
+
+- 元居た場所から要素をdropゾーンへ移動させるとき
+
+条件:
+1. `DragEvent.dataTransfer.effectAllowed = "move"`をdropstartハンドラに記述する
+2. dropstartハンドラ上で`DragEvent.dataTransfer.setData()`でdragする要素を特定できる情報を渡す
+3. dropゾーン側のdropハンドラ上で`DragEvent.dataTransfer.getData()`から要素の情報を取得してgetElementById()なりappendChild()なりを行う
+
+すると**勝手にdrag要素が移動する**
+drag要素は元居た場所から消去処理の必要なく自動的に消え去りdropゾーンに配置される
+
+drag and dropが実現できるのは`DragEvent.dataTransfer`のおかげ！！
+
+どいういうことかというと
+dragされる側のイベントハンドラと
+dropゾーンのイベントハンドラそれぞれを設定する必要があり
+これらは別要素同士のリスナなので一見無関係に見える
+
+しかし
+onDragstartでdataTransfer.setData()して
+onDropでdataTransfer.getData()でアクセスすると
+drag側でsetしたデータがdrop側で取得できるのである
+
+この機能によってsetDataで送信した情報を基に、dropゾーン側でdragしていた要素の情報にアクセスできるのである
+
+こうしてgetDataで要素のidを取得　>>>  `getElementById()`で要素を取得して操作（appendChildとか）できる
+
+
+
+
+
+## DnDでの効果を表現するためにすること
+
+- dragしたときの見せ方
+- drag中の見せ方
+- dropzoneをホバーしたときの見せ方
+- dropしたときの見せ方
+
+-->
