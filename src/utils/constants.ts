@@ -4,63 +4,63 @@
  *
  * ************************************************/
 
-import { iModel } from "../background/annotations";
-import { uError } from "../Error/Error";
+import { iModel } from '../background/annotations';
+import { uError } from '../Error/Error';
 
-export const _key_of_model_state__ = "_key_of_model_state__@&%8=8";
+export const _key_of_model_state__ = '_key_of_model_state__@&%8=8';
 
 export const urlPattern: RegExp = /https:\/\/www.udemy.com\/course\/*/gm;
 
 export const extensionStatus = {
-  working: "working",
-  notWorking: "notWorking",
-  idle: "idle",
+    working: 'working',
+    notWorking: 'notWorking',
+    idle: 'idle',
 } as const;
 
 export const extensionNames = {
-  popup: "popup",
-  contentScript: "contentScript",
-  controller: "controller",
-  captureSubtitle: "captureSubtitle",
-  background: "background",
+    popup: 'popup',
+    contentScript: 'contentScript',
+    controller: 'controller',
+    captureSubtitle: 'captureSubtitle',
+    background: 'background',
 } as const;
 
 //
 // Updated
 //
 export const orderNames = {
-  // // Inject content script order
-  // injectCaptureSubtitleScript: 'injectCaptureSubtitleScript',
-  // injectExTranscriptScript: 'injectExTranscriptScript',
-  // From background to contentScript
-  sendStatus: "sendStatus",
-  // from controller to background
-  sendSubtitles: "sendSubtitles",
-  // order to disconnect port
-  disconnect: "disconnect",
+    // // Inject content script order
+    // injectCaptureSubtitleScript: 'injectCaptureSubtitleScript',
+    // injectExTranscriptScript: 'injectExTranscriptScript',
+    // From background to contentScript
+    sendStatus: 'sendStatus',
+    // from controller to background
+    sendSubtitles: 'sendSubtitles',
+    // order to disconnect port
+    disconnect: 'disconnect',
 
-  // from popup inquire the url is correct
-  inquireUrl: "inquireUrl",
-  // from popup, run process
-  run: "run",
-  // reset content script
-  reset: "reset",
-  // Turn Off ExTranscript
-  turnOff: "turnOff",
-  // something succeeded
-  success: "success",
-  // NOTE: new added
-  // Is the page moved to text page?
-  isPageIncludingMovie: "isPageIncludingMovie",
-  // NOTE: new added
-  // Alert
-  alert: "alert",
+    // from popup inquire the url is correct
+    inquireUrl: 'inquireUrl',
+    // from popup, run process
+    run: 'run',
+    // reset content script
+    reset: 'reset',
+    // Turn Off ExTranscript
+    turnOff: 'turnOff',
+    // something succeeded
+    success: 'success',
+    // NOTE: new added
+    // Is the page moved to text page?
+    isPageIncludingMovie: 'isPageIncludingMovie',
+    // NOTE: new added
+    // Alert
+    alert: 'alert',
 } as const;
 
 // Subtitle object interface
 export interface subtitle_piece {
-  index: number;
-  subtitle: string;
+    index: number;
+    subtitle: string;
 }
 
 type et = typeof extensionNames;
@@ -71,55 +71,55 @@ export type orderTypes = keyof on;
 
 // interface of sendResponse parameter
 export interface iResponse {
-  // from: extensionsTypes;
-  from?: extensionsTypes;
-  to?: extensionsTypes;
-  // 取得した字幕データ
-  subtitles?: subtitle_piece[];
-  order?: orderTypes[];
-  activated?: boolean;
-  language?: boolean;
-  title?: string;
-  // sendResponseを送信するときに必須
-  complete?: boolean;
-  // Udemy講義ページのURLかどうかの判定
-  correctUrl?: boolean;
-  // 何かしらの成功を示す
-  success?: boolean;
-  // 失敗の理由を示す
-  failureReason?: string;
-  // ExTranscriptが展開されたかどうか
-  isExTranscriptDeployed?: boolean;
-  // Udemy講義ページでトランスクリプトが表示されているかどうか
-  isTranscriptDisplaying?: boolean;
-  // Is page including movie container?
-  isPageIncludingMovie?: boolean;
+    // from: extensionsTypes;
+    from?: extensionsTypes;
+    to?: extensionsTypes;
+    // 取得した字幕データ
+    subtitles?: subtitle_piece[];
+    order?: orderTypes[];
+    activated?: boolean;
+    language?: boolean;
+    title?: string;
+    // sendResponseを送信するときに必須
+    complete?: boolean;
+    // Udemy講義ページのURLかどうかの判定
+    correctUrl?: boolean;
+    // 何かしらの成功を示す
+    success?: boolean;
+    // 失敗の理由を示す
+    failureReason?: string;
+    // ExTranscriptが展開されたかどうか
+    isExTranscriptDeployed?: boolean;
+    // Udemy講義ページでトランスクリプトが表示されているかどうか
+    isTranscriptDisplaying?: boolean;
+    // Is page including movie container?
+    isPageIncludingMovie?: boolean;
 
-  // NOTE: いらないかも
-  // chrome.tabs.Tab info will be included
-  tabInfo?: chrome.tabs.Tab;
-  // state popup requires.
-  state?: { [Property in keyof iModel]?: iModel[Property] };
+    // NOTE: いらないかも
+    // chrome.tabs.Tab info will be included
+    tabInfo?: chrome.tabs.Tab;
+    // state popup requires.
+    state?: { [Property in keyof iModel]?: iModel[Property] };
 
-  // NOTE: new added
-  error?: uError;
-  // NOTE: new added
-  // alert message
-  alertMessage?: string;
+    // NOTE: new added
+    error?: uError;
+    // NOTE: new added
+    // alert message
+    alertMessage?: string;
 
-  // --- DUPLICATED ----
-  // disconnect?: boolean;
-  // completed?: boolean;
-  // RUN orderに対して、展開がすべて完了したらtrue
-  // successDeployment?: boolean;
-  // message?: any;
+    // --- DUPLICATED ----
+    // disconnect?: boolean;
+    // completed?: boolean;
+    // RUN orderに対して、展開がすべて完了したらtrue
+    // successDeployment?: boolean;
+    // message?: any;
 }
 
 // interface of message parameter
 export interface iMessage extends iResponse {
-  // from, toは必須とする
-  from: extensionsTypes;
-  to: extensionsTypes;
+    // from, toは必須とする
+    from: extensionsTypes;
+    to: extensionsTypes;
 }
 
 // --- constants for controller.js -------------------------------
@@ -138,20 +138,20 @@ export const SIDEBAR_WIDTH_BOUNDARY: number = 1182;
 export const RESIZE_TIMER: number = 100;
 
 export const SIGNAL = {
-  widthStatus: {
-    wideview: true,
-    middleview: false,
-  },
+    widthStatus: {
+        wideview: true,
+        middleview: false,
+    },
 };
 
 export const positionStatus = {
-  sidebar: "sidebar",
-  noSidebar: "noSidebar",
+    sidebar: 'sidebar',
+    noSidebar: 'noSidebar',
 } as const;
 
 export const viewStatusNames = {
-  wideView: "wideView",
-  middleView: "middleView",
+    wideView: 'wideView',
+    middleView: 'middleView',
 } as const;
 
 type typeof_positionStatus = typeof positionStatus;
@@ -162,8 +162,13 @@ export type keyof_viewStatus = keyof typeof_viewStatus;
 // ---- ABOUT PORT ----------------------------------
 
 export const port_names = {
-  _requiring_subtitles: "_port_name_require_subtitles",
-  _injected_contentScript: "_port_name_injected_contentScript",
+    _requiring_subtitles: '_port_name_require_subtitles',
+    _injected_contentScript: '_port_name_injected_contentScript',
+};
+
+export const messageTemplate = {
+    appCannotExecute:
+        'Problem occured that the extension not being able to run. Please turn off the extension or reload the page.',
 };
 
 // // Usage

@@ -23,13 +23,26 @@ MVC と DDD の設計思想を取り入れたい
 
 更新は豆に！
 
--   例外/Error ダイアグラムの作成
+- [ExTranscriptのハイライト位置の修正](#ExTranscriptのハイライト位置の修正)
+  もうちょい下にする
 
-やっぱり視覚的にわかりやすいのを作った方がいいね
-まず紙とペンですわ
+- [responsive](#responsive)
+  transcriotViewのレスポンシブデザインをJavaScritpの計算から
+  CSSの力で自力でサイズ変更できるように変更する
 
+-   [エラーハンドリング](#エラーハンドリング)
+  進捗：`alertHandler()`をbackground.tsの各要所で呼び出すことにした
+  今のところ、すべての例外発生時はアラートを出してリロードか再起動をユーザに促している
+  とくに原因別にメッセージを変更はしない
 
-- [時間をおいてからUdemy講義ぺーいに戻るとリロードするけど、popupのボタンがturnoffのままな件](#時間をおいてからUdemy講義ぺーいに戻るとリロードするけど、popupのボタンがturnoffのままな件)
+-   デザイン改善: 見た目の話
+    [デザイン改善:popup](#デザイン改善:popup)
+    いい加減ExTranscriptのbackground-colorをredにしない
+
+-   loading 中を ExTranscript へ表示させる
+    [ローディング中 view の実装](#ローディング中viewの実装)
+
+-   [時間をおいてから Udemy 講義ぺーいに戻るとリロードするけど、popup のボタンが turnoff のままな件](#時間をおいてからUdemy講義ぺーいに戻るとリロードするけど、popupのボタンがturnoffのままな件)
 
 -   どのタブ ID でどの window なのかは区別しないといかんかも
     たとえば複数タブで展開するときに、おそらく今のままだと
@@ -42,17 +55,6 @@ MVC と DDD の設計思想を取り入れたい
     もしくはタブ情報を「持たない」とか？
     もしくはそれがでふぉということで、1 ページにしか使えないという仕様にする
 
--   loading 中を ExTranscript へ表示させる
-    [ローディング中 view の実装](#ローディング中viewの実装)
-
--   拡張機能を展開していたタブが閉じられたときの後始末
-
--   [エラーハンドリング](#エラーハンドリング)
-    エラーハンドリング: 適切な場所へエラーを投げる、POPUP に表示させる、アラートを出すなど
-
--   デザイン改善: 見た目の話
-    [デザイン改善:popup](#デザイン改善:popup)
-    拡張機能 OFF 機能を実装したら再度進行する
 
 後回しでもいいかも:
 
@@ -77,7 +79,8 @@ MVC と DDD の設計思想を取り入れたい
 
 済：
 
-- [済][`setTimeout`, `setInterval`を background script で使うな](#`setTimeout`, `setInterval`を background script で使うな)
+- [済]拡張機能を展開していたタブが閉じられたときの後始末
+-   [済][`settimeout`, `setinterval`を background script で使うな](#`setTimeout`, `setInterval`を background script で使うな)
     専用の API が用意されているのでそちらに切り替えること
     https://developer.chrome.com/docs/extensions/mv3/migrating_to_service_workers/#alarms
 
@@ -5952,7 +5955,6 @@ Codesandbox で確認済。
 
 ```
 
-
 ## `setTimeout`, `setInterval`を background script で使うな
 
 解決
@@ -5961,11 +5963,11 @@ https://developer.chrome.com/docs/extensions/mv3/migrating_to_service_workers/#a
 
 https://developer.chrome.com/docs/extensions/reference/alarms/
 
-かわりにchrome.alarms APIを使いなさいとのこと
+かわりに chrome.alarms API を使いなさいとのこと
 
 > In order to reduce the load on the user's machine, Chrome limits alarms to at most once every 1 minute but may delay them an arbitrary amount more. That is, setting delayInMinutes or periodInMinutes to less than 1 will not be honored and will cause a warning. when can be set to less than 1 minute after "now" without warning but won't actually cause the alarm to fire for at least 1 minute.
 
-> ユーザーのマシンの負荷を軽減するために、**Chromeはアラームを最大で1分に1回に制限します**が、アラームをさらに任意の量だけ遅延させる場合があります。つまり、delayInMinutesまたはperiodInMinutesを1未満に設定すると、適用されず、警告が発生します。**警告なしに「今」から1分未満に設定できますが、実際には少なくとも1分間はアラームが発生しません。**
+> ユーザーのマシンの負荷を軽減するために、**Chrome はアラームを最大で 1 分に 1 回に制限します**が、アラームをさらに任意の量だけ遅延させる場合があります。つまり、delayInMinutes または periodInMinutes を 1 未満に設定すると、適用されず、警告が発生します。**警告なしに「今」から 1 分未満に設定できますが、実際には少なくとも 1 分間はアラームが発生しません。**
 
 は？
 
@@ -5975,6 +5977,61 @@ https://developer.chrome.com/docs/extensions/reference/alarms/
 イマんところ`setTimeout`, `setInterval`は問題はないので
 このままでよし
 
-## 時間をおいてからUdemy講義ぺーいに戻るとリロードするけど、popupのボタンがturnoffのままな件
+## 時間をおいてから Udemy 講義ぺーいに戻るとリロードするけど、popup のボタンが turnoff のままな件
 
 とにかく時間をおかないと再現性がない
+
+## エラーハンドリング
+
+background.ts には、
+
+例外が起こった際のやらなきゃいかんことが 2 つある
+
+-   ユーザ向けに alert を出す
+-   POPUP 向けにメッセージを送る
+
+background.ts で例外が発生したときまたはキャッチしたときは
+
+その 2 つを実行できるようにする
+
+ただし、
+
+多くの場合 sendMessage()は呼び出し元の finally で必ず実行されることになっている
+
+なので alert のことだけ考える
+
+```TypeScript
+
+const messageWhenExceptionHappened =
+"Problem occured that the extension not being able to run. Please turn off the extension or reload the page."
+
+const alertHandler = (tabId: number, msg: string): void => {
+  // 返事が必要ないので投げっぱなしの通常のAPIを使う
+  chrome.tabs.sendMessage(tabId, {
+    from: exntensionNames.background,
+    to: extensionNames.contentScript,
+    alertMessage: msg
+  })
+}
+
+// 上記のままだとcontentScript.tsがインジェクトされていることが前提になるので
+// ファイルとやり取りするのではなくて、
+// 関数を指定のタブに埋め込むことにする
+
+const alertHandler = (tabId: number, msg: string): void => {
+  chrome.scripting.executeScript({
+    target: {tabId: tabId},
+    func: function(msg) {
+      alert(msg);
+    },
+    args: [msg]
+  })
+}
+
+
+```
+
+あとやっぱり少し詳細な説明をユーザ向けにするためにオプションページが必要かも
+
+例外が発生したときの POPUP の挙動は...
+
