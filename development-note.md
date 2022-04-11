@@ -23,21 +23,21 @@ MVC と DDD の設計思想を取り入れたい
 
 更新は豆に！
 
-- [ExTranscriptのハイライト位置の修正](#ExTranscriptのハイライト位置の修正)
-  もうちょい下にする
+-   [ExTranscript のハイライト位置の修正](#ExTranscriptのハイライト位置の修正)
+    もうちょい下にする
 
-- [responsive](#responsive)
-  transcriotViewのレスポンシブデザインをJavaScritpの計算から
-  CSSの力で自力でサイズ変更できるように変更する
+-   [responsive](#responsive)
+    transcriotView のレスポンシブデザインを JavaScritp の計算から
+    CSS の力で自力でサイズ変更できるように変更する
 
 -   [エラーハンドリング](#エラーハンドリング)
-  進捗：`alertHandler()`をbackground.tsの各要所で呼び出すことにした
-  今のところ、すべての例外発生時はアラートを出してリロードか再起動をユーザに促している
-  とくに原因別にメッセージを変更はしない
+    進捗：`alertHandler()`を background.ts の各要所で呼び出すことにした
+    今のところ、すべての例外発生時はアラートを出してリロードか再起動をユーザに促している
+    とくに原因別にメッセージを変更はしない
 
 -   デザイン改善: 見た目の話
     [デザイン改善:popup](#デザイン改善:popup)
-    いい加減ExTranscriptのbackground-colorをredにしない
+    いい加減 ExTranscript の background-color を red にしない
 
 -   loading 中を ExTranscript へ表示させる
     [ローディング中 view の実装](#ローディング中viewの実装)
@@ -54,7 +54,6 @@ MVC と DDD の設計思想を取り入れたい
 
     もしくはタブ情報を「持たない」とか？
     もしくはそれがでふぉということで、1 ページにしか使えないという仕様にする
-
 
 後回しでもいいかも:
 
@@ -79,7 +78,7 @@ MVC と DDD の設計思想を取り入れたい
 
 済：
 
-- [済]拡張機能を展開していたタブが閉じられたときの後始末
+-   [済]拡張機能を展開していたタブが閉じられたときの後始末
 -   [済][`settimeout`, `setinterval`を background script で使うな](#`setTimeout`, `setInterval`を background script で使うな)
     専用の API が用意されているのでそちらに切り替えること
     https://developer.chrome.com/docs/extensions/mv3/migrating_to_service_workers/#alarms
@@ -6035,3 +6034,10 @@ const alertHandler = (tabId: number, msg: string): void => {
 
 例外が発生したときの POPUP の挙動は...
 
+## responsive
+
+CSS だけで ExTranscript のサイズ変更とかできるかどうか確かめる
+
+ここのディレクトリで確認する
+
+~/Udemy/udemy-advanced-css-sass/playground/
