@@ -23,6 +23,10 @@ MVC と DDD の設計思想を取り入れたい
 
 更新は豆に！
 
+- `getComputedStyle`のエラー対処
+
+-   [ExTranscript の閉じるボタンの実装](#ExTranscriptの閉じるボタンの実装)
+
 -   [ExTranscript のハイライト位置の修正](#ExTranscriptのハイライト位置の修正)
     もうちょい下にする
 
