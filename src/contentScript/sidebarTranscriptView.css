@@ -1,4 +1,4 @@
-.ex--sidebar-column {
+.ex-sidebar__column {
     position: fixed;
     right: 0;
     /* 
@@ -20,10 +20,10 @@
     width: 300px;
 }
 
-.ex--sidebar--sidebar {
+.ex-sidebar__sidebar {
 }
 
-.ex--sidebar--sidebar-header {
+.ex-sidebar__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -36,7 +36,7 @@
     background-color: red;
 }
 
-.ex--sidebar--content {
+.ex-sidebar__content {
     z-index: 1;
     background-color: #fff;
     border: 1px solid #f7f9fa;
@@ -47,7 +47,7 @@
     background-color: red;
 }
 
-.ex--sidebar-transcript--autoscroll-wrapper {
+.ex-sidebar__footer {
     position: fixed;
     bottom: 0;
     width: 100%;

@@ -23,7 +23,7 @@ MVC と DDD の設計思想を取り入れたい
 
 更新は豆に！
 
-- `getComputedStyle`のエラー対処
+-   `getComputedStyle`のエラー対処
 
 -   [ExTranscript の閉じるボタンの実装](#ExTranscriptの閉じるボタンの実装)
 
@@ -6045,3 +6045,20 @@ CSS だけで ExTranscript のサイズ変更とかできるかどうか確か�
 ここのディレクトリで確認する
 
 ~/Udemy/udemy-advanced-css-sass/playground/
+
+やること：
+
+-   済 セレクタ名の変更
+-   たぶん済 セレクタ名変更に伴う全体の修正
+-   ExTranscript が sidebar のときの middleview or wideview の処理の除去
+-   SASS を webpack プロジェクトへ導入する
+
+参考:
+
+https://webpack.js.org/loaders/sass-loader/
+
+sass-loader を使えとのこと
+
+注意点として、sass-loader は webpack からみてサードパーティ製だよとのこと
+
+node-sass は非推奨だから Dirt-Sass を使えだって

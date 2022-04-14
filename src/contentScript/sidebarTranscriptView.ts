@@ -38,6 +38,9 @@ SidebarTranscriptView.prototype.generateSubtitleMarkup = function (
 ): string {
   var mu: string = "";
   for (const s of subtitles) {
+    // TODO: `nothingYet`をなくして
+    // 新規に追加したセレクタを採用すること
+    // 
     const _mu: string = `
         <div class="${selectors.EX.sidebarCueContainer.slice(1)}" data-id="${
       s.index
