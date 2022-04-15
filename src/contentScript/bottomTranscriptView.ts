@@ -1,6 +1,7 @@
 import * as selectors from '../utils/selectors';
 import { subtitle_piece } from '../utils/constants';
-import './bottomTranscriptView.css';
+// import './bottomTranscriptView.css';
+import './exTranscript.scss';
 
 const BottomTranscriptView = function () {
     // insert position for Element.insertAdjaccentHTML()
@@ -44,8 +45,6 @@ BottomTranscriptView.prototype.generateSubtitleMarkup = function (
     return mu;
 };
 
-
-
 BottomTranscriptView.prototype.generateMarkup = function (
     subtitleStrings?: string
 ) {
@@ -63,7 +62,6 @@ BottomTranscriptView.prototype.generateMarkup = function (
     </div>
     `;
 };
-
 
 BottomTranscriptView.prototype.render = function (
     subtitles?: subtitle_piece[]

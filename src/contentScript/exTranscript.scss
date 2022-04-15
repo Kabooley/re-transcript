@@ -1,0 +1,182 @@
+/*
+
+埋め込み先からのfont-sizeの継承など考えていない
+data-*は今のところ定義していない
+
+*/
+
+$color-primary: #f7f9fa;
+$color-white: #fff;
+$color-highlight: #cec0fc;
+
+@mixin respond($breakpoint) {
+    @if $breakpoint == middleview {
+        //   980.96px < width < 1200px
+        @media (min-width: 61.31em) and (max-width: 75em) {
+            width: 30rem;
+        }
+    }
+    @if $breakpoint == wideview {
+        @media (max-width: 1182px) {
+            width: 30rem;
+        }
+    }
+}
+
+p {
+    font-size: inherit;
+    font-weight: 400;
+    max-width: 60rem;
+}
+
+// --- SIDEBAR ---------------------------
+
+.ex-sidebar {
+    font-size: inherit;
+    box-sizing: inherit;
+
+    /*
+          Udemyのページに埋め込む
+          本家のTranscriptの上にぴったり表示させるので
+          position: fixed;にしている
+          埋め込むときの本家の親要素は、
+          ".app--content-column--HC_i1"
+      */
+    &__column {
+        position: fixed;
+        right: 0;
+        /* 重ね合わせコンテキストがあったら埋もれないようにひとまず2にした */
+        z-index: 2;
+        /* top: 本家でそうなので、JavaScriptで計算する */
+        width: 25%;
+        @include respond(middleview);
+    }
+
+    &__sidebar {
+    }
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.8rem 0.8rem 0.8rem 1.6rem;
+        border: 1px solid #d1d7dc;
+        border-right: 0;
+        background-color: #fff;
+    }
+
+    &__content {
+        z-index: 1;
+        background-color: #fff;
+        border: 1px solid $color-primary;
+        overflow-x: hidden;
+        overflow-y: auto;
+        /* 
+            height: 本家でそうなので、JavaScriptで計算する 
+            ブラウザの垂直方向のリサイズに応じて変化する
+            ウィンドウの上下いっぱいに伸びるようにしている
+          */
+    }
+
+    &__footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+
+        padding: 0.8rem 1.6rem;
+        border-left: 1px solid $color-primary;
+        border-right: 1px solid $color-primary;
+        border-top: 2px solid $color-white;
+        background: $color-primary;
+    }
+}
+
+.ex-transcript {
+    &__panel {
+        background-color: $color-primary;
+    }
+
+    &__cue-container {
+        padding: 0.4rem 1.6rem;
+
+        // NOTE: ここのクラス名の変化は実際と異なる
+        // 実際は
+        // class="ex-transcript__cue-container --highlight--"
+        &.--highlight {
+            padding: 0.4rem 1.6rem;
+            background-color: #cec0fc;
+            box-shadow: 0.8rem 0 0 #cec0fc, -0.8rem 0 0 #cec0fc;
+            box-decoration-break: clone;
+        }
+    }
+
+    &__cue {
+        // nothing defined
+    }
+}
+
+// --- BTTOM -----------------------------
+
+.ex-dashboard-transcript {
+    font-size: inherit;
+    box-sizing: inherit;
+    line-height: inherit;
+
+    &__wrapper {
+        // 必ず一番上に来るようにz-indexを設けている
+        z-index: 3;
+        position: absolute;
+        top: 0;
+        // 本家は@mediaで指定していた...けど毎度挿入するだけだから関係ない...
+        width: 100%;
+    }
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.8rem 0.8rem 0.8rem 1.6rem;
+        border: 1px solid #d1d7dc;
+        background-color: $color-white;
+
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08),
+            0 4px 12px rgba(0, 0, 0, 0.08);
+        margin-bottom: 3px;
+    }
+
+    &__footer {
+        padding: 0.4rem 1.6rem;
+        // background: $color-primary;
+        border-left: 1px solid $color-primary;
+        border-right: 1px solid $color-primary;
+    }
+
+    &__transcript {
+        &--panel {
+            max-height: 30rem;
+            // In case few transcrpt.
+            height: 300px;
+            overflow-y: auto;
+
+            // ここじゃないかも念のため
+            background-color: $color-primary;
+        }
+
+        // --highlight--はここにつけている
+        // 本家ではspanに対して付けている
+        &--cue-container {
+            padding: 0.4rem 1.6rem;
+
+            &.--highlight-- {
+                padding: 0.4rem 1.6rem;
+                background-color: $color-highlight;
+                box-shadow: 0.8rem 0 0 $color-highlight,
+                    -0.8rem 0 0 $color-highlight;
+                box-decoration-break: clone;
+            }
+        }
+
+        &--cue-underline {
+        }
+    }
+}
