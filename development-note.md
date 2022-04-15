@@ -6196,11 +6196,12 @@ $ npm i -D node-sass sass-loader
 ## ExTranscriptの閉じるボタンの実装
 
 - `justify-content: space-between;`でアイテムを両端に置く模様
-- 閉じるボタンアイコンはsvgでつくる
-    本家はuse要素を使っていた
-- 閉じるボタンクリックでExTranscriptは閉じるし、本家のトランスクリプトも閉じたい
-    ...本家を閉じるのは無理
+- 閉じるボタンアイコンはCSSでつくる
+- 閉じるボタンクリックで本家のトランスクリプトも閉じたい
+    ...無理
 
+
+#### 実装
 
 - 「閉じるボタン」で閉じる仕組み
 
@@ -6349,4 +6350,8 @@ const handlerOfTurnOff = async (): Promise<void> => {
 ```
 
 修正完了
+
+#### スタイリング
+
+どうやって×ボタンを作るか
 
