@@ -61,8 +61,6 @@ import { DomManipulationError } from '../Error/Error';
 interface iController {
     // 本家Transcriptのポジション2通り
     position: keyof_positionStatus;
-    // 本家Transcriptがsidebarであるときの表示のされ方2通り
-    view: keyof_viewStatus;
     // 本家Transcriptでハイライトされている字幕の要素の順番
     highlight: number;
     // ExTranscriptの字幕要素のうち、いまハイライトしている要素の順番
@@ -85,7 +83,6 @@ const statusBase: iController = {
     // NOTE: position, viewの初期値は意味をなさず、
     // すぐに変更されることが前提である
     position: null,
-    view: null,
     highlight: null,
     ExHighlight: null,
     indexList: null,
@@ -313,15 +310,6 @@ const handlerOfReset = (): void => {
         w > RESIZE_BOUNDARY ? positionStatus.sidebar : positionStatus.noSidebar;
     sStatus.setState({ position: s });
 
-    if (s === positionStatus.sidebar) {
-        sStatus.setState({
-            view:
-                w > SIDEBAR_WIDTH_BOUNDARY
-                    ? viewStatusNames.wideView
-                    : viewStatusNames.middleView,
-        });
-    }
-
     window.addEventListener('resize', reductionOfwindowResizeHandler);
 };
 
@@ -343,14 +331,13 @@ const onWindowScrollHandler = (): void => {
  * Checks...
  * If window clientWidth straddle the MINIMUM_BOUNDARY, update state.
  * If window clientWidth straddle the RESIZE_BOUNDARY, update state.
- * If ExTranscript is sidebar, check if window clientWidth straddble
- * the SIDEBAR_WIDTH_BOUNDARY to update view state.
+ *
  * */
 const onWindowResizeHandler = (): void => {
     console.log('[controller] onWindowResizeHandler()');
 
     const w: number = document.documentElement.clientWidth;
-    const { position, view, isWindowTooSmall } = sStatus.getState();
+    const { position, isWindowTooSmall } = sStatus.getState();
 
     //  MINIMUM_BOUNDARYの境界値をまたいだ時は何もしない
     if (w < MINIMUM_BOUNDARY && !isWindowTooSmall) {
@@ -364,38 +351,18 @@ const onWindowResizeHandler = (): void => {
 
     // ブラウザの幅がRESIZE_BOUNDARYを上回るとき
     // Transcriptをsidebarに設置する
-    if (w > RESIZE_BOUNDARY && position !== positionStatus.sidebar) {
+    if (w > RESIZE_BOUNDARY && position !== positionStatus.sidebar)
         sStatus.setState({ position: positionStatus.sidebar });
-        sStatus.setState({ view: viewStatusNames.middleView });
-
-        // 同時に、sidebar時のTranscriptの表示方法の変更
-        sStatus.setState({
-            view:
-                w > SIDEBAR_WIDTH_BOUNDARY
-                    ? viewStatusNames.wideView
-                    : viewStatusNames.middleView,
-        });
-    }
 
     // ブラウザの幅がRESIZE＿BOUNDARYを下回るとき
     // Transcriptを動画下部に表示する
-    if (w < RESIZE_BOUNDARY && position !== positionStatus.noSidebar) {
+    if (w <= RESIZE_BOUNDARY && position !== positionStatus.noSidebar) {
         sStatus.setState({ position: positionStatus.noSidebar });
     }
 
-    // Transcriptがsidebarの時、
-    // 2通りある表示方法を決定する
-    if (position === positionStatus.sidebar) {
+    // sidebar transcriptの高さの更新
+    if (position === positionStatus.sidebar)
         sidebarTranscriptView.updateContentHeight();
-        if (view === viewStatusNames.middleView && w > SIDEBAR_WIDTH_BOUNDARY) {
-            // sidebar widthを300pxから25%へ
-            sStatus.setState({ view: viewStatusNames.wideView });
-        }
-        if (view === viewStatusNames.wideView && w < SIDEBAR_WIDTH_BOUNDARY) {
-            // sideba widthを25%から300pxへ
-            sStatus.setState({ view: viewStatusNames.middleView });
-        }
-    }
 };
 
 //
@@ -675,13 +642,13 @@ const updateSubtitle = (prop, prev): void => {
     if (prop.subtitles === undefined) return;
 
     // 字幕データのアップデート
-    const { position, view } = sStatus.getState();
+
+    const { position } = sStatus.getState();
+    // TODO: 'sidebar'と'noSidebar'のハードコーディングをやめて
+    // 定数を与えること
     if (position === 'sidebar') {
         renderSidebarTranscript();
         sidebarTranscriptView.updateContentHeight();
-        view === 'middleView'
-            ? sidebarTranscriptView.updateWidth(SIGNAL.widthStatus.middleview)
-            : sidebarTranscriptView.updateWidth(SIGNAL.widthStatus.wideview);
     }
     if (position === 'noSidebar') {
         renderBottomTranscript();
@@ -699,16 +666,6 @@ const updatePosition = (prop, prev): void => {
     else if (position === 'noSidebar') renderBottomTranscript();
     // 必須：自動スクロール機能のリセット
     resetDetectScroll();
-};
-
-const updateSidebarView = (prop, prev): void => {
-    const { view } = prop;
-    if (view === undefined) return;
-
-    if (view === 'middleView')
-        sidebarTranscriptView.updateWidth(SIGNAL.widthStatus.middleview);
-    else if (view === 'wideView')
-        sidebarTranscriptView.updateWidth(SIGNAL.widthStatus.wideview);
 };
 
 // NOTE: リファクタリング未定...
@@ -739,7 +696,6 @@ const updateSidebarView = (prop, prev): void => {
 
     sSubtitles.observable.register(updateSubtitle);
     sStatus.observable.register(updatePosition);
-    sStatus.observable.register(updateSidebarView);
     //   TODO: (未定)下記update関数が機能するようにリファクタリングするかも...
     //   sStatus.observable.register(updateHighlight);
     //   sStatus.observable.register(updateExHighlight);
@@ -749,15 +705,6 @@ const updateSidebarView = (prop, prev): void => {
     const s: keyof_positionStatus =
         w > RESIZE_BOUNDARY ? positionStatus.sidebar : positionStatus.noSidebar;
     sStatus.setState({ position: s });
-
-    if (s === positionStatus.sidebar) {
-        sStatus.setState({
-            view:
-                w > SIDEBAR_WIDTH_BOUNDARY
-                    ? viewStatusNames.wideView
-                    : viewStatusNames.middleView,
-        });
-    }
 
     sStatus.setState({ isWindowTooSmall: w < MINIMUM_BOUNDARY ? true : false });
 

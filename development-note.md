@@ -6050,8 +6050,10 @@ CSS だけで ExTranscript のサイズ変更とかできるかどうか確か�
 
 -   済 セレクタ名の変更
 -   たぶん済 セレクタ名変更に伴う全体の修正
+-   window リサイズにかかわる修正
 -   ExTranscript が sidebar のときの middleview or wideview の処理の除去
 -   SASS を webpack プロジェクトへ導入する
+-   出力 css ファイルを sidebarTranscriptView と bottomTranscriptView と共有することとする
 
 参考:
 
@@ -6062,3 +6064,118 @@ sass-loader を使えとのこと
 注意点として、sass-loader は webpack からみてサードパーティ製だよとのこと
 
 node-sass は非推奨だから Dirt-Sass を使えだって
+
+#### window リサイズにかかわる修正
+
+境界条件を px で指定しないようにしたい
+
+もっと確かな境界条件を付与したい
+
+そのためには@media で指定するような場合分けが必要になるのかも
+
+TODO: どこまでやればいいのかわからんから、Udemy のコースをやってから再度取り掛かる.
+
+-   RESIZE_BOUNDARY を 975px から 963px に変更したけど。。。
+
+たぶんメディアタイプによってこの境界線は異なる
+
+なので別のものだしで図る必要があるだろう...
+
+本家は、
+
+-   `@media (max-width: 75em) {}`
+-   `@media (min-width: 61.31em) and (max-width: 75em) {}`
+    など設定していて、
+
+おそらく 75em が基準値となるだろう...
+
+これを JavaScript で扱うにはどうすればいいのか
+
+前提について確認：
+
+```JavaScript
+// 垂直スクロールバー（表示されている場合）を含む、ブラウザウィンドウの ビューポート (viewport) の幅
+window.innerWidth;
+// 水平スクロールバー（表示されている場合）を含む、ブラウザウィンドウの ビューポート (viewport) の高さ
+window.innerHeight;
+
+
+// ブラウザウィンドウの外側の幅
+window.outerHeight;
+// ブラウザウインドウの外側の高さ
+window.outerWidth;
+```
+
+```JavaScript
+// スクロールバー含ない
+document.documentElement.clientWidth;
+document.documentElement.clientHeight;
+
+// スクロール含む
+document.body.clientWidth;
+document.body.clientHeight;
+
+```
+
+現状: in case sidebar と bottom の切り替え条件の話
+
+正しくは 61.31\*root font-size が境界条件である(980px になる)
+
+前提がちぐはぐしている
+
+CSS であつかう単位も含めて統一するとしたら
+window の view port と root font-size を前提としたい
+
+でもたしか window.innerWidth をつかわないで documentElement.clientWidth にしたのは理由があったはずなんだけどなんだっけ...
+
+```TypeScript
+// リサイズ・イベントハンドラ: windowに対してつけている
+window.addEventListener("resize", function() {
+  // ...
+});
+
+// callback funciton: documentの、スクロールバーを含まない幅を取得している
+const onWindowResizeHandler = (): void => {
+
+    const w: number = document.documentElement.clientWidth;
+    // ...
+}
+
+
+// 垂直スクロールバーの幅を除いた長さを基準値としている
+export const RESIZE_BOUNDARY: number = 963;
+
+
+```
+
+修正後：
+
+```TypeScript
+// そのままでおｋ
+// リサイズ・イベントハンドラ
+window.addEventListener("resize", function() {
+  // ...
+});
+
+
+// window.innerWidthにする
+// callback funciton
+const onWindowResizeHandler = (): void => {
+
+    // const w: number = document.documentElement.clientWidth;
+    const w: number = window.innerWidth;
+    // ...
+}
+
+// 垂直スクロールバーの幅の長さは環境によってことなるのかわからんから
+// window.innerWidthで取得する値を前提にすればスクロールバーの幅を気にする必要がない
+// わかり安い値になった
+export const RESIZE_BOUNDARY: number = 980;
+
+```
+
+#### sidebar のときの middleview と wideview にかかわる処理を取り除く
+
+済
+
+すこし controller.ts のコードが少なくなった

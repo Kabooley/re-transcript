@@ -128,7 +128,8 @@ export interface iMessage extends iResponse {
 // export const TEN_SEC: number = 10000;
 
 // transcript要素はwinodwサイズが975px以下の時にdashboardへ以上でsidebarへ移動する
-export const RESIZE_BOUNDARY: number = 975;
+// export const RESIZE_BOUNDARY: number = 975;
+export const RESIZE_BOUNDARY: number = 963;
 
 // sidebarのwidthは2通りあって、
 // 975px < w =< 1182pxだと300px, w > 1182pxで25%

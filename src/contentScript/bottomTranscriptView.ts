@@ -32,7 +32,7 @@ BottomTranscriptView.prototype.generateSubtitleMarkup = function (
             <p data-purpose="ex-transcript-cue" class="${selectors.EX.dashboardTranscriptCue.slice(
                 1
             )}">
-                <span data-purpose="ex--dashboard-cue-text">
+                <span data-purpose="${selectors.EX.dashboardTranscriptCueText}">
                     ${s.subtitle}
                 </span>
             </p>
@@ -43,6 +43,8 @@ BottomTranscriptView.prototype.generateSubtitleMarkup = function (
     }
     return mu;
 };
+
+
 
 BottomTranscriptView.prototype.generateMarkup = function (
     subtitleStrings?: string
@@ -62,18 +64,6 @@ BottomTranscriptView.prototype.generateMarkup = function (
     `;
 };
 
-// BottomTranscriptView.prototype.render = function (): void {
-//   console.log("[BottomTranscriptView]render");
-
-//   //   親要素を`position: relative`にする
-//   const e: HTMLElement = document.querySelector<HTMLElement>(
-//     this.insertParentSelector
-//   );
-//   e.style.position = "relative";
-//   const p: InsertPosition = this.insertPosition;
-//   const html: string = this.generateMarkup();
-//   e.insertAdjacentHTML(p, html);
-// };
 
 BottomTranscriptView.prototype.render = function (
     subtitles?: subtitle_piece[]

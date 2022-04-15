@@ -1,10 +1,7 @@
 /***************************************************
  * SELECTORS
- * ________________________________________________
  *
- *
- *
- *
+ * TODO: data-*系を区別したい
  * **************************************************/
 
 // --- Selectors related to Transcript ---------------------------
@@ -98,10 +95,9 @@ export const EX = {
     dashboardTranscriptPanel: '.ex-dashboard-transcript__transcript--panel',
     dashboardTranscriptCueContainer:
         '.ex-dashboard-transcript__transcript--cue-container',
-    dashboardTranscriptCue:
-        '.ex--dashboard-transcript__transcript--cue-underline',
-    // TODO: 要修正 命名
-    dashboardTranscriptCueText: "span[data-purpose='ex--dashboard-cue-text']",
+    dashboardTranscriptCue: '.ex-dashboard-transcript__transcript--cue',
+    // data-purpose
+    dashboardTranscriptCueText: 'ex--dashboard-cue-text',
     dashboardTranscriptBottom: '.ex-dashboard-transcript__footer',
 
     // TODO: 要修正 クラス名を重ね掛けにするのかどうか、
