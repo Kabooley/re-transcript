@@ -52,7 +52,10 @@ BottomTranscriptView.prototype.generateMarkup = function (
     <div class="${selectors.EX.dashboardTranscriptWrapper.slice(1)}">
         <div class="${selectors.EX.dashboardTranscriptHeader.slice(
             1
-        )}">ExTranscript</div>
+        )}">
+            <h2 class="heading-secondary">ExTranscript</h2>
+            <button type="button" class="${selectors.EX.closeButton.slice(1)}">X</button>
+        </div>
         <div class="${selectors.EX.dashboardTranscriptPanel.slice(1)}">
             ${subtitleStrings === undefined ? '' : subtitleStrings}
         </div>

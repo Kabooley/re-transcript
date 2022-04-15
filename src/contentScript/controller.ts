@@ -222,16 +222,19 @@ chrome.runtime.onMessage.addListener(
 // --- VIEW METHODS ------------------------------------------
 //
 
+
 /************************************************
  * Insert sidebar ExTranscript
  * And clear previoud ExTranscript.
  * */
-const renderSidebarTranscript = (): void => {
+ const renderSidebarTranscript = (): void => {
     console.log('[controller] Rerender sidebar ExTranscript');
     const { subtitles } = sSubtitles.getState();
     bottomTranscriptView.clear();
     sidebarTranscriptView.clear();
     sidebarTranscriptView.render(subtitles);
+    // NOTE: new added.
+    resetCloseButtonListener();
     sidebarTranscriptView.updateContentHeight();
     // sidebarの時だけに必要
     window.addEventListener('scroll', onWindowScrollHandler);
@@ -248,6 +251,8 @@ const renderBottomTranscript = (): void => {
     sidebarTranscriptView.clear();
     bottomTranscriptView.clear();
     bottomTranscriptView.render(subtitles);
+    // NOTE: new added.
+    resetCloseButtonListener();
     // noSidebarの時は不要
     window.removeEventListener('scroll', onWindowScrollHandler);
 };
@@ -312,6 +317,19 @@ const handlerOfReset = (): void => {
 
     window.addEventListener('resize', reductionOfwindowResizeHandler);
 };
+
+/**
+ * Order background to turn off ExTranscript
+ * 
+ * */ 
+ const closeButtonHandler = (): void => {
+    chrome.runtime.sendMessage({
+        from: extensionNames.controller,
+        to: extensionNames.background,
+        order: [orderNames.turnOff]
+    });
+};
+
 
 /**********************************************************
  * OnScroll handler for sidebar ExTranscript.
@@ -526,6 +544,15 @@ const updateExTranscriptHighlight = (): void => {
         }
     }
 };
+
+/**
+ * 
+ * */
+ const resetCloseButtonListener = (): void => {
+    const btn: HTMLElement = document.querySelector<HTMLElement>(selectors.EX.closeButton);
+    btn.addEventListener("click", closeButtonHandler);
+} 
+
 
 /********************************************************************
  * Reset MutationObserver API for detect scroll system.

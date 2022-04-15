@@ -6192,3 +6192,161 @@ https://webpack.js.org/loaders/sass-loader/
 ```bash
 $ npm i -D node-sass sass-loader
 ```
+
+## ExTranscriptの閉じるボタンの実装
+
+- `justify-content: space-between;`でアイテムを両端に置く模様
+- 閉じるボタンアイコンはsvgでつくる
+    本家はuse要素を使っていた
+- 閉じるボタンクリックでExTranscriptは閉じるし、本家のトランスクリプトも閉じたい
+    ...本家を閉じるのは無理
+
+
+- 「閉じるボタン」で閉じる仕組み
+
+ExTranscript上のボタンを押す
+
+controller.ts上のハンドラが発火する
+
+background.tsへメッセージを送信する
+
+background.tsは受信したらhandlerOfHid()を実行する
+
+閉じた
+
+- 「閉じるボタン」のリスナを設置する仕組み
+
+各viewクラスのrender()メソッド実行後に、DOMを取得して付ける
+
+remove処理は必要ない。かならずrender()前にDOMをクリアする仕組みだから
+
+
+```TypeScript
+// selectors.ts
+export const EX = {
+    // ...
+    closeButton: ".btn__close",
+    linkButton: ".btn__close",
+}
+
+// controller.ts
+
+/************************************************
+ * Insert sidebar ExTranscript
+ * And clear previoud ExTranscript.
+ * */
+const renderSidebarTranscript = (): void => {
+    console.log('[controller] Rerender sidebar ExTranscript');
+    const { subtitles } = sSubtitles.getState();
+    bottomTranscriptView.clear();
+    sidebarTranscriptView.clear();
+    sidebarTranscriptView.render(subtitles);
+    // NOTE: new added.
+    resetCloseButtonHandler();
+    sidebarTranscriptView.updateContentHeight();
+    // sidebarの時だけに必要
+    window.addEventListener('scroll', onWindowScrollHandler);
+};
+
+/************************************************
+ * Insert bttom ExTranscript
+ * And clear previoud ExTranscript.
+ * */
+const renderBottomTranscript = (): void => {
+    console.log('[controller] Rerender bottom ExTranscript');
+
+    const { subtitles } = sSubtitles.getState();
+    sidebarTranscriptView.clear();
+    bottomTranscriptView.clear();
+    bottomTranscriptView.render(subtitles);
+    // NOTE: new added.
+    resetCloseButtonHandler();
+    // noSidebarの時は不要
+    window.removeEventListener('scroll', onWindowScrollHandler);
+};
+
+/**
+ * 
+ * */
+const resetCloseButtonListener = (): void => {
+    const btn: HTMLElement = document.querySelector<HTMLElement>(selectors.EX.closeButton);
+    btn.addEventListener("click", closeButtonHandler);
+} 
+
+
+/**
+ * Order background to turn off ExTranscript
+ * 
+ * */ 
+const closeButtonHandler = (): void => {
+    chrome.runtime.sendMessage({
+        from: extensionNames.controller,
+        to: extensionNames.background,
+        order: [orderNames.turnOff]
+    });
+};
+
+// background.ts
+
+/**
+ * So far no response is needed. 
+ * */ 
+const handlerOfControllerMessage = async (
+    message: iMessage,
+    sender: chrome.runtime.MessageSender,
+    sendResponse: (response?: iResponse) => void
+): Promise<void> => {
+    try {
+        const { order, ...rest } = message;
+        const { tabId } = await state.get();
+
+        if(order && order.length) {
+            if(order.includes(orderNames.turnOff)) await handlerOfHide(tabId);
+        }
+    } catch (e) {
+        alertHandler((await tabQuery()).id, messageTemplate.appCannotExecute);
+    }
+};
+
+```
+
+閉じるボタンの機能は実装できた
+
+しかし
+
+POPUPの表示が更新しない
+
+理由はhandlerOfHideは適切なメソッドじゃなかったから
+
+適切な処理はbackground.ts::handlerOfPopupMessage()の
+
+turnOffオーダーでの処理である
+
+つまりここの一連の処理が再利用されるので
+
+メソッド化する
+
+```TypeScript
+const handlerOfTurnOff = async (): Promise<void> => {
+    try {
+        const { tabId } = await state.get();
+        await turnOffEachContentScripts(tabId);
+        const {
+            isContentScriptInjected,
+            isCaptureSubtitleInjected,
+            isControllerInjected,
+        } = await state.get();
+        // content scriptのinject状況だけ反映させてstateを初期値に戻す
+        await state.set({
+            ...modelBase,
+            isContentScriptInjected: isContentScriptInjected,
+            isCaptureSubtitleInjected: isCaptureSubtitleInjected,
+            isControllerInjected: isControllerInjected,
+        });
+    }
+    catch(e) throw e;
+}
+```
+
+修正完了
+
