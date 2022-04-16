@@ -23,9 +23,12 @@ MVC と DDD の設計思想を取り入れたい
 
 更新は豆に！
 
-- `getComputedStyle`のエラー対処
+- [検討：自動スクロールのfooterは本家をそのまま表示する](#検討：自動スクロールのfooterは本家をそのまま表示する)
 
-- [SASS の webpack への導入](#SASSのwebpackへの導入)
+本家の自動スクロールチェックボックスを外したら、こっちは「自動スクロール」の機能をOFFにできないか
+
+- `getComputedStyle`のエラー対処
+    わりと後回しでいいかも
 
 - [ExTranscript の閉じるボタンの実装](#ExTranscriptの閉じるボタンの実装)
 
@@ -84,6 +87,7 @@ MVC と DDD の設計思想を取り入れたい
 
 済：
 
+- [済][SASS の webpack への導入](#SASSのwebpackへの導入)
 - [済]拡張機能を展開していたタブが閉じられたときの後始末
 - [済][`settimeout`, `setinterval`を background script で使うな](#`setTimeout`, `setInterval`を background script で使うな)
   専用の API が用意されているのでそちらに切り替えること
@@ -6371,3 +6375,80 @@ const handlerOfTurnOff = async (): Promise<void> => {
 どうやって × ボタンを作るか
 
 後は参考サイトのとおりに webpack コンフィグをいじるだけの簡単なお仕事
+
+
+## 検討：自動スクロールのfooterは本家をそのまま表示する
+
+実現したいこと：
+
+トランスクリプトのフッターの自動スクロールチェックボックスを拡張機能展開中でも表示させて、
+
+チェックボックスが外れたらそのことを検知して、
+
+拡張機能の「自動スクロール機能」をOFFにする
+
+
+課題：
+
+- 本家の「自動スクロール」のチェックボックスにリスナを付ける
+- 「自動スクロール機能」のON/OFF
+- ExTranscriptのFooterをなくしても問題なく表示させられるか
+
+
+#### 本家の「自動スクロール」のチェックボックスにリスナを付ける
+
+
+```TypeScript
+// selector
+const autoscroll_checkbox: string = "[name='autoscroll-checkbox']" as const;
+// querySelectorAll()も試したけどただ一つの要素だけマッチする
+const cb: HTMLElement = document.querySelector(autoscroll_checkbox);
+// チェックボックスを外したり付けたりして確認したらチェック状態を反映した値を取得できた
+console.log(cb.checked);
+```
+
+
+```TypeScript
+// リスナを付けるタイミングは、controller.tsで各TranscriptView.render()が呼び出された、
+// その直後
+// (removeをその前に行うこと)
+const resetAutoscrollCheckboxListener = (): void => {
+
+    cb.removeEventListener("click", autoscrollCheckboxClickHandler);
+    cb.addEventListener("click", autoscrollCheckboxClickHandler);
+};
+
+const autoscrollCheckboxClickHandler = (): void => {
+    const cb: HTMLElement = document.querySelector(
+        /* selector of "[name='autoscroll-checkbox']"*/ 
+    );
+
+    // Fire after click event has been done.
+    setTimeout(function() {
+        if(cb.checked){
+            // 本家トランスクリプト自動スクロール機能がONになった
+            // ExTranscriptの自動スクロール機能をONにする
+        }
+        else {
+            // 本家トランスクリプト自動スクロール機能がOFFになった
+            // ExTranscriptの自動スクロール機能をONにする
+        }
+    }, 100);
+}
+
+// 
+```
+
+拡張機能の自動スクロール機能はcontroller.ts::moCallback()のなかで、
+
+scrollToHighlight()がよびだされることで実現している
+
+つまり、
+
+自動スクロール機能をOFFにしたいならばmoCallbackから外せばいい
+
+再度ONにしたいならばmoCallbackに追加すればいい
+
+たぶん大変やぞこれ...
+
+MutationObserver
