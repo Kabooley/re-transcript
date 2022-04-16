@@ -25,7 +25,7 @@ MVC と DDD の設計思想を取り入れたい
 
 -   `getComputedStyle`のエラー対処
 
-- [SASSのwebpackへの導入](#SASSのwebpackへの導入)
+-   [SASS の webpack への導入](#SASSのwebpackへの導入)
 
 -   [ExTranscript の閉じるボタンの実装](#ExTranscriptの閉じるボタンの実装)
 
@@ -6182,8 +6182,27 @@ export const RESIZE_BOUNDARY: number = 980;
 
 すこし controller.ts のコードが少なくなった
 
+#### CSS Tips: SVG の導入
 
-## SASSのwebpackへの導入
+参考
+
+https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Adding_vector_graphics_to_the_Web
+
+```JavaScript
+
+const button = document.createElement("button");
+const svg = document.createElement("img");
+svg.setAttribute("src", "close-button.svg");
+svg.setAttribute("alt", "close button");
+svg.setAttribute("height", "36");
+svg.setAttribute("width", "36");
+button.appendChild(svg);
+document.getElementById("app").appendChild(button);
+```
+
+なんかうまくいかん...
+
+## SASS の webpack への導入
 
 参考:
 
@@ -6192,3 +6211,5 @@ https://webpack.js.org/loaders/sass-loader/
 ```bash
 $ npm i -D node-sass sass-loader
 ```
+
+後は参考サイトのとおりに webpack コンフィグをいじるだけの簡単なお仕事
