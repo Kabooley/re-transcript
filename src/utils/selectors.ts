@@ -28,7 +28,9 @@ export const transcript = {
   // Controlbar
   controlbar:
     "div.control-bar--control-bar--MweER[data-purpose='video-controls']",
-  //
+  // NOTE: new added. 自動スクロールチェックボックス
+    // AutoScroll Checkbox
+    autoscroll: "[name='autoscroll-checkbox']"
 } as const;
 
 // --- Selectors related to control bar. -------------------------

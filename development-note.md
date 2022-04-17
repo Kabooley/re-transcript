@@ -6545,9 +6545,11 @@ console.log(cb.checked);
 // その直後
 // (removeをその前に行うこと)
 const resetAutoscrollCheckboxListener = (): void => {
-
+    const cb: HTMLElement =  document.querySelector(selectors.transcript.autoscroll);
+    if(cb) {
     cb.removeEventListener("click", autoscrollCheckboxClickHandler);
     cb.addEventListener("click", autoscrollCheckboxClickHandler);
+    }
 };
 
 const autoscrollCheckboxClickHandler = (): void => {
