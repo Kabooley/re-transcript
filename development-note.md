@@ -6583,4 +6583,213 @@ scrollToHighlight()がよびだされることで実現している
 
 たぶん大変やぞこれ...
 
-MutationObserver
+MutationObserverおさらい
+
+```JavaScript
+const observer = new MutationObserver(function() {
+    // トリガーされたときにしたいこと
+})
+// 監視対象の登録と監視開始
+observer.observe(target, config);
+// 監視終了
+observer.disconnect()
+// 監視再開は別の要素にすることもできる
+observer.observe(target2, config2);
+
+```
+
+MutationObserverを設置する関数
+
+`resetDetectScroll()`
+
+resetDetectScroll()を呼び出す関数
+
+`updateSubtitle`だけ
+
+scrollToHighlight()だけ自由にON/OFFにしたいので
+
+つまり、
+
+```TypeScript
+// これはすでに（モジュール内の）グローバル変数としてどこからでもスコープできるから
+let transcriptListObserver: MutationObserver_ = null;
+
+const resetAutoscrollCheckboxListener = (): void => {
+    cb.removeEventListener("click", autoscrollCheckboxClickHandler);
+    cb.addEventListener("click", autoscrollCheckboxClickHandler);
+};
+
+const autoscrollCheckboxClickHandler = (): void => {
+    const cb: HTMLElement = document.querySelector(
+        /* selector of "[name='autoscroll-checkbox']"*/
+    );
+    //   NodeListOf HTMLSpanElement
+    const transcriptList: NodeListOf<Element> = document.querySelectorAll(
+        selectors.transcript.transcripts
+    );
+
+    setTimeout(function() {
+        if(!cb.checked){
+            // 本家トランスクリプト自動スクロール機能がOFFになった
+            // 一旦監視解除して
+            transcriptListObserver.disconnect();
+            // インスタンスを削除して
+            transcriptListObserver = null;
+            // 新しいcallbackを渡したインスタンスにして
+            transcriptListObserevr = new MutationObserver_(
+                /* NEW CALLBACK THAT DOESNOT INCLUDE scrollToHighlight() */,
+                moConfig,
+                transcriptList
+            );
+            // 監視再開
+            transcriptListObserver.observe();
+        }
+        else {
+            // 本家トランスクリプト自動スクロール機能がONになった
+            resetDetectScroll();
+        }
+    }, 100);
+}
+```
+
+長いしわかりづらい...
+
+MutationObserver_クラスを活用できないか？
+
+すでに再利用性皆無なのでこの際都合のいいようにしてしまえば...
+
+
+```TypeScript
+// 自動スクロールあり
+const moCallback = function (
+    this: MutationObserver_,
+    mr: MutationRecord[]
+): void {
+    let guard: boolean = false;
+    mr.forEach((record: MutationRecord) => {
+        if (
+            record.type === 'attributes' &&
+            record.attributeName === 'class' &&
+            record.oldValue === '' &&
+            !guard
+        ) {
+            console.log('OBSERVED');
+            guard = true;
+            try {
+                updateHighlightIndexes();
+                updateExTranscriptHighlight();
+                scrollToHighlight();
+            } catch (e) {
+                chrome.runtime.sendMessage({
+                    from: extensionNames.controller,
+                    to: extensionNames.background,
+                    error: e,
+                });
+            }
+        }
+    });
+};
+// 自動スクロールなし
+const moCallback = function (
+    this: MutationObserver_,
+    mr: MutationRecord[]
+): void {
+    let guard: boolean = false;
+    mr.forEach((record: MutationRecord) => {
+        if (
+            record.type === 'attributes' &&
+            record.attributeName === 'class' &&
+            record.oldValue === '' &&
+            !guard
+        ) {
+            console.log('OBSERVED');
+            guard = true;
+            try {
+                updateHighlightIndexes();
+                updateExTranscriptHighlight();
+            } catch (e) {
+                chrome.runtime.sendMessage({
+                    from: extensionNames.controller,
+                    to: extensionNames.background,
+                    error: e,
+                });
+            }
+        }
+    });
+};
+
+// MutationObserver_なしの場合
+
+const observer: MutationObserver = new MutationObserver(moCallback);
+const transcriptList: NodeListOf<Element> = document.querySelectorAll(
+    selectors.transcript.transcripts
+);
+transcriptList.forEach(ts => observer.observe(ts, config));
+```
+
+こうしてみると
+
+callbackは固定されてしまうので
+
+callbackの内容が異なる場合、observerをその分用意しておくことになるかも
+
+```TypeScript
+const moWatchHighlight = function (
+    this: MutationObserver_,
+    mr: MutationRecord[]
+): void {
+    let guard: boolean = false;
+    mr.forEach((record: MutationRecord) => {
+        if (
+            record.type === 'attributes' &&
+            record.attributeName === 'class' &&
+            record.oldValue === '' &&
+            !guard
+        ) {
+            console.log('OBSERVED');
+            guard = true;
+            try {
+                updateHighlightIndexes();
+                updateExTranscriptHighlight();
+                scrollToHighlight();
+            } catch (e) {
+                chrome.runtime.sendMessage({
+                    from: extensionNames.controller,
+                    to: extensionNames.background,
+                    error: e,
+                });
+            }
+        }
+    });
+};
+
+```
+
+もしくはもっとも簡単な方法としてiControllerにプロパティを一つ増やして
+
+その状態をscrollToHighlight()で参照して実行するかしないか判断させれば一番楽かも...
+
+```TypeScript
+const scrollToHighlight = (): void => {
+    console.log('[controller] scrollToHighlight()');
+    // autoscroll: booleanだとして...
+    const { autoScroll } = sStatus.getState();
+    if(!autoscroll) return;
+    // ...
+}
+
+const resetAutoscrollCheckboxListener = (): void => {
+    cb.removeEventListener("click", autoscrollCheckboxClickHandler);
+    cb.addEventListener("click", autoscrollCheckboxClickHandler);
+};
+
+const autoscrollCheckboxClickHandler = (): void => {
+    setTimeout(function() {
+        const cb: HTMLElement = document.querySelector(
+            /* selector of "[name='autoscroll-checkbox']"*/
+        );
+        sStatus.setState({autoscroll: cb.checked})
+    }, 100);
+}
+
+```
