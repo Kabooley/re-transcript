@@ -6833,3 +6833,6 @@ updatePosition()
 ぴったり一致させること
 
 
+なんかsidebarTranscriptだけ自動ハイライト機能が効いていない...なぜ？
+
+TODO: これの修正!!

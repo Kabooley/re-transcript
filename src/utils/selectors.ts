@@ -104,7 +104,7 @@ export const EX = {
   // TODO: 要修正 クラス名を重ね掛けにするのかどうか、
   // 命名も
   // To Highlight Transcriot Cue Container
-  highlight: ".--highlight--",
+  highlight: ".--highlight",
   // NOTE: new added.
   closeButton: ".btn__close",
 } as const;
