@@ -6795,3 +6795,41 @@ const autoscrollCheckboxClickHandler = (): void => {
 }
 
 ```
+
+上の案を採用した
+
+sidebarとbottomを切り替えると常にsStatus.isAutoscrollOnがtrueのままになってしまう
+
+切り替えの時のプロセスの確認
+
+ブラウザのリサイズが発生
+
+onWindowResizeHandler()
+
+  sStatus.setState({position: sideview});
+
+updatePosition()
+
+  renderSidebarTranscript()
+
+  resetDetectScroll()
+
+    MutationObserverのリセット
+
+
+で完了。
+
+つまり、autoscroll toggleのリスナ更新がこのプロセスの中にないのである
+
+だから前回の値を参照し続けている...
+
+
+ということで、切り替えのプロセスの中に更新を含めるようにする
+
+解決した
+
+あとは各ExTranscriptのFooterをなくして、本家のトランスクリプトのfooterと
+
+ぴったり一致させること
+
+
