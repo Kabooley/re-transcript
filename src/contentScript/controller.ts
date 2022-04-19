@@ -225,6 +225,13 @@ chrome.runtime.onMessage.addListener(
 // --- VIEW METHODS ------------------------------------------
 //
 
+const calcContentHeight = (): void => {
+    const footer: HTMLElement = document.querySelector('.transcript--autoscroll-wrapper--oS-dz.transcript--bottom--2wFKl');
+    const height: number = parseInt(window.getComputedStyle(footer).height.replace("px", ""))
+    sidebarTranscriptView.updateContentHeight(height);
+  }
+  
+
 /************************************************
  * Insert sidebar ExTranscript
  * And clear previoud ExTranscript.
@@ -237,7 +244,8 @@ const renderSidebarTranscript = (): void => {
     sidebarTranscriptView.render(subtitles);
     // NOTE: new added.
     resetCloseButtonListener();
-    sidebarTranscriptView.updateContentHeight();
+    // sidebarTranscriptView.updateContentHeight();
+    calcContentHeight();
     // sidebarの時だけに必要
     window.addEventListener('scroll', onWindowScrollHandler);
 };

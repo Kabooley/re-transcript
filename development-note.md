@@ -6836,3 +6836,70 @@ updatePosition()
 なんかsidebarTranscriptだけ自動ハイライト機能が効いていない...なぜ？
 
 TODO: これの修正!!
+
+各メソッドの呼出は正しく行われている
+
+sidebarTranscriptViewのとき、トランスクリプトの`overflow-y: hidden`が無効になっている
+
+多分そのせいでスクロールがそもそもできないのだと思う
+
+つまり、footerがあることが前提にある
+
+`SidebarTranscriptView.prototype.updateContentHeight`で高さを再計算している
+
+このとき、footerがそもそも`display: none`なので要素が取得できていない
+
+なので、
+
+footerの要素を取得する代わりに、本家のトランスクリプトのフッターの高さを取得できればいいわけである
+
+```TypeScript
+// selectors.ts
+
+export const transcript = {
+  // ...
+  footer: `.transcript--autoscroll-wrapper--oS-dz.transcript--bottom--2wFKl`,
+}
+// controller.ts
+const calcContentHeight = (): void => {
+  const footer: HTMLElement = document.querySelector(selectors.transcript.footer);
+  const height: number = parseInt(window.getComputedStyle(footer).height.replace("px", ""))
+  sidebarTranscriptView.updateContentHeight(height);
+}
+
+// ひとまず導入してみる用のテスト関数
+const calcContentHeight = (): void => {
+  const footer: HTMLElement = document.querySelector('.transcript--autoscroll-wrapper--oS-dz.transcript--bottom--2wFKl');
+  const height: number = parseInt(window.getComputedStyle(footer).height.replace("px", ""))
+  sidebarTranscriptView.updateContentHeight(height);
+}
+
+
+// sidebarTranscriptView.ts
+
+// NOTE: new parameter: foterHeight added
+// これは本家のトランスクリプトのfooterの高さである
+SidebarTranscriptView.prototype.updateContentHeight = function (
+  footerHeight: number
+): void {
+  const content = document.querySelector<HTMLElement>(
+    selectors.EX.sidebarContent
+  );
+  const footer: Element = document.querySelector<Element>(
+    selectors.EX.sidebarFooter
+  );
+  const header: Element = document.querySelector<Element>(
+    selectors.EX.sidebarHeader
+  );
+  const height =
+    document.documentElement.clientHeight -
+    parseInt(window.getComputedStyle(footer).height.replace("px", "")) -
+    parseInt(window.getComputedStyle(header).height.replace("px", ""));
+
+  content.style.height = height + "px";
+};
+```
+
+NOTE: new selector. 本家のトランスクリプト・フッターのセレクタ
+
+`.transcript--autoscroll-wrapper--oS-dz.transcript--bottom--2wFKl`
