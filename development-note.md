@@ -6585,7 +6585,7 @@ scrollToHighlight()がよびだされることで実現している
 
 たぶん大変やぞこれ...
 
-MutationObserverおさらい
+MutationObserver おさらい
 
 ```JavaScript
 const observer = new MutationObserver(function() {
@@ -6600,7 +6600,7 @@ observer.observe(target2, config2);
 
 ```
 
-MutationObserverを設置する関数
+MutationObserver を設置する関数
 
 `resetDetectScroll()`
 
@@ -6608,7 +6608,7 @@ resetDetectScroll()を呼び出す関数
 
 `updateSubtitle`だけ
 
-scrollToHighlight()だけ自由にON/OFFにしたいので
+scrollToHighlight()だけ自由に ON/OFF にしたいので
 
 つまり、
 
@@ -6656,10 +6656,9 @@ const autoscrollCheckboxClickHandler = (): void => {
 
 長いしわかりづらい...
 
-MutationObserver_クラスを活用できないか？
+MutationObserver\_クラスを活用できないか？
 
 すでに再利用性皆無なのでこの際都合のいいようにしてしまえば...
-
 
 ```TypeScript
 // 自動スクロールあり
@@ -6731,9 +6730,9 @@ transcriptList.forEach(ts => observer.observe(ts, config));
 
 こうしてみると
 
-callbackは固定されてしまうので
+callback は固定されてしまうので
 
-callbackの内容が異なる場合、observerをその分用意しておくことになるかも
+callback の内容が異なる場合、observer をその分用意しておくことになるかも
 
 ```TypeScript
 const moWatchHighlight = function (
@@ -6767,9 +6766,9 @@ const moWatchHighlight = function (
 
 ```
 
-もしくはもっとも簡単な方法としてiControllerにプロパティを一つ増やして
+もしくはもっとも簡単な方法として iController にプロパティを一つ増やして
 
-その状態をscrollToHighlight()で参照して実行するかしないか判断させれば一番楽かも...
+その状態を scrollToHighlight()で参照して実行するかしないか判断させれば一番楽かも...
 
 ```TypeScript
 const scrollToHighlight = (): void => {
@@ -6798,7 +6797,7 @@ const autoscrollCheckboxClickHandler = (): void => {
 
 上の案を採用した
 
-sidebarとbottomを切り替えると常にsStatus.isAutoscrollOnがtrueのままになってしまう
+sidebar と bottom を切り替えると常に sStatus.isAutoscrollOn が true のままになってしまう
 
 切り替えの時のプロセスの確認
 
@@ -6806,52 +6805,49 @@ sidebarとbottomを切り替えると常にsStatus.isAutoscrollOnがtrueのま�
 
 onWindowResizeHandler()
 
-  sStatus.setState({position: sideview});
+sStatus.setState({position: sideview});
 
 updatePosition()
 
-  renderSidebarTranscript()
+renderSidebarTranscript()
 
-  resetDetectScroll()
+resetDetectScroll()
 
     MutationObserverのリセット
 
-
 で完了。
 
-つまり、autoscroll toggleのリスナ更新がこのプロセスの中にないのである
+つまり、autoscroll toggle のリスナ更新がこのプロセスの中にないのである
 
 だから前回の値を参照し続けている...
-
 
 ということで、切り替えのプロセスの中に更新を含めるようにする
 
 解決した
 
-あとは各ExTranscriptのFooterをなくして、本家のトランスクリプトのfooterと
+あとは各 ExTranscript の Footer をなくして、本家のトランスクリプトの footer と
 
 ぴったり一致させること
 
-
-なんかsidebarTranscriptだけ自動ハイライト機能が効いていない...なぜ？
+なんか sidebarTranscript だけ自動ハイライト機能が効いていない...なぜ？
 
 TODO: これの修正!!
 
 各メソッドの呼出は正しく行われている
 
-sidebarTranscriptViewのとき、トランスクリプトの`overflow-y: hidden`が無効になっている
+sidebarTranscriptView のとき、トランスクリプトの`overflow-y: hidden`が無効になっている
 
 多分そのせいでスクロールがそもそもできないのだと思う
 
-つまり、footerがあることが前提にある
+つまり、footer があることが前提にある
 
 `SidebarTranscriptView.prototype.updateContentHeight`で高さを再計算している
 
-このとき、footerがそもそも`display: none`なので要素が取得できていない
+このとき、footer がそもそも`display: none`なので要素が取得できていない
 
 なので、
 
-footerの要素を取得する代わりに、本家のトランスクリプトのフッターの高さを取得できればいいわけである
+footer の要素を取得する代わりに、本家のトランスクリプトのフッターの高さを取得できればいいわけである
 
 ```TypeScript
 // selectors.ts
@@ -6903,3 +6899,13 @@ SidebarTranscriptView.prototype.updateContentHeight = function (
 NOTE: new selector. 本家のトランスクリプト・フッターのセレクタ
 
 `.transcript--autoscroll-wrapper--oS-dz.transcript--bottom--2wFKl`
+
+ExFooter が要らなくなった！
+
+しかしばっちり動かすには(content の height を正しく計算するには)
+
+Udemy の本家のページのヘッダ(Nav bar)が表示されている分も計算に入れないといけない
+
+ついになんとか API の導入かしら？
+
+intersection observer API の導入の検討

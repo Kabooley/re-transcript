@@ -227,7 +227,8 @@ chrome.runtime.onMessage.addListener(
 
 const calcContentHeight = (): void => {
     const footer: HTMLElement = document.querySelector('.transcript--autoscroll-wrapper--oS-dz.transcript--bottom--2wFKl');
-    const height: number = parseInt(window.getComputedStyle(footer).height.replace("px", ""))
+    const height: number = parseInt(window.getComputedStyle(footer).height.replace("px", ""));
+    console.log(height);
     sidebarTranscriptView.updateContentHeight(height);
   }
   
