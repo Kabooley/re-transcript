@@ -19,15 +19,17 @@
  * - ExTranscriptの表示・非表示はbackground scriptの指示に従う
  * - 字幕データはこちらか要求しない
  *
- * NOTE:
  *
- * - 自動スクロール機能は本家の自動スクロール・チェックボックスを実装しない。
- * これは仕様とする
- *
- *
- * TODO: コード中の'TODO'を確認して修正のこと
+ * TODO:
+ *  - TypeScriptの型定義は別のファイルに移動したい...
  *
  *
+ * 走り書き：
+ *
+ * - controller.tsは２つのstateオブジェクトを扱う
+ * 一つはsStatus, もう一つはsSubtitles
+ * 前者は進行状況、windowの状態などを表す変数を管理する
+ * 後者はbackground.tsから送信された字幕データを管理する
  * *******************************************************/
 import sidebarTranscriptView from './sidebarTranscriptView';
 import bottomTranscriptView from './bottomTranscriptView';
@@ -50,14 +52,14 @@ import {
 import Observable from '../utils/Observable';
 import State from '../utils/contentScript/State';
 import MutationObserver_ from '../utils/MutationObserver_';
-import { DomManipulationError } from '../Error/Error';
-// import { sendMessagePromise } from "../utils/helpers";
 
 //
 // ----- GLOBALS -----------------------------------------
 //
 
 // ----- Annotations -------------------------------------
+
+// Annotations of sStatus.
 interface iController {
     // 本家Transcriptのポジション2通り
     position: keyof_positionStatus;
@@ -75,12 +77,12 @@ interface iController {
     isAutoscrollOn: boolean;
 }
 
-// 字幕データはでかいので、毎回気軽に呼び出さないでほしい
-// そのため別にしておく
+// Annotation of sSubtitles.
 interface iSubtitles {
     subtitles: subtitle_piece[];
 }
 
+// Base object of sStatus.
 const statusBase: iController = {
     // NOTE: position, viewの初期値は意味をなさず、
     // すぐに変更されることが前提である
@@ -93,6 +95,7 @@ const statusBase: iController = {
     isAutoscrollOn: false,
 };
 
+// Base object of sSubtitles
 const subtitleBase: iSubtitles = {
     subtitles: [],
 };
@@ -104,6 +107,7 @@ let sStatus: State<iController>;
 let sSubtitles: State<iSubtitles>;
 let transcriptListObserver: MutationObserver_ = null;
 
+// Config of MutationObserver for auto high light.
 const moConfig: MutationObserverInit = {
     attributes: true,
     childList: false,
@@ -111,8 +115,11 @@ const moConfig: MutationObserverInit = {
     attributeOldValue: true,
 } as const;
 
-/*************************************************************************
- * Callback for MutationObserver.
+/**
+ * Callback of MutationObserver for auto high light.
+ *
+ * @param {MutationObserver_} this -
+ * @param {MutationRecord[]} mr - MutationObserverが発火したときに受け取るAPI既定の引数
  *
  * guard: 以下の理由で設けている変数
  *
@@ -121,7 +128,6 @@ const moConfig: MutationObserverInit = {
  * つまりまったく同じ要素が同時に複数存在する状況が発生してしまっている
  * 多分バグだけど、同じ要素が何個も生成されてしまうとリスナが何度も
  * 反応してしまう可能性がある
- *
  *
  * */
 const moCallback = function (
@@ -157,10 +163,12 @@ const moCallback = function (
 // --- CHROME LISTENERS ----------------------------------------
 //
 
-/***************************************************************
- * On Message Handler
+/**
+ * Chrome API: on message handler.
  *
- * @return {boolean} Return true to indicate that it will respond asynchronously.
+ * @return {boolean} - Return true to indicate that it will respond asynchronously.
+ *
+ * Always run sendResponse in finally block so that send error to background script.
  * */
 chrome.runtime.onMessage.addListener(
     async (
@@ -225,20 +233,9 @@ chrome.runtime.onMessage.addListener(
 // --- VIEW METHODS ------------------------------------------
 //
 
-const calcContentHeight = (): void => {
-    const footer: HTMLElement = document.querySelector(
-        '.transcript--autoscroll-wrapper--oS-dz.transcript--bottom--2wFKl'
-    );
-    const height: number = parseInt(
-        window.getComputedStyle(footer).height.replace('px', '')
-    );
-    console.log(height);
-    sidebarTranscriptView.updateContentHeight(height);
-};
-
-/************************************************
+/**
  * Insert sidebar ExTranscript
- * And clear previoud ExTranscript.
+ * And clear previous ExTranscript.
  * */
 const renderSidebarTranscript = (): void => {
     console.log('[controller] Rerender sidebar ExTranscript');
@@ -253,7 +250,7 @@ const renderSidebarTranscript = (): void => {
     window.addEventListener('scroll', onWindowScrollHandler);
 };
 
-/************************************************
+/**
  * Insert bttom ExTranscript
  * And clear previoud ExTranscript.
  * */
@@ -274,19 +271,8 @@ const renderBottomTranscript = (): void => {
 // --- HANDLERS ----------------------------------------------
 //
 
-/************************************************
- * Reduction of onWindowResizeHandler()
- *
- * Delays reaction of window resize.
- * */
-const reductionOfwindowResizeHandler = (): void => {
-    clearTimeout(timerQueue);
-    timerQueue = setTimeout(onWindowResizeHandler, RESIZE_TIMER);
-};
-
-/************************************************
+/**
  * Handler of Turning off ExTranscript.
- *
  *
  * */
 const handlerOfTurnOff = (): void => {
@@ -312,14 +298,11 @@ const handlerOfTurnOff = (): void => {
     sSubtitles.setState({ ...subtitleBase });
 };
 
-/**************************************************
+/**
  * Handler of Reset ExTranscript.
- *
  *
  * */
 const handlerOfReset = (): void => {
-    // DEBUG:
-    console.log('----------------------------------------------------------');
     console.log('[controller] handlerOfReset()');
 
     handlerOfTurnOff();
@@ -332,26 +315,12 @@ const handlerOfReset = (): void => {
 
     window.addEventListener('resize', reductionOfwindowResizeHandler);
     resetAutoscrollCheckboxListener();
-
-    console.log('----------------------------------------------------------');
 };
 
 /**
- * Order background to turn off ExTranscript
+ * Window onScroll handler.
  *
- * */
-const closeButtonHandler = (): void => {
-    chrome.runtime.sendMessage({
-        from: extensionNames.controller,
-        to: extensionNames.background,
-        order: [orderNames.turnOff],
-    });
-};
-
-/**********************************************************
- * OnScroll handler for sidebar ExTranscript.
- *
- * When window scrolled, 
+ * When window scrolled,
  * update ExTranscript top position, and
  * update ExTranscript content height.
  * */
@@ -370,10 +339,9 @@ const onWindowScrollHandler = (): void => {
     calcContentHeight();
 };
 
-/*************************************************************
- * window onResize handler.
+/**
+ * Window onResize handler.
  *
- * Checks...
  * If window clientWidth straddle the MINIMUM_BOUNDARY, update state.
  * If window clientWidth straddle the RESIZE_BOUNDARY, update state.
  *
@@ -409,11 +377,48 @@ const onWindowResizeHandler = (): void => {
     if (position === positionStatus.sidebar) calcContentHeight();
 };
 
+/**
+ * Reduction of onWindowResizeHandler()
+ *
+ * Delays reaction of window resize.
+ * */
+const reductionOfwindowResizeHandler = (): void => {
+    clearTimeout(timerQueue);
+    timerQueue = setTimeout(onWindowResizeHandler, RESIZE_TIMER);
+};
+
+/**
+ * Order background to turn off ExTranscript
+ *
+ * */
+const closeButtonHandler = (): void => {
+    chrome.runtime.sendMessage({
+        from: extensionNames.controller,
+        to: extensionNames.background,
+        order: [orderNames.turnOff],
+    });
+};
+
+/**
+ * Recalculate and update ExTranscript height.
+ *
+ * */
+const calcContentHeight = (): void => {
+    const footer: HTMLElement = document.querySelector(
+        '.transcript--autoscroll-wrapper--oS-dz.transcript--bottom--2wFKl'
+    );
+    const height: number = parseInt(
+        window.getComputedStyle(footer).height.replace('px', '')
+    );
+    console.log(height);
+    sidebarTranscriptView.updateContentHeight(height);
+};
+
 //
-// ----- METHODS RELATED TO AUTO SCROLL -----------------------------
+// ----- METHODS RELATED TO AUTO SCROLL --------------------
 //
 
-/***********************************************************************
+/**
  * Initialize sStatus.indexList
  *
  * sSubtitles.subtitlesのindex番号からなる配列を
@@ -427,7 +432,7 @@ const initializeIndexList = (): void => {
     sStatus.setState({ indexList: indexes });
 };
 
-/************************************************************************
+/**
  * Returns the index number if the list contains an element.
  *
  * @param {NodeListOf<Element>} from: List of subtitles data.
@@ -460,7 +465,7 @@ const getElementIndexOfList = (
     return -1;
 };
 
-/*********************************************************************
+/**
  * Update sStatus.ExHighlight.
  * Invoked by MutationObserver
  * when Udemy highlighted element changed.
@@ -517,7 +522,7 @@ const updateHighlightIndexes = (): void => {
     }
 };
 
-/***************************************************************************
+/**
  * Update ExTranscript highlighted element.
  * Invoked by MutationObserver
  * just after updateHighlightIndexes().
@@ -610,7 +615,7 @@ const resetAutoscrollCheckboxListener = (): void => {
     }
 };
 
-/********************************************************************
+/**
  * Reset MutationObserver API for detect scroll system.
  *
  * Reset based on sStatus.isAutroscrollInitialized.
@@ -665,12 +670,11 @@ const resetDetectScroll = (): void => {
     }
 };
 
-/*****************************************************************
+/**
  * Scroll to Highlight
  *
  * Make ExTranscript subtitle panel scroll to latest highlighted element.
  *
- * TODO: (対応) DOMが取得できなかったらSyntaxErrorが発生する
  * */
 const scrollToHighlight = (): void => {
     console.log('[controller] scrollToHighlight()');
@@ -713,7 +717,7 @@ const scrollToHighlight = (): void => {
 };
 
 //
-// --- UPDATE METHODS -----------------------------------
+// --- UPDATE STATE METHODS -----------------------------------
 //
 
 /**
@@ -768,7 +772,7 @@ const updatePosition = (prop, prev): void => {
 //   console.log("[controller] UPDATED ExHighlight");
 // };
 
-/******************************************************
+/**
  * Entry Point
  *
  * */

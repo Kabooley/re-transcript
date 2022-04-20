@@ -1,6 +1,5 @@
 import * as selectors from '../utils/selectors';
 import { subtitle_piece } from '../utils/constants';
-// import './bottomTranscriptView.css';
 import './exTranscript.scss';
 
 const BottomTranscriptView = function () {
@@ -50,18 +49,15 @@ BottomTranscriptView.prototype.generateMarkup = function (
 ) {
     return `
     <div class="${selectors.EX.dashboardTranscriptWrapper.slice(1)}">
-        <div class="${selectors.EX.dashboardTranscriptHeader.slice(
-            1
-        )}">
+        <div class="${selectors.EX.dashboardTranscriptHeader.slice(1)}">
             <h2 class="heading-secondary">ExTranscript</h2>
-            <button type="button" class="${selectors.EX.closeButton.slice(1)}">X</button>
+            <button type="button" class="${selectors.EX.closeButton.slice(
+                1
+            )}">X</button>
         </div>
         <div class="${selectors.EX.dashboardTranscriptPanel.slice(1)}">
             ${subtitleStrings === undefined ? '' : subtitleStrings}
         </div>
-        <div class="${selectors.EX.dashboardTranscriptBottom.slice(
-            1
-        )}">Auto Scroll</div>
     </div>
     `;
 };
@@ -114,3 +110,8 @@ export default new BottomTranscriptView();
 
 /*
  */
+
+// ExTranscriptのfooterを切り取った
+// <div class="${selectors.EX.dashboardTranscriptBottom.slice(
+//     1
+// )}">Auto Scroll</div>

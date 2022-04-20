@@ -1,7 +1,5 @@
 import * as selectors from '../utils/selectors';
-import { SIGNAL } from '../utils/constants';
 import { subtitle_piece } from '../utils/constants';
-// import './sidebarTranscriptView.css';
 import './exTranscript.scss';
 
 const SidebarTranscriptView = function () {
@@ -29,9 +27,6 @@ SidebarTranscriptView.prototype.generateMarkup = function (
                       ${s}
                     </div>
                   </div>
-                  <div class="${selectors.EX.sidebarFooter.slice(
-                      1
-                  )}">Auto Scroll</div>
               </section>
           </div>
       `;
@@ -198,3 +193,9 @@ export default new SidebarTranscriptView();
 //   const html: string = this.generateMarkup();
 //   e.insertAdjacentHTML(p, html);
 // };
+
+
+// ExTranscriptのfooterを切り取った
+// <div class="${selectors.EX.sidebarFooter.slice(
+//     1
+// )}">Auto Scroll</div>
