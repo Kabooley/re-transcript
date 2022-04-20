@@ -226,12 +226,15 @@ chrome.runtime.onMessage.addListener(
 //
 
 const calcContentHeight = (): void => {
-    const footer: HTMLElement = document.querySelector('.transcript--autoscroll-wrapper--oS-dz.transcript--bottom--2wFKl');
-    const height: number = parseInt(window.getComputedStyle(footer).height.replace("px", ""));
+    const footer: HTMLElement = document.querySelector(
+        '.transcript--autoscroll-wrapper--oS-dz.transcript--bottom--2wFKl'
+    );
+    const height: number = parseInt(
+        window.getComputedStyle(footer).height.replace('px', '')
+    );
     console.log(height);
     sidebarTranscriptView.updateContentHeight(height);
-  }
-  
+};
 
 /************************************************
  * Insert sidebar ExTranscript
@@ -245,7 +248,6 @@ const renderSidebarTranscript = (): void => {
     sidebarTranscriptView.render(subtitles);
     // NOTE: new added.
     resetCloseButtonListener();
-    // sidebarTranscriptView.updateContentHeight();
     calcContentHeight();
     // sidebarの時だけに必要
     window.addEventListener('scroll', onWindowScrollHandler);
@@ -349,13 +351,23 @@ const closeButtonHandler = (): void => {
 /**********************************************************
  * OnScroll handler for sidebar ExTranscript.
  *
+ * When window scrolled, 
+ * update ExTranscript top position, and
+ * update ExTranscript content height.
  * */
 const onWindowScrollHandler = (): void => {
     console.log('[controller] onWindowScrollHandler()');
+    const header: HTMLElement = document.querySelector<HTMLElement>(
+        selectors.header
+    );
+    const headerHeight: number = parseInt(
+        window.getComputedStyle(header).height.replace('px', '')
+    );
     const y: number = window.scrollY;
-    y < 56
-        ? sidebarTranscriptView.updateContentTop(56 - y)
+    y < headerHeight
+        ? sidebarTranscriptView.updateContentTop(headerHeight - y)
         : sidebarTranscriptView.updateContentTop(0);
+    calcContentHeight();
 };
 
 /*************************************************************
@@ -394,8 +406,7 @@ const onWindowResizeHandler = (): void => {
     }
 
     // sidebar transcriptの高さの更新
-    if (position === positionStatus.sidebar)
-        sidebarTranscriptView.updateContentHeight();
+    if (position === positionStatus.sidebar) calcContentHeight();
 };
 
 //
@@ -722,7 +733,7 @@ const updateSubtitle = (prop, prev): void => {
     // 定数を与えること
     if (position === 'sidebar') {
         renderSidebarTranscript();
-        sidebarTranscriptView.updateContentHeight();
+        calcContentHeight();
     }
     if (position === 'noSidebar') {
         renderBottomTranscript();

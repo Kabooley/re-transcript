@@ -98,6 +98,16 @@ SidebarTranscriptView.prototype.updateContentTop = function (
     wrapper.style.top = top + 'px';
 };
 
+/**
+ * Update ExTranscript content height.
+ *
+ * Height calculation considers about...
+ * - Gap of top edge of ExTranscript between top edge of viewport.
+ *  Until nav header is shown.
+ * - ExTranscript header height.
+ * - Transcript footer height.
+ * @param {number} footerHeight - Length of transcript footer height.
+ * */
 SidebarTranscriptView.prototype.updateContentHeight = function (
     footerHeight: number
 ): void {
@@ -108,14 +118,23 @@ SidebarTranscriptView.prototype.updateContentHeight = function (
     const header: Element = document.querySelector<Element>(
         selectors.EX.sidebarHeader
     );
-    const height =
+    const height: number =
         document.documentElement.clientHeight -
         footerHeight -
         parseInt(window.getComputedStyle(header).height.replace('px', ''));
 
-    console.log(content);
-    console.log(height);
-    content.style.height = height + 'px';
+    const navHeaderHeight: number = parseInt(
+        window
+            .getComputedStyle(
+                document.querySelector<HTMLElement>(selectors.header)
+            )
+            .height.replace('px', '')
+    );
+    // Transcript上辺とviewportの上辺までのギャップ
+    const gap: number =
+        window.scrollY < navHeaderHeight ? navHeaderHeight - window.scrollY : 0;
+
+    content.style.height = height - gap + 'px';
 };
 
 // SidebarTranscriptView.prototype.updateContentHeight = function (): void {
