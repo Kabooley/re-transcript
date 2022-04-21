@@ -10,7 +10,7 @@
 // テキストページとかなら一致しない
 export const videoContainer : string = 'div.video-viewer--container--23VX7';
 
-// NOTE: new added. Udemyページのヘッダ
+// NOTE: new added. UdemyページのNavbarヘッダ
 export const header: string = '.header--header--3k4a7';
 
 export const transcript = {

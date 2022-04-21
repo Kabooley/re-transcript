@@ -9,10 +9,29 @@ const SidebarTranscriptView = function () {
     this.transcriptSelectors = [selectors.EX.sidebarWrapper];
 };
 
+// ひとまずハードコーディングなんだわ...
+// <use>とか使えるようになるといいね...
+SidebarTranscriptView.prototype.generateSVG = function (): string {
+    return `
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g clip-path="url(#clip0_2_8)">
+    <line x1="-0.707107" y1="38.2929" x2="35.2929" y2="2.29289" stroke="black" stroke-width="2"/>
+    <line x1="-1.29289" y1="-0.707107" x2="34.7071" y2="35.2929" stroke="black" stroke-width="2"/>
+    </g>
+    <defs>
+    <clipPath id="clip0_2_8">
+    <rect width="36" height="36" rx="8" fill="white"/>
+    </clipPath>
+    </defs>
+    </svg>
+    `;
+};
+
 SidebarTranscriptView.prototype.generateMarkup = function (
     subtitles?: string
 ): string {
     const s: string = subtitles ? subtitles : '';
+    const closeButton: string = this.generateSVG();
     return `
           <div class="${selectors.EX.sidebarWrapper.slice(1)}">
               <section class="${selectors.EX.sidebarSection.slice(1)}">
@@ -20,7 +39,7 @@ SidebarTranscriptView.prototype.generateMarkup = function (
                       <h2 class="heading-secondary">ExTranscript</h2>
                       <button type="button" class="${selectors.EX.closeButton.slice(
                           1
-                      )}">X</button>
+                      )}">${closeButton}</button>
                   </div>
                   <div class="${selectors.EX.sidebarContent.slice(1)}">
                     <div class="${selectors.EX.sidebarContentPanel.slice(1)}">
@@ -193,7 +212,6 @@ export default new SidebarTranscriptView();
 //   const html: string = this.generateMarkup();
 //   e.insertAdjacentHTML(p, html);
 // };
-
 
 // ExTranscriptのfooterを切り取った
 // <div class="${selectors.EX.sidebarFooter.slice(

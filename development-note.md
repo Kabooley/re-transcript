@@ -28,9 +28,6 @@ MVC と DDD の設計思想を取り入れたい
 -   `getComputedStyle`のエラー対処
     わりと後回しでいいかも
 
--   [ExTranscript の閉じるボタンの実装](#ExTranscriptの閉じるボタンの実装)
- まだ途中...
-
 -   [ExTranscript のハイライト位置の修正](#ExTranscriptのハイライト位置の修正)
     もうちょい下にする
 
@@ -86,6 +83,8 @@ MVC と DDD の設計思想を取り入れたい
 
 済：
 
+
+- [済]  [ExTranscript の閉じるボタンの実装](#ExTranscriptの閉じるボタンの実装)
 -   [済] [検討：自動スクロールの footer は本家をそのまま表示する](#検討：自動スクロールのfooterは本家をそのまま表示する)
 -   [済][sass の webpack への導入](#SASS の webpack への導入)
 -   [済]拡張機能を展開していたタブが閉じられたときの後始末
@@ -6218,10 +6217,14 @@ $ npm i -D node-sass sass-loader
 
 ## ExTranscript の閉じるボタンの実装
 
+完了
+
 -   `justify-content: space-between;`でアイテムを両端に置く模様
 -   閉じるボタンアイコンは CSS でつくる
 -   閉じるボタンクリックで本家のトランスクリプトも閉じたい
     ...無理
+
+
 
 #### 実装
 
@@ -6513,7 +6516,11 @@ SidebarTranscriptView.prototype.generateSVG = function(mask_id: string)): string
 }
 ```
 
+SVGのHTMLをそのまま出力する関数から取得することとした
+
 ## 検討：自動スクロールの footer は本家をそのまま表示する
+
+完了
 
 実現したいこと：
 
