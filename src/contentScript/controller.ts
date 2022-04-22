@@ -359,7 +359,7 @@ const onWindowResizeHandler = (): void => {
     }
     if (w > MINIMUM_BOUNDARY && isWindowTooSmall) {
         sStatus.setState({ isWindowTooSmall: false });
-        return;
+        // return;
     }
 
     // ブラウザの幅がRESIZE_BOUNDARYを上回るとき

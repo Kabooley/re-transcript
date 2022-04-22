@@ -23,6 +23,8 @@ MVC と DDD の設計思想を取り入れたい
 
 更新は豆に！
 
+-   [不具合記録](#不具合記録)
+
 -   `getComputedStyle`のエラー対処
     わりと後回しでいいかも
 
@@ -6911,3 +6913,40 @@ Udemy の本家のページのヘッダ(Nav bar)が表示されている分も�
 ついになんとか API の導入かしら？
 
 intersection observer API の導入の検討
+
+## 不具合記録
+
+4/22: ブラウザでウィンドウを小さくしたら ExTranscritp が sidebar にい続けた
+
+```TypeScript
+const onWindowResizeHandler = (): void => {
+    console.log('[controller] onWindowResizeHandler()');
+
+    const w: number = document.documentElement.clientWidth;
+    const { position, isWindowTooSmall } = sStatus.getState();
+
+    if (w < MINIMUM_BOUNDARY && !isWindowTooSmall) {
+        sStatus.setState({ isWindowTooSmall: true });
+        return;
+    }
+    if (w > MINIMUM_BOUNDARY && isWindowTooSmall) {
+        sStatus.setState({ isWindowTooSmall: false });
+        // NOTE: 原因はここで、returnしてしまっているのが原因
+        // 最小幅を超える幅になったのに
+        // sidebarかbottomかの判定をするまえにreturnしてしまった
+        return;
+    }
+
+    if (w > RESIZE_BOUNDARY && position !== positionStatus.sidebar)
+        sStatus.setState({ position: positionStatus.sidebar });
+
+    if (w <= RESIZE_BOUNDARY && position !== positionStatus.noSidebar) {
+        sStatus.setState({ position: positionStatus.noSidebar });
+    }
+
+    if (position === positionStatus.sidebar) calcContentHeight();
+};
+
+```
+
+解消済
