@@ -6950,3 +6950,9 @@ const onWindowResizeHandler = (): void => {
 ```
 
 解消済
+
+
+## ExTranscriptのハイライト位置の修正
+
+もうちょい下にする
+

@@ -671,18 +671,48 @@ const resetDetectScroll = (): void => {
 };
 
 /**
- * Scroll to Highlight
+ * Scroll to Highlight Element on ExTranscript
  *
  * Make ExTranscript subtitle panel scroll to latest highlighted element.
  *
+ * - sStatus.isAutoscrollOnがfalseならば何もしない
+ *
+ * - スクロール方法は3通り
+ *
+ * ExTranscriptのコンテンツ・パネル要素、現在のハイライト字幕要素の、
+ * getBoundingClientRect()を取得する
+ * getBoudingClientRect()はviewportの左上を基準とするので...
+ * その要素がviewport上のどこにあるのかと、ウィンドウがスクロールしている場合に影響を受ける
+ *
+ * そのため、
+ *
+ * 1. ハイライト要素がコンテンツ・パネル要素よりも上にあるとき
+ * 2. ハイライト要素がコンテンツ・パネル要素よりも下にいるときで、なおかつハイライト要素のy座標が正であるとき
+ * 3. ２の場合で、ただしハイライト要素のy座標が負であるとき
+ *
+ * の3通りに沿って、コンテンツ・パネル要素のscrollTopプロパティを調整する
+ *
+ * - Element.scrollTopの値で調整する
+ *
+ * Element.scrollTop
+ * 要素はスクロール可能であるならば実際の上辺の位置と表示領域の上辺は異なり
+ * scrollTopはこの差を出力する
+ *
+ * スクロールバーが最も上にあるならばscrollTopは0、
+ * スクロールしているならば表示領域上辺と要素の上辺の差を出力する
+ * そして必ず正の値である
+ *
+ * - ハイライト要素はコンテンツ・パネルの表示領域の上辺から100px下に表示される
+ *
+ * TODO: marginTopを加味した計算方法が正しいのか確認
  * */
 const scrollToHighlight = (): void => {
     console.log('[controller] scrollToHighlight()');
 
     // そのたびにいまハイライトしている要素を取得する
     const { ExHighlight, position, isAutoscrollOn } = sStatus.getState();
-    console.log(isAutoscrollOn);
     if (!isAutoscrollOn) return;
+
     const current: HTMLElement =
         position === positionStatus.sidebar
             ? document.querySelector<HTMLElement>(
@@ -699,19 +729,19 @@ const scrollToHighlight = (): void => {
     const panelRect: DOMRect = panel.getBoundingClientRect();
     const currentRect: DOMRect = current.getBoundingClientRect();
 
-    console.log(`currentRect.y: ${currentRect.y}`);
-    console.log(`panelRect.y: ${panelRect.y}`);
-
+    const marginTop: number = 100;
     if (currentRect.y > panelRect.y) {
         const distance: number = currentRect.y - panelRect.y;
-        panel.scrollTop = distance + panel.scrollTop;
+        panel.scrollTop = distance + panel.scrollTop - marginTop;
     } else {
         if (currentRect.y > 0) {
             const distance: number = panelRect.y - currentRect.y;
-            panel.scrollTop = panel.scrollTop - distance;
+            panel.scrollTop = panel.scrollTop - distance - marginTop;
+            console.log(panel.scrollTop);
         } else {
             const distance = panelRect.y + Math.abs(currentRect.y);
-            panel.scrollTop = panel.scrollTop - distance;
+            panel.scrollTop = panel.scrollTop - distance - marginTop;
+            console.log(panel.scrollTop);
         }
     }
 };
