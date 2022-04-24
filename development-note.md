@@ -23,10 +23,10 @@ MVC と DDD の設計思想を取り入れたい
 
 更新は豆に！
 
-- [footerの削除](#footerの削除)
-  ExTranscriptのfooterの削除。いまのところ生成して`display: none`にしている
+- [不具合：udemyのページ遷移で原因不明のエラーが出る件](#不具合：udemyのページ遷移で原因不明のエラーが出る件)
+
 -   `getComputedStyle`のエラー対処
-    わりと後回しでいいかも
+    後回しでいい
 
 -   [ExTranscript の閉じるボタンの実装](#ExTranscriptの閉じるボタンの実装)
  まだ途中...
