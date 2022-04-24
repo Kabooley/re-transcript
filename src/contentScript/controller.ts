@@ -41,12 +41,8 @@ import {
     orderNames,
     subtitle_piece,
     RESIZE_BOUNDARY,
-    SIDEBAR_WIDTH_BOUNDARY,
     RESIZE_TIMER,
-    SIGNAL,
     positionStatus,
-    viewStatusNames,
-    keyof_viewStatus,
     keyof_positionStatus,
 } from '../utils/constants';
 import Observable from '../utils/Observable';
@@ -55,7 +51,8 @@ import MutationObserver_ from '../utils/MutationObserver_';
 
 //
 // ----- GLOBALS -----------------------------------------
-//
+// 
+chrome.runtime.sendMessage
 
 // ----- Annotations -------------------------------------
 
