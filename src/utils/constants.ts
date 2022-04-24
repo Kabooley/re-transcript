@@ -1,22 +1,17 @@
 /**************************************************
- * constants
- * ________________________________________________
+ * constants which is common in Extensions
+ *
  *
  * ************************************************/
-
 import { iModel } from '../background/annotations';
 import { uError } from '../Error/Error';
 
-export const _key_of_model_state__ = '_key_of_model_state__@&%8=8';
-
+// Extension only valid in this URL pattern.
 export const urlPattern: RegExp = /https:\/\/www.udemy.com\/course\/*/gm;
 
-export const extensionStatus = {
-    working: 'working',
-    notWorking: 'notWorking',
-    idle: 'idle',
-} as const;
+// --- RELATED TO MESSAGE PASSING -------------
 
+// message passingで利用する拡張機能名称
 export const extensionNames = {
     popup: 'popup',
     contentScript: 'contentScript',
@@ -25,22 +20,13 @@ export const extensionNames = {
     background: 'background',
 } as const;
 
-//
-// Updated
-//
+// message passingで利用する共通order名称
 export const orderNames = {
-    // // Inject content script order
-    // injectCaptureSubtitleScript: 'injectCaptureSubtitleScript',
-    // injectExTranscriptScript: 'injectExTranscriptScript',
     // From background to contentScript
     sendStatus: 'sendStatus',
     // from controller to background
     sendSubtitles: 'sendSubtitles',
-    // order to disconnect port
-    disconnect: 'disconnect',
 
-    // from popup inquire the url is correct
-    inquireUrl: 'inquireUrl',
     // from popup, run process
     run: 'run',
     // reset content script
@@ -49,19 +35,18 @@ export const orderNames = {
     turnOff: 'turnOff',
     // something succeeded
     success: 'success',
-    // NOTE: new added
     // Is the page moved to text page?
     isPageIncludingMovie: 'isPageIncludingMovie',
-    // NOTE: new added
     // Alert
     alert: 'alert',
-} as const;
 
-// Subtitle object interface
-export interface subtitle_piece {
-    index: number;
-    subtitle: string;
-}
+    // -- DUPLICATED ------------
+    //
+    // order to disconnect port
+    // disconnect: 'disconnect',
+    // from popup inquire the url is correct
+    // inquireUrl: 'inquireUrl',
+} as const;
 
 type et = typeof extensionNames;
 type on = typeof orderNames;
@@ -101,9 +86,7 @@ export interface iResponse {
     // state popup requires.
     state?: { [Property in keyof iModel]?: iModel[Property] };
 
-    // NOTE: new added
     error?: uError;
-    // NOTE: new added
     // alert message
     alertMessage?: string;
 
@@ -122,57 +105,49 @@ export interface iMessage extends iResponse {
     to: extensionsTypes;
 }
 
-// --- constants for controller.js -------------------------------
+// --- OTHERS -----------------------------------
 
-// // To pass to setTimeout
-// export const TEN_SEC: number = 10000;
+// Subtitle object interface
+export interface subtitle_piece {
+    index: number;
+    subtitle: string;
+}
+
+// --- RELATED TO background.ts --------------
+
+// Key for chrome.storage.local in background.ts
+export const _key_of_model_state__ = '_key_of_model_state__@&%8=8';
+export const _key_of_localstorage__ = "__key__of_local_storage__@&%8=8";
+
+// TODO: まだlocalStorageにこの情報が残っているかも...
+// const _key_of_localstorage__ = "__key__of_local_storage__";
+
+// --- RELATED TO controller.ts -----------------
 
 // transcript要素はwinodwサイズが975px以下の時にdashboardへ以上でsidebarへ移動する
 // export const RESIZE_BOUNDARY: number = 975;
 export const RESIZE_BOUNDARY: number = 963;
 
-// sidebarのwidthは2通りあって、
-// 975px < w =< 1182pxだと300px, w > 1182pxで25%
-export const SIDEBAR_WIDTH_BOUNDARY: number = 1182;
-
 // window onResize時の反応遅延速度
 export const RESIZE_TIMER: number = 100;
-
-export const SIGNAL = {
-    widthStatus: {
-        wideview: true,
-        middleview: false,
-    },
-};
 
 export const positionStatus = {
     sidebar: 'sidebar',
     noSidebar: 'noSidebar',
 } as const;
 
-export const viewStatusNames = {
-    wideView: 'wideView',
-    middleView: 'middleView',
-} as const;
-
 type typeof_positionStatus = typeof positionStatus;
-type typeof_viewStatus = typeof viewStatusNames;
 export type keyof_positionStatus = keyof typeof_positionStatus;
-export type keyof_viewStatus = keyof typeof_viewStatus;
 
-// ---- ABOUT PORT ----------------------------------
-
-export const port_names = {
-    _requiring_subtitles: '_port_name_require_subtitles',
-    _injected_contentScript: '_port_name_injected_contentScript',
-};
-
+// Template message for alert.
 export const messageTemplate = {
     appCannotExecute:
         'Problem occured that the extension not being able to run. Please turn off the extension or reload the page.',
+    letPagePrepare:
+        'Please turn on Transcript and choose English for subtitle language.'
 };
 
-// // Usage
+// --- Usage -------------------------------------
 // type _order = orderTypes[];
 
 // const oo: _order = [
@@ -250,3 +225,16 @@ https://typescript-jp.gitbook.io/deep-dive/type-system/literal-types
 
 
 */
+
+// --- LEGACY CODE -----------------------------
+
+// export const extensionStatus = {
+//     working: 'working',
+//     notWorking: 'notWorking',
+//     idle: 'idle',
+// } as const;
+
+// export const port_names = {
+//     _requiring_subtitles: '_port_name_require_subtitles',
+//     _injected_contentScript: '_port_name_injected_contentScript',
+// };

@@ -23,100 +23,103 @@ MVC と DDD の設計思想を取り入れたい
 
 更新は豆に！
 
-- [不具合：udemyのページ遷移で原因不明のエラーが出る件](#不具合：udemyのページ遷移で原因不明のエラーが出る件)
+- [不具合：udemy のページ遷移で原因不明のエラーが出る件](#不具合：udemyのページ遷移で原因不明のエラーが出る件)
+- [不具合記録](#不具合記録)
 
--   `getComputedStyle`のエラー対処
-    後回しでいい
+- [refactoring](#refactoring)
 
--   [ExTranscript の閉じるボタンの実装](#ExTranscriptの閉じるボタンの実装)
- まだ途中...
+- [chrome ストアで表示するまで](#chromeストアで表示するまで)
 
--   [ExTranscript のハイライト位置の修正](#ExTranscriptのハイライト位置の修正)
-    もうちょい下にする
+- `getComputedStyle`のエラー対処
+  後回しでいい
 
--   [responsive](#responsive)
-    transcriotView のレスポンシブデザインを JavaScritp の計算から
-    CSS の力で自力でサイズ変更できるように変更する
+- [ExTranscript のハイライト位置の修正](#ExTranscriptのハイライト位置の修正)
+  もうちょい下にする
 
--   [エラーハンドリング](#エラーハンドリング)
-    進捗：`alertHandler()`を background.ts の各要所で呼び出すことにした
-    今のところ、すべての例外発生時はアラートを出してリロードか再起動をユーザに促している
-    とくに原因別にメッセージを変更はしない
+- [responsive](#responsive)
+  transcriotView のレスポンシブデザインを JavaScritp の計算から
+  CSS の力で自力でサイズ変更できるように変更する
 
--   デザイン改善: 見た目の話
-    [デザイン改善:popup](#デザイン改善:popup)
-    いい加減 ExTranscript の background-color を red にしない
+- [エラーハンドリング](#エラーハンドリング)
+  進捗：`alertHandler()`を background.ts の各要所で呼び出すことにした
+  今のところ、すべての例外発生時はアラートを出してリロードか再起動をユーザに促している
+  とくに原因別にメッセージを変更はしない
 
--   loading 中を ExTranscript へ表示させる
-    [ローディング中 view の実装](#ローディング中viewの実装)
+- デザイン改善: 見た目の話
+  [デザイン改善:popup](#デザイン改善:popup)
+  いい加減 ExTranscript の background-color を red にしない
 
--   [時間をおいてから Udemy 講義ぺーいに戻るとリロードするけど、popup のボタンが turnoff のままな件](#時間をおいてからUdemy講義ぺーいに戻るとリロードするけど、popupのボタンがturnoffのままな件)
+- loading 中を ExTranscript へ表示させる
+  [ローディング中 view の実装](#ローディング中viewの実装)
 
--   どのタブ ID でどの window なのかは区別しないといかんかも
-    たとえば複数タブで展開するときに、おそらく今のままだと
-    一つのタブの情報しか扱えない
-    なので複数のタブで拡張機能を展開したときに先に展開開始した情報を
-    両方のたぶに展開することになるかも
-    [修正：window-id と tabId からなる ID で state を区別する](#修正：window-idとtabIdからなるIDでstateを区別する)
-    [chrome-extension-API:Window](#chrome-extension-API:Window)
+- [時間をおいてから Udemy 講義ぺーいに戻るとリロードするけど、popup のボタンが turnoff のままな件](#時間をおいてからUdemy講義ぺーいに戻るとリロードするけど、popupのボタンがturnoffのままな件)
 
-    もしくはタブ情報を「持たない」とか？
-    もしくはそれがでふぉということで、1 ページにしか使えないという仕様にする
+- どのタブ ID でどの window なのかは区別しないといかんかも
+  たとえば複数タブで展開するときに、おそらく今のままだと
+  一つのタブの情報しか扱えない
+  なので複数のタブで拡張機能を展開したときに先に展開開始した情報を
+  両方のたぶに展開することになるかも
+  [修正：window-id と tabId からなる ID で state を区別する](#修正：window-idとtabIdからなるIDでstateを区別する)
+  [chrome-extension-API:Window](#chrome-extension-API:Window)
+
+  もしくはタブ情報を「持たない」とか？
+  もしくはそれがでふぉということで、1 ページにしか使えないという仕様にする
 
 後回しでもいいかも:
 
--   controller.ts の onwWindowResizeHandler をもうちょっとサクサク動かしたい
--   [また問題が起こったら対処] [Google 翻訳と連携させるとおこる不具合対処](#Google翻訳と連携させるとおこる不具合対処)
--   [async 関数は暗黙に Promise を返すから return_new_Promise しなくていい](#async関数は暗黙にPromiseを返すからreturn_new_Promiseしなくていい)
+- controller.ts の onwWindowResizeHandler をもうちょっとサクサク動かしたい
+- [また問題が起こったら対処] [Google 翻訳と連携させるとおこる不具合対処](#Google翻訳と連携させるとおこる不具合対処)
+- [async 関数は暗黙に Promise を返すから return_new_Promise しなくていい](#async関数は暗黙にPromiseを返すからreturn_new_Promiseしなくていい)
 
 つまりコードリーディングてきな改善としての refactoring
 
--   [また問題が起こったら対処] 自動スクロール機能で重複する字幕要素を完全に処理しきれていない模様...
-    つまりたぶんだけど、重複しているほうの要素に css の class をつけてしまっていて、
-    だけれども remove はできていない
-    という可能性...
-    [自動スクロール機能修正：ハイライト重複](#自動スクロール機能修正：ハイライト重複)
--   [また問題が起こったら対処] 複数 window を開いていると、あとから複製した window の id を取得してしまう問題
-    [複数 window だとあとから複製した window.id を取得してしまう問題](#複数windowだとあとから複製したwindow.idを取得してしまう問題)
+- [また問題が起こったら対処] 自動スクロール機能で重複する字幕要素を完全に処理しきれていない模様...
+  つまりたぶんだけど、重複しているほうの要素に css の class をつけてしまっていて、
+  だけれども remove はできていない
+  という可能性...
+  [自動スクロール機能修正：ハイライト重複](#自動スクロール機能修正：ハイライト重複)
+- [また問題が起こったら対処] 複数 window を開いていると、あとから複製した window の id を取得してしまう問題
+  [複数 window だとあとから複製した window.id を取得してしまう問題](#複数windowだとあとから複製したwindow.idを取得してしまう問題)
 
 他:
 
--   chrome extension はブラウザが閉じたらどうなるのか
-    [ブラウザが閉じたらどうなるのか](#ブラウザが閉じたらどうなるのか)
+- chrome extension はブラウザが閉じたらどうなるのか
+  [ブラウザが閉じたらどうなるのか](#ブラウザが閉じたらどうなるのか)
 
 済：
 
--   [済] [検討：自動スクロールの footer は本家をそのまま表示する](#検討：自動スクロールのfooterは本家をそのまま表示する)
--   [済][sass の webpack への導入](#SASS の webpack への導入)
--   [済]拡張機能を展開していたタブが閉じられたときの後始末
--   [済][`settimeout`, `setinterval`を background script で使うな](#`setTimeout`, `setInterval`を background script で使うな)
-    専用の API が用意されているのでそちらに切り替えること
-    https://developer.chrome.com/docs/extensions/mv3/migrating_to_service_workers/#alarms
+- [済] [ExTranscript の閉じるボタンの実装](#ExTranscriptの閉じるボタンの実装)
+- [済] [検討：自動スクロールの footer は本家をそのまま表示する](#検討：自動スクロールのfooterは本家をそのまま表示する)
+- [済][sass の webpack への導入](#SASS の webpack への導入)
+- [済]拡張機能を展開していたタブが閉じられたときの後始末
+- [済][`settimeout`, `setinterval`を background script で使うな](#`setTimeout`, `setInterval`を background script で使うな)
+  専用の API が用意されているのでそちらに切り替えること
+  https://developer.chrome.com/docs/extensions/mv3/migrating_to_service_workers/#alarms
 
--   [済][google翻訳を実行したあとに拡張機能offからのonにすると英語字幕は最早取得できない件](#Google 翻訳を実行したあとに拡張機能 OFF からの ON にすると英語字幕は最早取得できない件)
--   [済] [実装：拡張機能 OFF](#実装：拡張機能OFF)
--   [済] [展開中にリロードしたときの挙動の実装](#展開中にリロードしたときの挙動の実装)
--   [済] [展開中のタブが別の URL へ移動したときの対応](#展開中のタブが別のURLへ移動したときの対応)
--   [済] [実装：拡張機能 OFF](#実装：拡張機能OFF)
--   [済] sidebar の時の自動スクロール機能関数`controller.ts::scrollToHighlight()`が機能するようにすること
--   [済] background.ts はいったんアンロードされると state に渡した変数がすべて消えることへの対処
--   [済] Refac: background script で `chrome.tabs.updated.addListener`に filter を設けることで余計な url はデフォで無視する仕様にする
-    参考：https://developer.chrome.com/docs/extensions/reference/events/#filtered
+- [済][google翻訳を実行したあとに拡張機能offからのonにすると英語字幕は最早取得できない件](#Google 翻訳を実行したあとに拡張機能 OFF からの ON にすると英語字幕は最早取得できない件)
+- [済] [実装：拡張機能 OFF](#実装：拡張機能OFF)
+- [済] [展開中にリロードしたときの挙動の実装](#展開中にリロードしたときの挙動の実装)
+- [済] [展開中のタブが別の URL へ移動したときの対応](#展開中のタブが別のURLへ移動したときの対応)
+- [済] [実装：拡張機能 OFF](#実装：拡張機能OFF)
+- [済] sidebar の時の自動スクロール機能関数`controller.ts::scrollToHighlight()`が機能するようにすること
+- [済] background.ts はいったんアンロードされると state に渡した変数がすべて消えることへの対処
+- [済] Refac: background script で `chrome.tabs.updated.addListener`に filter を設けることで余計な url はデフォで無視する仕様にする
+  参考：https://developer.chrome.com/docs/extensions/reference/events/#filtered
 
--   [済] `chrome.tabs.onUpdated.addListener()`のスリム化
-    　 filter は使えないことは TypeScript の型から確認済
-    よけいなローディングに反応しないようにしたい
-    [`chrome.tabs.onUpdated.addListener()`のスリム化](<#`chrome.tabs.onUpdated.addListener()`のスリム化>)
+- [済] `chrome.tabs.onUpdated.addListener()`のスリム化
+  　 filter は使えないことは TypeScript の型から確認済
+  よけいなローディングに反応しないようにしたい
+  [`chrome.tabs.onUpdated.addListener()`のスリム化](<#`chrome.tabs.onUpdated.addListener()`のスリム化>)
 
--   [済] Udemy の講義ページで、動画じゃないページへアクセスしたときの対応
-    たとえばテキストだけ表示される回があるけど、それの対 [テキストページへの対処](#テキストページへの対処)
+- [済] Udemy の講義ページで、動画じゃないページへアクセスしたときの対応
+  たとえばテキストだけ表示される回があるけど、それの対 [テキストページへの対処](#テキストページへの対処)
 
--   [済] message passing で受信側が非同期関数を実行するとき完了を待たずに port が閉じられてしまう問題
-    [onMessage で非同期関数の完了を待たずに接続が切れる問題](#onMessageで非同期関数の完了を待たずに接続が切れる問題)
+- [済] message passing で受信側が非同期関数を実行するとき完了を待たずに port が閉じられてしまう問題
+  [onMessage で非同期関数の完了を待たずに接続が切れる問題](#onMessageで非同期関数の完了を待たずに接続が切れる問題)
 
 実装しない機能：
 
--   Autro Scroll ON/OFF ボタンとその機能
+- Autro Scroll ON/OFF ボタンとその機能
 
 ## 仕様について
 
@@ -124,9 +127,9 @@ MVC と DDD の設計思想を取り入れたい
 
 記事にしていない成果:
 
--   chrome.tabs.onUpdated.addListener には filter が付けられない
+- chrome.tabs.onUpdated.addListener には filter が付けられない
 
--   普遍的な知見
+- 普遍的な知見
 
 [All_about_JavaScript エラーハンドリング](#All_about_JavaScriptエラーハンドリング)
 [Return-false-vs.-throw-exception](#Return-false-vs.-throw-exception)
@@ -146,16 +149,16 @@ https://ja.javascript.info/promise-error-handling
 
 try...catch 構造:
 
--   エラーが起こったら残りの*try 内のコードは無視されて*catch ブロックが実行される
+- エラーが起こったら残りの*try 内のコードは無視されて*catch ブロックが実行される
 
 で、とくに catch ブロックで何もしなければ関数の外側が実行される
 
--   try...catch は同期的に動作する
+- try...catch は同期的に動作する
 
 try 内で setTiemout を置いておいて、setTimeout のなかでエラーが発生しても
 catch は同期呼出なのでキャッチされない
 
--   catch するのはエラーオブジェクト
+- catch するのはエラーオブジェクト
 
 ```JavaScript
 {
@@ -167,7 +170,7 @@ catch は同期呼出なのでキャッチされない
 
 tyr...catch の利用方法：
 
--   スローエラーは一番近い catch が捕まえる
+- スローエラーは一番近い catch が捕まえる
 
 つまり次の状況では...
 
@@ -206,7 +209,7 @@ b()で catch しなかったら a()でキャッチしないでグローバルな
 
 捕まえたいところで try...catch を定義すればいい
 
--   `throw`演算子でエラーオブジェクトを生成しよう
+- `throw`演算子でエラーオブジェクトを生成しよう
 
 エラーオブジェクトには種類がある！
 エラーオブジェクトの`name`は各オブジェクトにちなんだ名前になる
@@ -224,7 +227,7 @@ let error = new ReferenceError(message);
 
 名前を付加できるのでエラーの分類がしやすくなる
 
--   再スロー
+- 再スロー
 
 **キャッチはそれが知っているエラーだけを処理し、すべてのオブジェクトを “再スロー” するべきです**
 
@@ -268,7 +271,7 @@ finally :
 現在の開発でいえば、
 chrome extension では sendResponse するときに都合がいいかも
 
--   `finally`と`return`
+- `finally`と`return`
 
 `return`が`try`のなかにあったら`finally`はどうなるのか？
 
@@ -276,7 +279,7 @@ chrome extension では sendResponse するときに都合がいいかも
 
 カスタムエラー、Error の拡張
 
--   継承でエラーオブジェクトをカスタマイズして分類しやすくする
+- 継承でエラーオブジェクトをカスタマイズして分類しやすくする
 
 ```JavaScript
 
@@ -329,7 +332,7 @@ try {
 > なぜなら、将来 ValidationError を拡張し、PropertyRequiredError のようなサブタイプを作るからです。
 > そして instanceof チェックは新しい継承したクラスでもうまく機能し続けます。それは将来を保証します。
 
--   さらなる継承
+- さらなる継承
 
 ```JavaScript
 
@@ -471,7 +474,7 @@ https://ja.javascript.info/promise-error-handling
 
 知りたいのは Promise が reject されたときの挙動がどうなのかとどうすべきかである
 
--   暗黙の try...catch rejct の意味
+- 暗黙の try...catch rejct の意味
 
 次は、
 
@@ -512,9 +515,9 @@ https://blog.ohgaki.net/error-exception-secure-coding-programming
 
 > エラー処理と例外処理の違い
 
-> -   **エラー処理は”起きることが期待される問題”で、多くの場合、プログラムの実行停止は行えない**
+> - **エラー処理は”起きることが期待される問題”で、多くの場合、プログラムの実行停止は行えない**
 
-> -   **例外処理は”起きることが期待されない問題”で、多くの場合、プログラムの実行を停止しても構わない**
+> - **例外処理は”起きることが期待されない問題”で、多くの場合、プログラムの実行を停止しても構わない**
 
 これを理解していないとおかしな例外の使い方／エラー処理になります。
 
@@ -532,17 +535,17 @@ https://blog.ohgaki.net/error-exception-secure-coding-programming
 
 ### chrome API 知見まとめ
 
--   content script で例外が発生しても background script へそのことを教えるには message-passing しかない
+- content script で例外が発生しても background script へそのことを教えるには message-passing しかない
 
 #### icon が表示されないときは
 
 `png`でなくてはならない
 次の 3 つのサイズを提供しているか
 
--   128 \* 128 :
-    > インストール中および Chrome ウェブストアで使用されます
--   48 \* 48
-    > 拡張機能管理ページ（chrome：// extends）で使用される 48x48 アイコンも提供する必要があります
+- 128 \* 128 :
+  > インストール中および Chrome ウェブストアで使用されます
+- 48 \* 48
+  > 拡張機能管理ページ（chrome：// extends）で使用される 48x48 アイコンも提供する必要があります
 
 #### service worker への理解
 
@@ -851,18 +854,18 @@ chrome.runtime.onMessage.addListener((msg) => {
 
 @popup
 
--   popup を開く
--   popup 上の RUN ボタンを押す
+- popup を開く
+- popup 上の RUN ボタンを押す
 
 @Udemy-page
 
--   ブラウザのサイズを変更する
--   字幕を変更する
--   トランスクリプトを ON/OFF にする
--   URL が変わる(動画が切り替わる)
--   tab を閉じる（ブラウザを閉じる）
+- ブラウザのサイズを変更する
+- 字幕を変更する
+- トランスクリプトを ON/OFF にする
+- URL が変わる(動画が切り替わる)
+- tab を閉じる（ブラウザを閉じる）
 
--   ExTranscript を閉じる
+- ExTranscript を閉じる
 
 #### 一般的な処理の流れ
 
@@ -905,9 +908,9 @@ microsoft の DDD の説明によれば
 
 > オブジェクト指向におけるクラスは、
 >
-> -   インスタンス変数
-> -   インスタンス変数 を正常に制御するメソッド
->     から構成されるのが基本です
+> - インスタンス変数
+> - インスタンス変数 を正常に制御するメソッド
+>   から構成されるのが基本です
 
 つまり単一責任とはある変数を変更できるクラスは一つだけで
 そのクラスが負う責任は変数の正常動作にたいして責任を負うのである
@@ -1101,9 +1104,9 @@ OrderManager インスタンスの execute()にはこのコンストラクタ関
 
 メリット
 
--   クラスはメソッドを持つ必要がなくなる
--   実際に実行する関数は呼び出し側のクラスのプロパティと共通の名前をもつことでプロパティを変更できる
--   呼び出し側の都合でクラスに好きなメソッドを実行させることができる
+- クラスはメソッドを持つ必要がなくなる
+- 実際に実行する関数は呼び出し側のクラスのプロパティと共通の名前をもつことでプロパティを変更できる
+- 呼び出し側の都合でクラスに好きなメソッドを実行させることができる
 
 これを応用して Queue クラスを作ってみる
 
@@ -1382,8 +1385,8 @@ https://qiita.com/emaame/items/745a35509fdfc7250026
 中目標として MVC モデルの導入、DDD 設計思想に近づけたい
 そのために必要なこととして
 
--   order にたいして処理に必要な関数を Queue につめて Queue を実行するシステムにする
--   state の変更内容に応じて notify するシステムにする
+- order にたいして処理に必要な関数を Queue につめて Queue を実行するシステムにする
+- state の変更内容に応じて notify するシステムにする
 
 ##### order と Queue の実装に関して
 
@@ -1393,17 +1396,17 @@ https://qiita.com/emaame/items/745a35509fdfc7250026
 
 前提：必要な state の生成は chrome.runtime.onInstalled で済んでいる
 
--   メッセージ受信機能がメッセージハンドラを呼び出す
--   メッセージハンドラはメッセージ内容を読んで、必要な処理（関数）を Queue へつめる
--   Queue を queue 実行関数へ渡す
--   Queue の関数が一つずつ実行される
--   実行するにつれて必要な state の変更も発生する
--   すべての処理が無事に済んだら success, うまくいかなかったら failure を返す
+- メッセージ受信機能がメッセージハンドラを呼び出す
+- メッセージハンドラはメッセージ内容を読んで、必要な処理（関数）を Queue へつめる
+- Queue を queue 実行関数へ渡す
+- Queue の関数が一つずつ実行される
+- 実行するにつれて必要な state の変更も発生する
+- すべての処理が無事に済んだら success, うまくいかなかったら failure を返す
 
 実装しようとしたときにぶち当たった障害
 
--   Queue につめる関数を一般化したいけれど、戻り値の扱いが異なるから一般化できない
-    すくなくとも今の自分の腕では...
+- Queue につめる関数を一般化したいけれど、戻り値の扱いが異なるから一般化できない
+  すくなくとも今の自分の腕では...
 
 ##### state observer の実装に関して
 
@@ -1641,15 +1644,15 @@ notify は setstate 内で呼出せばいいだけなので
 
 ユーザ操作：
 
--   [popup](#popupが開かれる)
--   [popup](#RUNが押される)
--   [ブラウザ] ウィンドウのサイズを変更する
--   [ブラウザ] 字幕の言語を変更する
--   [ブラウザ] (公式の)トランスクリプトを ON または OFF にする
-    一度拡張機能を実行済ならこれに合わせて閉じる、再度開かれたら開く
--   [ブラウザ](<#URLが変わる(動画が切り替わる)>)
--   [ブラウザ] タブを閉じる
--   [ExTranscript] ExTranscript を閉じる
+- [popup](#popupが開かれる)
+- [popup](#RUNが押される)
+- [ブラウザ] ウィンドウのサイズを変更する
+- [ブラウザ] 字幕の言語を変更する
+- [ブラウザ] (公式の)トランスクリプトを ON または OFF にする
+  一度拡張機能を実行済ならこれに合わせて閉じる、再度開かれたら開く
+- [ブラウザ](<#URLが変わる(動画が切り替わる)>)
+- [ブラウザ] タブを閉じる
+- [ExTranscript] ExTranscript を閉じる
 
 [設計に関する考察](#設計に関する考察)
 
@@ -1770,36 +1773,36 @@ const popupMessageHandler = async (m: messageTemplate): Promise<void> => {
 
 処理順序:
 
--   [poup] マウント時または毎度の useEffect()で background へ`order:[orderNames.isUrlCorrect]`を送信する
+- [poup] マウント時または毎度の useEffect()で background へ`order:[orderNames.isUrlCorrect]`を送信する
 
--   [background] メッセージハンドラが受信してメッセージに応じた処理関数へ移動する
--   [background] メッセージに含まれる sender から URL を取得する
--   [background] url を matchURL と比較して比較結果を sendResponse()で返す
-    `{complete: true, url: true}`
--   [poup] sendResponse の結果に応じて state を変更し、popup の表示内容を変える
+- [background] メッセージハンドラが受信してメッセージに応じた処理関数へ移動する
+- [background] メッセージに含まれる sender から URL を取得する
+- [background] url を matchURL と比較して比較結果を sendResponse()で返す
+  `{complete: true, url: true}`
+- [poup] sendResponse の結果に応じて state を変更し、popup の表示内容を変える
 
 popup の state について:
 
--   `matchedPage`: popup を開いたときの tab の URL が正しいかについての状態を管理する state
+- `matchedPage`: popup を開いたときの tab の URL が正しいかについての状態を管理する state
 
 #### RUN が押される
 
 前提：
 
--   RUN ボタンは`matchedPage`が true の時に有効になるとする
--   sendResponse()で返事が返されることを前提とする
--   sendResponse()はエラーが返されることも想定する
+- RUN ボタンは`matchedPage`が true の時に有効になるとする
+- sendResponse()で返事が返されることを前提とする
+- sendResponse()はエラーが返されることも想定する
 
 エラーの可能性箇条書き：
 
--   字幕が英語でない、トランスクリプトが開かれていない
-    alert で字幕を英語にするように、またはトランスクリプトを開くように促す
+- 字幕が英語でない、トランスクリプトが開かれていない
+  alert で字幕を英語にするように、またはトランスクリプトを開くように促す
 
--   処理途中で字幕の言語を変えた、トランスクリプトを閉じた
-    alert で失敗を表示し、英語とトランスクリプトを戻して再度実行してもらうように促す
+- 処理途中で字幕の言語を変えた、トランスクリプトを閉じた
+  alert で失敗を表示し、英語とトランスクリプトを戻して再度実行してもらうように促す
 
--   それ以外のエラー
-    エラーだからどうしようもないよ
+- それ以外のエラー
+  エラーだからどうしようもないよ
 
 つまり大別して、成功、失敗（アラート）、エラー
 成功：`complete: true`
@@ -1970,13 +1973,13 @@ controller.js が正常に ExTranscript を展開できたか確認
 
 orderName.run を受け取った後の処理に見られる傾向：
 
--   content script の inject
+- content script の inject
 
--   content script からのメッセージで次の処理に必要な情報を取得する
-    または
--   background script から inject した content script へ必要な情報を催促して取得する
+- content script からのメッセージで次の処理に必要な情報を取得する
+  または
+- background script から inject した content script へ必要な情報を催促して取得する
 
--   取得した情報を検査して state へ保存して次へ進むか、処理を中断してエラーを返す
+- 取得した情報を検査して state へ保存して次へ進むか、処理を中断してエラーを返す
 
 #### URL が変わる(動画が切り替わる)
 
@@ -1986,38 +1989,38 @@ orderName.run を受け取った後の処理に見られる傾向：
 
 継続条件：
 
--   拡張機能が未展開であるけど、Udemy 講義ページである
-    なにもしない
+- 拡張機能が未展開であるけど、Udemy 講義ページである
+  なにもしない
 
--   拡張機能が展開されていて、同じタブで Udemy 講義ページだけど末尾の URL が変更されたとき
-    拡張機能をリセットして引き続き展開する
+- 拡張機能が展開されていて、同じタブで Udemy 講義ページだけど末尾の URL が変更されたとき
+  拡張機能をリセットして引き続き展開する
 
--   拡張機能が展開されていて、同じタブで Udemy 講義ページ以外の URL になった時
-    拡張機能は OFF にする
+- 拡張機能が展開されていて、同じタブで Udemy 講義ページ以外の URL になった時
+  拡張機能は OFF にする
 
--   タブが切り替わった
-    何もしない
+- タブが切り替わった
+  何もしない
 
--   拡張機能が展開されていたタブが閉じられた
-    拡張機能を OFF にする
+- 拡張機能が展開されていたタブが閉じられた
+  拡張機能を OFF にする
 
 次の時はどうするか:
 
--   すでに拡張機能が実行されているときにページのユーザ操作によるリロードがあった
-    変わらず展開したい
-    google 翻訳アプリも変わらず展開しているし
-    OFF になるのは、
-    tab が閉じられたとき、ユーザの操作によって拡張機能上の OFF ボタンが押されたとき
-    拡張機能マネージャでが OFF にされたとき、
-    そのタブで別の Udemy 講義ページ以外に移動したとき
+- すでに拡張機能が実行されているときにページのユーザ操作によるリロードがあった
+  変わらず展開したい
+  google 翻訳アプリも変わらず展開しているし
+  OFF になるのは、
+  tab が閉じられたとき、ユーザの操作によって拡張機能上の OFF ボタンが押されたとき
+  拡張機能マネージャでが OFF にされたとき、
+  そのタブで別の Udemy 講義ページ以外に移動したとき
 
 Udemy ページの挙動と chrome.tabs.onUpdated の挙動:
 
--   リンクをたどって Udemy 講義ページへ移動したとき
-    "loading"は二度以上起こる
-    しかし、URL は同じ(#以下が変わるだけ)
+- リンクをたどって Udemy 講義ページへ移動したとき
+  "loading"は二度以上起こる
+  しかし、URL は同じ(#以下が変わるだけ)
 
-    ...よく考えたらこれ関係ないな...
+  ...よく考えたらこれ関係ないな...
 
 ...以上の挙動と事情がすべて反映されるように条件分岐を設ける
 
@@ -2080,19 +2083,19 @@ chrome.tabs.onUpdated.addListener(
 
 要確認：
 
--   state はどのようにリセットすべきか
--   content script は inject されたままなのか
--   content script は inject されたままだとして、ちゃんとリロードされたページの DOM を取得できるのか？
+- state はどのようにリセットすべきか
+- content script は inject されたままなのか
+- content script は inject されたままだとして、ちゃんとリロードされたページの DOM を取得できるのか？
 
 動画が切り替わったら
 
--   各 content script のイベントリスナを remove して再度セットする必要
--   各 content script のイベントリスナリセットを通知、完了報告管理
--   `state<iSubtitles>.subtitles: null`に
--   `state<iTabId>`はそのまま
--   `state<iContentUrl>`は URL が変わったのでその反映だけ
--   `state<iProgress>`は...
--   ExTranscript は中身をいったん空にする(空にして表示する loading circle でも表示するかい？)
+- 各 content script のイベントリスナを remove して再度セットする必要
+- 各 content script のイベントリスナリセットを通知、完了報告管理
+- `state<iSubtitles>.subtitles: null`に
+- `state<iTabId>`はそのまま
+- `state<iContentUrl>`は URL が変わったのでその反映だけ
+- `state<iProgress>`は...
+- ExTranscript は中身をいったん空にする(空にして表示する loading circle でも表示するかい？)
 
 進行状況 state：
 
@@ -2141,38 +2144,38 @@ const progressBase: iProgress = {
 
 リセットタスク：
 
--   各 content script のイベントリスナを remove して再度セットする必要
--   各 content script のイベントリスナリセットを通知、完了報告管理
--   `state<iSubtitles>.subtitles: null`に
--   `state<iTabId>`はそのまま
--   `state<iContentUrl>`は URL が変わったのでその反映だけ
--   `state<iProgress>`は...
--   ExTranscript は中身をいったん空にする(空にして表示する loading circle でも表示するかい？)
+- 各 content script のイベントリスナを remove して再度セットする必要
+- 各 content script のイベントリスナリセットを通知、完了報告管理
+- `state<iSubtitles>.subtitles: null`に
+- `state<iTabId>`はそのまま
+- `state<iContentUrl>`は URL が変わったのでその反映だけ
+- `state<iProgress>`は...
+- ExTranscript は中身をいったん空にする(空にして表示する loading circle でも表示するかい？)
 
--   [background] contentScript.js へリセット通知
--   [background] captureSubtitle.js へリセット通知
--   [background] controller.js へリセット通知
--   [background] 各 content script から`{success: boolean;}`の返事取得
--   [background] 全ての content script sucess が true だったら state を更新
--   [background] 字幕取得処理を実施
--   [background]
+- [background] contentScript.js へリセット通知
+- [background] captureSubtitle.js へリセット通知
+- [background] controller.js へリセット通知
+- [background] 各 content script から`{success: boolean;}`の返事取得
+- [background] 全ての content script sucess が true だったら state を更新
+- [background] 字幕取得処理を実施
+- [background]
 
--   [contentScript] toggle ボタンの要素は変化しないのでリセット不要
--   [contentScript] ccPopupButton 要素も変化しないのでリセット不要
-    結果、contentScript はリセット不要でした...
+- [contentScript] toggle ボタンの要素は変化しないのでリセット不要
+- [contentScript] ccPopupButton 要素も変化しないのでリセット不要
+  結果、contentScript はリセット不要でした...
 
--   [captureSubtitle] state のリセット
--   [captureSubtitle] 要素へのリスナはないのでリスナのリセット不要
--   [captureSubtitle] 毎度関数の実行時にすべて DOM を取得しなおすのでリセット不要
--   [captureSubtitle] 実行関数をサイド呼出せばいいだけっぽい
--   [captureSubtitle] 処理完了したら background へ字幕データを送信する
+- [captureSubtitle] state のリセット
+- [captureSubtitle] 要素へのリスナはないのでリスナのリセット不要
+- [captureSubtitle] 毎度関数の実行時にすべて DOM を取得しなおすのでリセット不要
+- [captureSubtitle] 実行関数をサイド呼出せばいいだけっぽい
+- [captureSubtitle] 処理完了したら background へ字幕データを送信する
 
--   [controller] state は...
-    \_state: iControllerState 不要
-    \_subtitles リセット
-    \_highlight リセット
-    \_ExHighlight リセット
-    \_indexList リセット
+- [controller] state は...
+  \_state: iControllerState 不要
+  \_subtitles リセット
+  \_highlight リセット
+  \_ExHighlight リセット
+  \_indexList リセット
 
 ```TypeScript
 // background.ts
@@ -2267,9 +2270,9 @@ export interface iResponse {
 
 要確認：
 
--   state はどのようにリセットすべきか
--   content script はそのページから除去できるのか
--   除去できないとしたらどうするか
+- state はどのようにリセットすべきか
+- content script はそのページから除去できるのか
+- 除去できないとしたらどうするか
 
 ## 1/28:各処理機能の実装をしてみる
 
@@ -2377,14 +2380,14 @@ const model_ = (function() {
 
 **update**やること：
 
--   background.ts の update に伴った各 content script の update
--   エラーハンドリング：どういう場合にエラースローでどういうときに続行なのか定義する
--   Model の見直し：エラーハンドリングと伴って
--   各`TODO`の消化
--   Observer の導入: state の変化で反応させられる View に導入する
--   拡張機能の OFF 機能の実装
--   （可能ならば）transcript が ON じゃなくても、英語字幕でなくても機能を ON にできるようにする
--   見た目をイカした感じに
+- background.ts の update に伴った各 content script の update
+- エラーハンドリング：どういう場合にエラースローでどういうときに続行なのか定義する
+- Model の見直し：エラーハンドリングと伴って
+- 各`TODO`の消化
+- Observer の導入: state の変化で反応させられる View に導入する
+- 拡張機能の OFF 機能の実装
+- （可能ならば）transcript が ON じゃなくても、英語字幕でなくても機能を ON にできるようにする
+- 見た目をイカした感じに
 
 #### Observer の導入
 
@@ -2392,12 +2395,12 @@ Model の変化で View を変化させるような場面は存在した...
 
 例：
 
--   popup の`capturing`表示、`complete`表示に関して
+- popup の`capturing`表示、`complete`表示に関して
 
 state の`isSubtitleCaptured`, `isSubtitleCapturing`の値の変化を
 notify して popup を変化させてもいいね
 
--   controller.js が表示する subtitles データの変化を notify されるようにする
+- controller.js が表示する subtitles データの変化を notify されるようにする
 
 `state.subtitles`が変化したら notfy されて取得する仕組みにする
 
@@ -2417,9 +2420,9 @@ class Observable {
 
 なので、次の通りにする
 
--   字幕データがなくても ExTranscript を展開できるようにする
--   字幕データが届き次第、ExTranscript へ展開する仕様にする
--   自動スクロールも、字幕データが届き次第リセットされる仕様にする
+- 字幕データがなくても ExTranscript を展開できるようにする
+- 字幕データが届き次第、ExTranscript へ展開する仕様にする
+- 自動スクロールも、字幕データが届き次第リセットされる仕様にする
 
 ```TypeScript
 
@@ -2702,8 +2705,8 @@ ExTranscript の機能として、必ず本家のトランスクリプトの表�
 
 具体的に：
 
--   ExTranscript の`bottomTranscriptView.clear();` or `sidebarTranscriptView.clear();`
--   `onWindowResizeHandler`のイベントリスナの remove
+- ExTranscript の`bottomTranscriptView.clear();` or `sidebarTranscriptView.clear();`
+- `onWindowResizeHandler`のイベントリスナの remove
 
 それだけ
 
@@ -2711,14 +2714,14 @@ ExTranscript の機能として、必ず本家のトランスクリプトの表�
 
 条件：
 
--   [webpage] 字幕を英語以外にした
--   [webpage] ブラウザのサイズを小さくしすぎた
--   [webpage] トランスクリプト上の × ボタンを押した
-    上記までの操作は、トランスクリプトを ON にすることで ExTranscript は復活する
+- [webpage] 字幕を英語以外にした
+- [webpage] ブラウザのサイズを小さくしすぎた
+- [webpage] トランスクリプト上の × ボタンを押した
+  上記までの操作は、トランスクリプトを ON にすることで ExTranscript は復活する
 
--   [ExTranscript] OFF ボタンを押した
--   [popup] OFF ボタンを押した
-    上記の操作の場合、ExTranscript は消え、再度 POPUP 上の実行ボタンを押さないと再展開しない
+- [ExTranscript] OFF ボタンを押した
+- [popup] OFF ボタンを押した
+  上記の操作の場合、ExTranscript は消え、再度 POPUP 上の実行ボタンを押さないと再展開しない
 
 信号の定義:
 
@@ -2768,9 +2771,9 @@ const statusBase: iController = {
 
 OFF 処理：
 
--   State はインスタンスは残しておいて、プロパティだけリセットする
-    highligh, ExhHighlight, indexList, isAutoscrollInitialized
-    iSubtitles
+- State はインスタンスは残しておいて、プロパティだけリセットする
+  highligh, ExhHighlight, indexList, isAutoscrollInitialized
+  iSubtitles
 
 ```TypeScript
 chrome.runtime.onMessage.addListener(
@@ -2960,10 +2963,10 @@ controller.js はそれに従うだけ
 
 トランスクリプトはあらゆる場面で消える！
 
--   ブラウザのサイズがある一定以上小さくなると消える（トグルボタンも消える）
--   トランスクリプト上の × ボタンを押すと消える
--   トグルボタンで OFF にすれば消える
--   「展開表示」で強制的に消える
+- ブラウザのサイズがある一定以上小さくなると消える（トグルボタンも消える）
+- トランスクリプト上の × ボタンを押すと消える
+- トグルボタンで OFF にすれば消える
+- 「展開表示」で強制的に消える
 
 そして、
 必ずコントロールバーのトランスクリプト・トグルボタンの表示・非表示と
@@ -3182,132 +3185,132 @@ CC：
 ```html
 <!-- コントロールバー内部 -->
 <div class="control-bar--control-bar--MweER" data-purpose="video-controls">
-    <!-- 再生ボタン -->
-    <div class="popper--popper--2r2To">
-        <button
-            type="button"
-            data-purpose="play-button"
-            class="udlite-btn udlite-btn-small udlite-btn-ghost udlite-heading-sm control-bar-dropdown--trigger--iFz7P control-bar-dropdown--trigger-dark--1qTuU control-bar-dropdown--trigger-small--1ZPqx"
-            id="popper-trigger--414"
-            tabindex="0"
-        ></button>
-    </div>
-    <!-- rewind skip  -->
-    <div class="popper--popper--2r2To">
-        <button
-            type="button"
-            data-purpose="rewind-skip-button"
-            class="udlite-btn udlite-btn-small udlite-btn-ghost udlite-heading-sm control-bar-dropdown--trigger--iFz7P control-bar-dropdown--trigger-dark--1qTuU control-bar-dropdown--trigger-small--1ZPqx"
-            id="popper-trigger--416"
-            tabindex="0"
-        ></button>
-    </div>
-    <!-- 再生速度 -->
-    <div class="playback-rate--playback-rate--1XOKO popper--popper--2r2To">
-        <!-- omit -->
-    </div>
-    <!-- skip -->
-    <div class="popper--popper--2r2To">
-        <button
-            type="button"
-            data-purpose="forward-skip-button"
-            class="udlite-btn udlite-btn-small udlite-btn-ghost udlite-heading-sm control-bar-dropdown--trigger--iFz7P control-bar-dropdown--trigger-dark--1qTuU control-bar-dropdown--trigger-small--1ZPqx"
-            id="popper-trigger--422"
-            tabindex="0"
-        ></button>
-    </div>
+  <!-- 再生ボタン -->
+  <div class="popper--popper--2r2To">
+    <button
+      type="button"
+      data-purpose="play-button"
+      class="udlite-btn udlite-btn-small udlite-btn-ghost udlite-heading-sm control-bar-dropdown--trigger--iFz7P control-bar-dropdown--trigger-dark--1qTuU control-bar-dropdown--trigger-small--1ZPqx"
+      id="popper-trigger--414"
+      tabindex="0"
+    ></button>
+  </div>
+  <!-- rewind skip  -->
+  <div class="popper--popper--2r2To">
+    <button
+      type="button"
+      data-purpose="rewind-skip-button"
+      class="udlite-btn udlite-btn-small udlite-btn-ghost udlite-heading-sm control-bar-dropdown--trigger--iFz7P control-bar-dropdown--trigger-dark--1qTuU control-bar-dropdown--trigger-small--1ZPqx"
+      id="popper-trigger--416"
+      tabindex="0"
+    ></button>
+  </div>
+  <!-- 再生速度 -->
+  <div class="playback-rate--playback-rate--1XOKO popper--popper--2r2To">
+    <!-- omit -->
+  </div>
+  <!-- skip -->
+  <div class="popper--popper--2r2To">
+    <button
+      type="button"
+      data-purpose="forward-skip-button"
+      class="udlite-btn udlite-btn-small udlite-btn-ghost udlite-heading-sm control-bar-dropdown--trigger--iFz7P control-bar-dropdown--trigger-dark--1qTuU control-bar-dropdown--trigger-small--1ZPqx"
+      id="popper-trigger--422"
+      tabindex="0"
+    ></button>
+  </div>
 
+  <div
+    class="udlite-heading-sm progress-display--progress-display--B20-A"
+  ></div>
+  <!-- ブックマーク -->
+  <div class="popper--popper--2r2To">
+    <button
+      type="button"
+      data-purpose="add-bookmark"
+      class="udlite-btn udlite-btn-small udlite-btn-ghost udlite-heading-sm control-bar-dropdown--trigger--iFz7P control-bar-dropdown--trigger-dark--1qTuU control-bar-dropdown--trigger-small--1ZPqx"
+      id="popper-trigger--424"
+      tabindex="0"
+    ></button>
+  </div>
+  <div class="control-bar--spacer--32VvX"></div>
+  <div>
+    <!-- 音量 -->
     <div
-        class="udlite-heading-sm progress-display--progress-display--B20-A"
+      data-purpose="volume-control-bar"
+      role="slider"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="22"
+      aria-label="音量"
+      tabindex="0"
+      class="volume-control--slider-focus-wrapper--1DEg2 volume-control--invisible-unless-focused--2jCET"
     ></div>
-    <!-- ブックマーク -->
+    <!-- トグル　トランスクリプト -->
     <div class="popper--popper--2r2To">
+      <button
+        type="button"
+        aria-expanded="false"
+        data-purpose="transcript-toggle"
+        class="udlite-btn udlite-btn-small udlite-btn-ghost udlite-heading-sm control-bar-dropdown--trigger--iFz7P control-bar-dropdown--trigger-dark--1qTuU control-bar-dropdown--trigger-small--1ZPqx"
+        id="popper-trigger--1256"
+        tabindex="0"
+      ></button>
+    </div>
+    <!-- CC MENU -->
+    <div class="popper--popper--2r2To">
+      <div class="popper--popper--2r2To">
         <button
-            type="button"
-            data-purpose="add-bookmark"
-            class="udlite-btn udlite-btn-small udlite-btn-ghost udlite-heading-sm control-bar-dropdown--trigger--iFz7P control-bar-dropdown--trigger-dark--1qTuU control-bar-dropdown--trigger-small--1ZPqx"
-            id="popper-trigger--424"
-            tabindex="0"
+          type="button"
+          aria-haspopup="menu"
+          data-purpose="captions-dropdown-button"
+          id="control-bar-dropdown-trigger--429"
+          tabindex="0"
+          aria-expanded="false"
+          class="udlite-btn udlite-btn-small udlite-btn-ghost udlite-heading-sm control-bar-dropdown--trigger--iFz7P control-bar-dropdown--trigger-dark--1qTuU control-bar-dropdown--trigger-small--1ZPqx"
         ></button>
+      </div>
     </div>
-    <div class="control-bar--spacer--32VvX"></div>
-    <div>
-        <!-- 音量 -->
-        <div
-            data-purpose="volume-control-bar"
-            role="slider"
-            aria-valuemin="0"
-            aria-valuemax="100"
-            aria-valuenow="22"
-            aria-label="音量"
-            tabindex="0"
-            class="volume-control--slider-focus-wrapper--1DEg2 volume-control--invisible-unless-focused--2jCET"
-        ></div>
-        <!-- トグル　トランスクリプト -->
-        <div class="popper--popper--2r2To">
-            <button
-                type="button"
-                aria-expanded="false"
-                data-purpose="transcript-toggle"
-                class="udlite-btn udlite-btn-small udlite-btn-ghost udlite-heading-sm control-bar-dropdown--trigger--iFz7P control-bar-dropdown--trigger-dark--1qTuU control-bar-dropdown--trigger-small--1ZPqx"
-                id="popper-trigger--1256"
-                tabindex="0"
-            ></button>
-        </div>
-        <!-- CC MENU -->
-        <div class="popper--popper--2r2To">
-            <div class="popper--popper--2r2To">
-                <button
-                    type="button"
-                    aria-haspopup="menu"
-                    data-purpose="captions-dropdown-button"
-                    id="control-bar-dropdown-trigger--429"
-                    tabindex="0"
-                    aria-expanded="false"
-                    class="udlite-btn udlite-btn-small udlite-btn-ghost udlite-heading-sm control-bar-dropdown--trigger--iFz7P control-bar-dropdown--trigger-dark--1qTuU control-bar-dropdown--trigger-small--1ZPqx"
-                ></button>
-            </div>
-        </div>
-        <!-- 設定 -->
-        <div class="popper--popper--2r2To">
-            <div class="popper--popper--2r2To">
-                <button
-                    type="button"
-                    aria-haspopup="menu"
-                    data-purpose="settings-button"
-                    id="control-bar-dropdown-trigger--433"
-                    tabindex="0"
-                    aria-expanded="false"
-                    class="udlite-btn udlite-btn-small udlite-btn-ghost udlite-heading-sm control-bar-dropdown--trigger--iFz7P control-bar-dropdown--trigger-dark--1qTuU control-bar-dropdown--trigger-small--1ZPqx"
-                ></button>
-            </div>
-            <div
-                id="popper-content--435"
-                aria-labelledby="control-bar-dropdown-trigger--433"
-                class="popper--popper-content--2tG0H"
-                style="bottom: 100%; right: 0px; margin-bottom: 3.2rem;"
-            ></div>
-        </div>
-        <!-- 全画面表示 -->
-        <div class="popper--popper--2r2To">
-            <button
-                type="button"
-                class="udlite-btn udlite-btn-small udlite-btn-ghost udlite-heading-sm control-bar-dropdown--trigger--iFz7P control-bar-dropdown--trigger-dark--1qTuU control-bar-dropdown--trigger-small--1ZPqx"
-                id="popper-trigger--445"
-                tabindex="0"
-            ></button>
-        </div>
-        <!-- toggle theatre -->
-        <div class="popper--popper--2r2To">
-            <button
-                type="button"
-                data-purpose="theatre-mode-toggle-button"
-                class="udlite-btn udlite-btn-small udlite-btn-ghost udlite-heading-sm control-bar-dropdown--trigger--iFz7P control-bar-dropdown--trigger-dark--1qTuU control-bar-dropdown--trigger-small--1ZPqx"
-                id="popper-trigger--1270"
-                tabindex="0"
-            ></button>
-        </div>
+    <!-- 設定 -->
+    <div class="popper--popper--2r2To">
+      <div class="popper--popper--2r2To">
+        <button
+          type="button"
+          aria-haspopup="menu"
+          data-purpose="settings-button"
+          id="control-bar-dropdown-trigger--433"
+          tabindex="0"
+          aria-expanded="false"
+          class="udlite-btn udlite-btn-small udlite-btn-ghost udlite-heading-sm control-bar-dropdown--trigger--iFz7P control-bar-dropdown--trigger-dark--1qTuU control-bar-dropdown--trigger-small--1ZPqx"
+        ></button>
+      </div>
+      <div
+        id="popper-content--435"
+        aria-labelledby="control-bar-dropdown-trigger--433"
+        class="popper--popper-content--2tG0H"
+        style="bottom: 100%; right: 0px; margin-bottom: 3.2rem;"
+      ></div>
     </div>
+    <!-- 全画面表示 -->
+    <div class="popper--popper--2r2To">
+      <button
+        type="button"
+        class="udlite-btn udlite-btn-small udlite-btn-ghost udlite-heading-sm control-bar-dropdown--trigger--iFz7P control-bar-dropdown--trigger-dark--1qTuU control-bar-dropdown--trigger-small--1ZPqx"
+        id="popper-trigger--445"
+        tabindex="0"
+      ></button>
+    </div>
+    <!-- toggle theatre -->
+    <div class="popper--popper--2r2To">
+      <button
+        type="button"
+        data-purpose="theatre-mode-toggle-button"
+        class="udlite-btn udlite-btn-small udlite-btn-ghost udlite-heading-sm control-bar-dropdown--trigger--iFz7P control-bar-dropdown--trigger-dark--1qTuU control-bar-dropdown--trigger-small--1ZPqx"
+        id="popper-trigger--1270"
+        tabindex="0"
+      ></button>
+    </div>
+  </div>
 </div>
 ```
 
@@ -3359,8 +3362,8 @@ const repeatCaptureSubtitles = async function(tabId: number): Promise<subtitle_p
 
 #### RESET 実装： 確認できる不備
 
--   字幕変更のために CCPOPUP ボタンをクリックしたら ExTranscript が消えた
--   一旦 loading にともなうリセットが起こると、ExTranscript が非表示にならなくなる？
+- 字幕変更のために CCPOPUP ボタンをクリックしたら ExTranscript が消えた
+- 一旦 loading にともなうリセットが起こると、ExTranscript が非表示にならなくなる？
 
 ##### 字幕変更しようとしたら ExTranscript が消える件
 
@@ -3435,13 +3438,13 @@ const handlerOfControlbar = function (ev: PointerEvent): void {
 
 #### 残るタスク
 
--   自動スクロール機能: のこる大きな課題
--   ブラウザ横幅を小さくしても、ExTranscript 残り続けてしまう問題
--   popup で正しい動作をさせる：RUN した後は RUN ボタンを無効にするとか
--   controller.ts の onwWindowResizeHandler をもうちょっとサクサク動かしたい
--   拡張機能を展開していたタブが閉じられたときの後始末
--   エラーハンドリング: 適切な場所へエラーを投げる、POPUP に表示させる、アラートを出すなど
--   デザイン改善: 見た目の話
+- 自動スクロール機能: のこる大きな課題
+- ブラウザ横幅を小さくしても、ExTranscript 残り続けてしまう問題
+- popup で正しい動作をさせる：RUN した後は RUN ボタンを無効にするとか
+- controller.ts の onwWindowResizeHandler をもうちょっとサクサク動かしたい
+- 拡張機能を展開していたタブが閉じられたときの後始末
+- エラーハンドリング: 適切な場所へエラーを投げる、POPUP に表示させる、アラートを出すなど
+- デザイン改善: 見た目の話
 
 ##### RESET 機能実装：ウィンドウが小さくなった時、ExTranscript が消えない件
 
@@ -3609,7 +3612,7 @@ const updateSubtitle = (prop, prev): void => {
 
 #### API をみてから改善できる点
 
--   `chrome.tabs.onUpdated`で関係ない URL を無視したいときは filter を使う
+- `chrome.tabs.onUpdated`で関係ない URL を無視したいときは filter を使う
 
 ##### 自動スクロール機能の実装： ExTranscript が sidebar だと`scrollToHighlight()`が機能しなくなる件の修正
 
@@ -3859,9 +3862,9 @@ chrome.tabs.onUpdated.addListener(
 
 ```html
 <div class="video-viewer--container--23VX7">
-    <div class="video-player--container--YDQRW udlite-in-udheavy">
-        <!-- .... -->
-    </div>
+  <div class="video-player--container--YDQRW udlite-in-udheavy">
+    <!-- .... -->
+  </div>
 </div>
 ```
 
@@ -4271,15 +4274,15 @@ $ npm install @mui/material @emotion/react @emotion/styled
 
 RUN してからの view のアイディア
 
--   RUN するまえ
+- RUN するまえ
 
 REBUILD ボタンが表示されているだけ
 
--   RUN おしたら
+- RUN おしたら
 
 REBUILD ボタンを消して LOADING ボタンを表示
 
--   COMPLETE したら
+- COMPLETE したら
 
 LOADING ボタンを fade するか、透明に近くする
 それで
@@ -4294,9 +4297,9 @@ OFF ボタンと RUNNING...を表示する
 
 次を確認して
 
--   アイコンは 128\*128 のアイコンを提供しないといけない
--   48*48、16*16 も提供しないといけない
--   アイコンは PNG 出ないといけない
+- アイコンは 128\*128 のアイコンを提供しないといけない
+- 48*48、16*16 も提供しないといけない
+- アイコンは PNG 出ないといけない
 
 #### 実装：拡張機能 OFF
 
@@ -4304,17 +4307,17 @@ OFF ボタンと RUNNING...を表示する
 
 まず知っておくこと：
 
--   background script は拡張機能が ON であるかぎり、ブラウザを閉じていても生きている(PC を起動したら起動される)
+- background script は拡張機能が ON であるかぎり、ブラウザを閉じていても生きている(PC を起動したら起動される)
 
--   拡張機能を展開したタブが生きている限り、inject した content scritp はそのままである
-    なので再度同じタブで run されたときに、既に content script が inject されていることを前提に動かないといかん
-    TODO: handlerOfRun の修正: content scritp が既に inject 済である場合を考慮する
+- 拡張機能を展開したタブが生きている限り、inject した content scritp はそのままである
+  なので再度同じタブで run されたときに、既に content script が inject されていることを前提に動かないといかん
+  TODO: handlerOfRun の修正: content scritp が既に inject 済である場合を考慮する
 
 OFF のトリガー：
 
--   case1:展開中のタブで POPUP のスライダーを OFF にする(タブはそのまま)
--   case2:展開中のタブを閉じる
--   case3:展開中のタブを含む window が閉じられる
+- case1:展開中のタブで POPUP のスライダーを OFF にする(タブはそのまま)
+- case2:展開中のタブを閉じる
+- case3:展開中のタブを含む window が閉じられる
 
 case1 ですること：
 
@@ -4648,8 +4651,8 @@ chrome.tabs.onRemoved.addListener(
 
 現状：
 
--   ExTranscript は消える
--   background script の state はそのまま
+- ExTranscript は消える
+- background script の state はそのまま
 
 ```TypeScript
 {
@@ -4768,17 +4771,17 @@ chrome.tabs.onUpdated.addListener(
 
 考えられる原因@background.ts :
 
--   state が初期化されていない(chrome.runtime.onInstalled が実行されていない)
--   `cotnentScript`への`orderNames.sendStatus`オーダのレスポンスのいずれかが false だった時
+- state が初期化されていない(chrome.runtime.onInstalled が実行されていない)
+- `cotnentScript`への`orderNames.sendStatus`オーダのレスポンスのいずれかが false だった時
 
 考えられる原因@contentScript.ts :
 
--   `initialize()`時、`controlbar`が取得できない
-    background へ伝えるには background へ sendMessage するしかない
+- `initialize()`時、`controlbar`が取得できない
+  background へ伝えるには background へ sendMessage するしかない
 
--   `orderNames.sendStatus`の対応中に、DOM が取得できない
-    検知するにはすべての DOM 取得関数の後に条件分岐を設けること
-    条件分岐でエラースローすること
+- `orderNames.sendStatus`の対応中に、DOM が取得できない
+  検知するにはすべての DOM 取得関数の後に条件分岐を設けること
+  条件分岐でエラースローすること
 
 Refac: `finally`で`sendResponse()`するようにする && `try...catch`の範囲を小さくする
 
@@ -5078,7 +5081,7 @@ background script 自身の例外を処理する
 
 エラーと例外を分類するここと
 
--   `chrome.runtime.onInstalled.addListener()`
+- `chrome.runtime.onInstalled.addListener()`
 
 state.clear(), state.set()の失敗
 chrome.storage.local.set()起因
@@ -5265,43 +5268,41 @@ popup のボタンのローディングはドットアニメーションにす�
 
 まず確認される問題：
 
--   Google 翻訳済のページは拡張機能は使えないのは仕様にしましょう
--   拡張機能実行してから Google 翻訳して、ページが次に遷移したときに、ExTranscript の字幕一番目の字幕の塊が大きすぎる
-    たぶん、Google 翻訳がページ遷移後に拡張機能を実行してして、英語を日本語に翻訳完了させた部分はすべてこの塊に含まれるのだと思う
-    Google 翻訳の実行スピードと captureSubtitle と controller のスピード勝負になっている
--   上記とおそらく同じ理由で場合によってはページ遷移後に字幕が取得できないかもしれない
+- Google 翻訳済のページは拡張機能は使えないのは仕様にしましょう
+- 拡張機能実行してから Google 翻訳して、ページが次に遷移したときに、ExTranscript の字幕一番目の字幕の塊が大きすぎる
+  たぶん、Google 翻訳がページ遷移後に拡張機能を実行してして、英語を日本語に翻訳完了させた部分はすべてこの塊に含まれるのだと思う
+  Google 翻訳の実行スピードと captureSubtitle と controller のスピード勝負になっている
+- 上記とおそらく同じ理由で場合によってはページ遷移後に字幕が取得できないかもしれない
 
 ```html
 <!-- 翻訳前 -->
 <div class="transcript--cue-container--wu3UY">
-    <p
-        data-purpose="transcript-cue"
-        class="transcript--underline-cue--3osdw"
-        role="button"
-        tabindex="-1"
-    >
-        <span data-purpose="cue-text" class=""
-            >So we talked about the Cascade</span
-        >
-    </p>
+  <p
+    data-purpose="transcript-cue"
+    class="transcript--underline-cue--3osdw"
+    role="button"
+    tabindex="-1"
+  >
+    <span data-purpose="cue-text" class="">So we talked about the Cascade</span>
+  </p>
 </div>
 
 <!-- 翻訳後 -->
 <div class="transcript--cue-container--wu3UY">
-    <p
-        data-purpose="transcript-cue"
-        class="transcript--underline-cue--3osdw"
-        role="button"
-        tabindex="-1"
-    >
-        <span data-purpose="cue-text" class="">
-            <font style="vertical-align: inherit;">
-                <font style="vertical-align: inherit;"
-                    >だから私たちはカスケードについて話しました</font
-                >
-            </font>
-        </span>
-    </p>
+  <p
+    data-purpose="transcript-cue"
+    class="transcript--underline-cue--3osdw"
+    role="button"
+    tabindex="-1"
+  >
+    <span data-purpose="cue-text" class="">
+      <font style="vertical-align: inherit;">
+        <font style="vertical-align: inherit;"
+          >だから私たちはカスケードについて話しました</font
+        >
+      </font>
+    </span>
+  </p>
 </div>
 ```
 
@@ -5634,11 +5635,11 @@ isLoopDone は T 型の値を引数にとって、boolean を返す関数
 
 つまりこういう経緯です
 
--   拡張機能を ON にして字幕を再生成した ExTranscript を出力した
--   Google 翻訳を実行していい感じの翻訳字幕を取得できた
--   拡張機能を OFF にした(トランスクリプトが閉じられた、window サイズが小さくなりすぎたなど...)
--   再度拡張機能を ON にした(トランスクリプトが再度開かれた、window サイズがリサイズされたなど...)
--   すでに字幕が翻訳済のデータから captureSubtitle するので、英語字幕が取得できずおかしな字幕が出力されてしまう
+- 拡張機能を ON にして字幕を再生成した ExTranscript を出力した
+- Google 翻訳を実行していい感じの翻訳字幕を取得できた
+- 拡張機能を OFF にした(トランスクリプトが閉じられた、window サイズが小さくなりすぎたなど...)
+- 再度拡張機能を ON にした(トランスクリプトが再度開かれた、window サイズがリサイズされたなど...)
+- すでに字幕が翻訳済のデータから captureSubtitle するので、英語字幕が取得できずおかしな字幕が出力されてしまう
 
 ということで、
 
@@ -5649,8 +5650,8 @@ isLoopDone は T 型の値を引数にとって、boolean を返す関数
 
 保存タイミング：
 
--   handlerOfRun 時
--   chrome.tabs.onUpdated.addListener()で「次のレクチャーページに移動した」判定後の最初の字幕取得時
+- handlerOfRun 時
+- chrome.tabs.onUpdated.addListener()で「次のレクチャーページに移動した」判定後の最初の字幕取得時
 
 消去タイミング：
 
@@ -5996,8 +5997,8 @@ background.ts には、
 
 例外が起こった際のやらなきゃいかんことが 2 つある
 
--   ユーザ向けに alert を出す
--   POPUP 向けにメッセージを送る
+- ユーザ向けに alert を出す
+- POPUP 向けにメッセージを送る
 
 background.ts で例外が発生したときまたはキャッチしたときは
 
@@ -6054,12 +6055,12 @@ CSS だけで ExTranscript のサイズ変更とかできるかどうか確か�
 
 やること：
 
--   済 セレクタ名の変更
--   たぶん済 セレクタ名変更に伴う全体の修正
--   window リサイズにかかわる修正
--   済 ExTranscript が sidebar のときの middleview or wideview の処理の除去
--   SASS を webpack プロジェクトへ導入する
--   出力 css ファイルを sidebarTranscriptView と bottomTranscriptView と共有することとする
+- 済 セレクタ名の変更
+- たぶん済 セレクタ名変更に伴う全体の修正
+- window リサイズにかかわる修正
+- 済 ExTranscript が sidebar のときの middleview or wideview の処理の除去
+- SASS を webpack プロジェクトへ導入する
+- 出力 css ファイルを sidebarTranscriptView と bottomTranscriptView と共有することとする
 
 参考:
 
@@ -6081,7 +6082,7 @@ node-sass は非推奨だから Dirt-Sass を使えだって
 
 TODO: どこまでやればいいのかわからんから、Udemy のコースをやってから再度取り掛かる.
 
--   RESIZE_BOUNDARY を 975px から 963px に変更したけど。。。
+- RESIZE_BOUNDARY を 975px から 963px に変更したけど。。。
 
 たぶんメディアタイプによってこの境界線は異なる
 
@@ -6089,9 +6090,9 @@ TODO: どこまでやればいいのかわからんから、Udemy のコース�
 
 本家は、
 
--   `@media (max-width: 75em) {}`
--   `@media (min-width: 61.31em) and (max-width: 75em) {}`
-    など設定していて、
+- `@media (max-width: 75em) {}`
+- `@media (min-width: 61.31em) and (max-width: 75em) {}`
+  など設定していて、
 
 おそらく 75em が基準値となるだろう...
 
@@ -6218,14 +6219,16 @@ $ npm i -D node-sass sass-loader
 
 ## ExTranscript の閉じるボタンの実装
 
--   `justify-content: space-between;`でアイテムを両端に置く模様
--   閉じるボタンアイコンは CSS でつくる
--   閉じるボタンクリックで本家のトランスクリプトも閉じたい
-    ...無理
+完了
+
+- `justify-content: space-between;`でアイテムを両端に置く模様
+- 閉じるボタンアイコンは CSS でつくる
+- 閉じるボタンクリックで本家のトランスクリプトも閉じたい
+  ...無理
 
 #### 実装
 
--   「閉じるボタン」で閉じる仕組み
+- 「閉じるボタン」で閉じる仕組み
 
 ExTranscript 上のボタンを押す
 
@@ -6237,7 +6240,7 @@ background.ts は受信したら handlerOfHid()を実行する
 
 閉じた
 
--   「閉じるボタン」のリスナを設置する仕組み
+- 「閉じるボタン」のリスナを設置する仕組み
 
 各 view クラスの render()メソッド実行後に、DOM を取得して付ける
 
@@ -6382,41 +6385,41 @@ https://developer.mozilla.org/ja/docs/Web/SVG/Element/use
 
 ```html
 <div>
-    <h1 className="title">Hi there!</h1>
-    <button class="btn">
-        <svg
-            class="icon"
-            width="36"
-            height="36"
-            viewBox="0 0 36 36"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-        >
-            <g clip-path="url(#clip0_2_8)">
-                <line
-                    x1="-0.707107"
-                    y1="38.2929"
-                    x2="35.2929"
-                    y2="2.29289"
-                    stroke="black"
-                    stroke-width="2"
-                />
-                <line
-                    x1="-1.29289"
-                    y1="-0.707107"
-                    x2="34.7071"
-                    y2="35.2929"
-                    stroke="black"
-                    stroke-width="2"
-                />
-            </g>
-            <defs>
-                <clipPath id="clip0_2_8">
-                    <rect width="36" height="36" rx="8" fill="white" />
-                </clipPath>
-            </defs>
-        </svg>
-    </button>
+  <h1 className="title">Hi there!</h1>
+  <button class="btn">
+    <svg
+      class="icon"
+      width="36"
+      height="36"
+      viewBox="0 0 36 36"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g clip-path="url(#clip0_2_8)">
+        <line
+          x1="-0.707107"
+          y1="38.2929"
+          x2="35.2929"
+          y2="2.29289"
+          stroke="black"
+          stroke-width="2"
+        />
+        <line
+          x1="-1.29289"
+          y1="-0.707107"
+          x2="34.7071"
+          y2="35.2929"
+          stroke="black"
+          stroke-width="2"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_2_8">
+          <rect width="36" height="36" rx="8" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  </button>
 </div>
 ```
 
@@ -6469,35 +6472,35 @@ https://developer.mozilla.org/ja/docs/Web/SVG/Element/use
 ```html
 <!-- svg -->
 <svg
-    width="36"
-    height="36"
-    viewBox="0 0 36 36"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
+  width="36"
+  height="36"
+  viewBox="0 0 36 36"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
 >
-    <g clip-path="url(#clip0_2_8)">
-        <line
-            x1="-0.707107"
-            y1="38.2929"
-            x2="35.2929"
-            y2="2.29289"
-            stroke="black"
-            stroke-width="2"
-        />
-        <line
-            x1="-1.29289"
-            y1="-0.707107"
-            x2="34.7071"
-            y2="35.2929"
-            stroke="black"
-            stroke-width="2"
-        />
-    </g>
-    <defs>
-        <clipPath id="clip0_2_8">
-            <rect width="36" height="36" rx="8" fill="white" />
-        </clipPath>
-    </defs>
+  <g clip-path="url(#clip0_2_8)">
+    <line
+      x1="-0.707107"
+      y1="38.2929"
+      x2="35.2929"
+      y2="2.29289"
+      stroke="black"
+      stroke-width="2"
+    />
+    <line
+      x1="-1.29289"
+      y1="-0.707107"
+      x2="34.7071"
+      y2="35.2929"
+      stroke="black"
+      stroke-width="2"
+    />
+  </g>
+  <defs>
+    <clipPath id="clip0_2_8">
+      <rect width="36" height="36" rx="8" fill="white" />
+    </clipPath>
+  </defs>
 </svg>
 ```
 
@@ -6513,7 +6516,11 @@ SidebarTranscriptView.prototype.generateSVG = function(mask_id: string)): string
 }
 ```
 
+SVG の HTML をそのまま出力する関数から取得することとした
+
 ## 検討：自動スクロールの footer は本家をそのまま表示する
+
+完了
 
 実現したいこと：
 
@@ -6525,9 +6532,9 @@ SidebarTranscriptView.prototype.generateSVG = function(mask_id: string)): string
 
 課題：
 
--   本家の「自動スクロール」のチェックボックスにリスナを付ける
--   「自動スクロール機能」の ON/OFF
--   ExTranscript の Footer をなくしても問題なく表示させられるか
+- 本家の「自動スクロール」のチェックボックスにリスナを付ける
+- 「自動スクロール機能」の ON/OFF
+- ExTranscript の Footer をなくしても問題なく表示させられるか
 
 #### 本家の「自動スクロール」のチェックボックスにリスナを付ける
 
@@ -6909,3 +6916,181 @@ Udemy の本家のページのヘッダ(Nav bar)が表示されている分も�
 ついになんとか API の導入かしら？
 
 intersection observer API の導入の検討
+
+## 不具合記録
+
+4/22: ブラウザでウィンドウを小さくしたら ExTranscritp が sidebar にい続けた
+
+```TypeScript
+const onWindowResizeHandler = (): void => {
+    console.log('[controller] onWindowResizeHandler()');
+
+    const w: number = document.documentElement.clientWidth;
+    const { position, isWindowTooSmall } = sStatus.getState();
+
+    if (w < MINIMUM_BOUNDARY && !isWindowTooSmall) {
+        sStatus.setState({ isWindowTooSmall: true });
+        return;
+    }
+    if (w > MINIMUM_BOUNDARY && isWindowTooSmall) {
+        sStatus.setState({ isWindowTooSmall: false });
+        // NOTE: 原因はここで、returnしてしまっているのが原因
+        // 最小幅を超える幅になったのに
+        // sidebarかbottomかの判定をするまえにreturnしてしまった
+        return;
+    }
+
+    if (w > RESIZE_BOUNDARY && position !== positionStatus.sidebar)
+        sStatus.setState({ position: positionStatus.sidebar });
+
+    if (w <= RESIZE_BOUNDARY && position !== positionStatus.noSidebar) {
+        sStatus.setState({ position: positionStatus.noSidebar });
+    }
+
+    if (position === positionStatus.sidebar) calcContentHeight();
+};
+
+```
+
+解消済
+
+## ExTranscript のハイライト位置の修正
+
+もうちょい下にする
+
+## refactoring
+
+もろもろの点をわかりやすく
+
+## chrome ストアで表示するまで
+
+各ポリシーを確認して要点をまとめ、違反しているかどうか自分でチェックすること
+
+これめちゃ大変...
+
+参考：
+
+https://developer.chrome.com/docs/webstore/best_practices/
+
+#### google プログラムポリシーに違反していないか？
+
+https://developer.chrome.com/docs/webstore/program_policies/
+
+https://developer.chrome.com/docs/webstore/terms/
+
+- content policy
+
+コンテンツポリシーは本製品以外にも製品がもたらす広告やホストまたはリンクするユーザ生成コンテンツにも適用される
+
+公開者のアカウントから chrome web store に公開されるすべてのコンテンツにも適用される
+
+セクシャルコンテンツか？
+
+No
+
+暴力またはいじめ行為か？
+
+No
+
+ヘイトスピーチを含むか？
+
+No
+
+暴力的な過激主義か？
+
+No
+
+なりすましまたは欺瞞的な行動をするか？
+ユーザを欺いたり誤解を与えるような情報を提供していないか？
+
+No
+
+> 製品の機能を誤って伝えたり、製品の主な目的を果たさない非自明な機能を含めたりしないでください。ユーザーが追加する製品を明確に理解できるように、製品の説明には機能を直接記載する必要があります。
+
+> 商品の説明フィールドが空白であるか、アイコンやスクリーンショットがない場合、商品は拒否されます。製品のコンテンツ、タイトル、アイコン、説明、またはスクリーンショットのいずれかに虚偽または誤解を招く情報が含まれている場合、当社はそれを削除する場合があります。
+
+google chrome の価値基準に違反するような製品でないか？
+
+たとえば動画ダウンローダとか Bot とか
+
+No
+
+特許、商標、企業秘密、著作権、その他の所有権など、他者の知的財産権を侵害しているか？
+
+No
+
+違法行為でないか?
+
+No
+
+賭博性はあるか？
+
+No
+
+#### 準備するもの
+
+https://tech.manafukurou.com/article/chrome-develop-2/
+
+上記のサイトに依れば以下を用意する必要がある
+
+- Google 開発者登録の初回登録料 5$
+
+- パッケージのタイトル
+  ストアに表示されるパッケージのタイトル manifest.json の[name]データがそのまま反映されます
+
+- パッケージの概要
+  ストアに表示されるパッケージのタイトル manifest.json の[description]データがそのまま反映されます
+
+- 説明
+  アイテムの紹介。ストア画面では上の概要の下に表示されます。
+
+- カテゴリ
+  chrome ウェブストアのどのカテゴリに並ぶかを指定出来ます。
+
+- 言語
+  言語です。複数の言語に対応している場合は、アイテムを国際化する必要があります
+
+- ショップ アイコン
+  128×128 ピクセル
+
+- 全言語向けアセット
+  プロモーション用の動画を設定出来ます。 Youtube の url を設定出来ます。
+
+- スクリーンショット
+  指定できるのは 5 枚までです  1280×800  または  640×400 JPEG または 24 ビット PNG（アルファなし） 少なくとも 1 枚指定してください
+
+- プロモーション タイル（小)
+  440×280  キャンバス JPEG または 24 ビット PNG（アルファなし）
+
+- プロモーション タイル（大）
+  920×680  キャンバス JPEG または 24 ビット PNG（アルファなし）
+
+- マーキー プロモーション タイル
+  1400×560  キャンバス JPEG または 24 ビット PNG（アルファなし）
+
+- 公式 URL
+  Google Search Console  から関連している url を選択できる形です。
+
+- ホームページ URL
+  アイテムに関する Web サイトのリンク
+
+- サポート URL
+  サポート用の URL です
+
+- 成人向けコンテンツ
+  成人向けかどうか設定します
+
+- Google Analytics ID
+  Google Analytics の管理ツールを利用している場合は、 アカウントの ID を設定する事で連携が出来ます
+
+プライバシー
+
+- 単一用途
+  拡張機能の用途は、単一で範囲の限られたわかりやすいものである必要があります
+- リモートコードを利用していますか？
+  外部の JS や CSS のファイルを読み込んでいるか確認します。もし利用している場合には利用している理由も記述する必要があります。
+
+価格と提供内容
+
+- 公開設定： 公開・限定公開・非公開を設定出来ます
+- 販売地域： どの国でアイテムを販売するかを指定出来ます。

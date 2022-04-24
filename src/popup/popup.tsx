@@ -43,6 +43,9 @@ const theme = createTheme({
   },
 });
 
+
+
+
 const Popup = (): JSX.Element => {
   // popupが開かれたときのURLが、拡張機能が有効になるべきURLなのか
   const [correctUrl, setCorrectUrl] = useState<boolean>(false);

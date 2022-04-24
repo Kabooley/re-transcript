@@ -1,15 +1,18 @@
 # Chrome Extension API 教訓
 
-NOTE: まとめていない話
+## これは何
 
-- content script は inject されたらプログラムで撤去することはできない
-- window か tab が閉じられたことを検知する方法 `chrome.tabs.onRemoved`
+個人開発中に経験した、chrome 拡張機能開発における教訓でございます。
+
+Manifest のバージョンは MV3 です。
+
+V3 特有の話と、よく嵌りやすい点についてまとめました。
 
 ## icon が表示されないときは
 
 参考：https://developer.chrome.com/docs/extensions/reference/action/#icon
 
-次を確認してみよう
+次を確認してみてください。
 
 - `png`を提供しているか
 
@@ -23,7 +26,7 @@ NOTE: まとめていない話
 
 - 48 \* 48
 
-> 拡張機能管理ページ（chrome：// extends）で使用される 48x48 アイコンも提供する必要があります
+> 拡張機能管理ページ（chrome://extensions）で使用される 48x48 アイコンも提供する必要があります
 
 - 16 \* 16
 
@@ -35,6 +38,8 @@ Chrome は完全に一致するものが見つからない場合、画像に合�
 完全なサイズを提供する必要はない模様。
 
 ## MV3 Service Worker の特徴
+
+参考：
 
 https://developer.chrome.com/docs/extensions/mv3/migrating_to_service_workers/
 
@@ -48,22 +53,24 @@ https://developers.google.com/web/fundamentals/primers/service-workers/
 2. `service worker`は DOM にアクセスできない
 
 MV2 までの`background page`は（アンロードされないという意味で）永続的な独立環境でしたが、
+
 `service worker`はアイドル時にアンロードされて、
+
 リスンしているイベントがあった場合だけ再ロードされるという違いがあります。
 
 この特徴によって気を付けないといけないことがあります。
 
 #### 注意 1. service worker のイベントリスナはトップレベルに同期的に記述すること
 
-理由はリスナが必ずイベントが発生したときに真っ先に実行されるようにするためです
+理由は必ずイベントが発生したときに chrome API のリスナが真っ先に実行されるようにするためです
 
 どういうことかというと、
 
-リスナの発生条件をイベントが発生したから以外にしてはならないという意味です
-
-公式に書いてあるのそのままだけれど
+リスナの発生条件を「イベントが発生したから」以外にしてはならないという意味です
 
 ```JavaScript
+// 公式のコードそのままですが...
+
 // background.js
 chrome.storage.local.get(["badgeText"], ({ badgeText }) => {
   chrome.action.setBadgeText({ text: badgeText });
@@ -79,7 +86,7 @@ chrome.storage.local.get(["badgeText"], ({ badgeText }) => {
 発火条件を「イベントが発生したから」という条件以外にすると
 
 再ロードされたときに非同期にイベントリスナが登録されて、
-イベントを逃してしまう可能性があるのである
+イベントを逃してしまう可能性があります
 
 また同様に、
 
@@ -87,17 +94,17 @@ chrome.storage.local.get(["badgeText"], ({ badgeText }) => {
 
 background script ファイルの最初のほうは、
 
-余計なコードが実行されないようにイベントリスナはトップに書いておくべきなのである
+余計なコードが実行されないようにイベントリスナはトップに書いておくべきです
 
-#### 注意 2. service worker で変数を保存するなら必ず`chrome.storage`で保存すること
+#### 注意 2. service worker で変数を保存するなら必ず`chrome.storage` API で保存すること
 
-service worker は頻繁にアンロードと再ロードが繰り返される
+service worker は頻繁にアンロードと再ロードが繰り返されます
 
 **その間 background script は変数を保持してくれません**
 
 たとえば`background.js`でファイル内のグローバル変数の値を変更したとしても
 
-一旦再ロードされればその値は存在しないのである
+一旦再ロードされればその値は存在しないのです
 
 この重要な事実は、公式情報をよく確認してから開発するか
 
@@ -107,7 +114,7 @@ service worker は頻繁にアンロードと再ロードが繰り返される
 
 開発中まったく気づかず、そのまま拡張機能をリリースするところまで来る可能性はないとはいえません
 
-ということで表題ですけど
+ということで
 
 公式に書いてあるとおり、`chrome.storage`を使って変数を保持することになります
 
@@ -166,7 +173,7 @@ const state: <T> = (function () {
 // background内では下のように呼び出してつかいます
 await state.set({hoge: 'hoge'});
 
-// service workerがアンロードされたとして
+// 10秒待つ間にservice workerがアンロードされたとして
 setTimeout(function() {
     state.get().then((t: T) => {
         // 変数が保存出来ているのを確認できます
@@ -187,7 +194,7 @@ https://developer.chrome.com/docs/extensions/mv3/migrating_to_service_workers/
 
 > アンロードされる直前にイベントページに送信されます。これにより、拡張機能にクリーンアップを実行する機会が与えられます。
 
-先のコードの毎回ちまちまストレージに保存する方法から、
+先のコードのような、毎回ちまちまストレージに保存する方法から、
 アンロード時に一気に保存する方法をとってみます
 
 ```TypeScript
@@ -202,7 +209,7 @@ interface State {
 const state: State = {
     hoge: null,
     num: null
-}
+};
 
 const KEY_LOCALSTORAGE: string = "some_awesome_local_storage_name";
 
@@ -218,14 +225,20 @@ chrome.runtime.onSuspend.addListener((): void => {
 
 ただし、
 
-再ロードされたことに対してトリガーされるイベントはないです。
+**chrome API には再ロードされたことに対してトリガーされるイベントはないです。**
 
-service worker は発生したイベントのリスナが登録されてあれば再ロードされるからです。
+service worker は発生したイベントのリスナが登録されてあるときにのみ再ロードされるだけだからです。
+
+つまり、アンロードされたときに保存した最新の値を、再ロード時に使うにはストレージから取得したいけれど
+
+再ロードに関するイベントがないから再ロードを検知することができないのです。
+
+となると、
 
 結局必要な変数を取得するには必要な時に直接ストレージから取得するか、
 
 今回の方法を守るとするならば、
-すべてのイベントリスナに`chrome.storage.local.get`の呼出しを義務付けることになります。
+すべての変数を利用するイベントリスナに`chrome.storage.local.get`の呼出しを義務付けることになります。
 
 ただしアンロードさせない方法はあります
 
@@ -233,281 +246,326 @@ https://stackoverflow.com/questions/66618136/persistent-service-worker-in-chrome
 
 こちらで紹介されています通り、
 
-拡張機能の content script や popup と`chrome.runtime.connect()`で接続されているときはしばらくアンロードされないみたいなので
+拡張機能の content script や popup と`chrome.runtime.connect()`で接続されているときはしばらくアンロードされない仕様を利用して、
 
 `chrome.runtime.onDisconnect()`で切断検知したらすかさず再接続させて service worker の稼働状態を保つ方法のようです
 
 これをするくらいなら MV2 で開発したほうがいいと思います。
 
-#### `chrome.tabs.query`で windowId を option で指定するな
+## `chrome.tabs.query`で `windowId` を option で指定するな
 
-`tabs.query`で今フォーカスしているウィンドウのアクティブなタブを取得したいとき、
-windowId を絶対指定するな(めったな状況でない限り)
+**今フォーカスしているウィンドウのアクティブなタブ**を取得したいとき、
+
+chrome API の`tabs.query`を使って取得することになります。
+
+その際、「どの window でどのタブなんですか？」という情報を`option`として`tabs.query`に渡します。
+
+この`option`には`windowId`というプロパティを含めることができますが、
+
+この`windowId`を指定してはなりません。
 
 なぜなのか
 
-`chrome.windows.getCurrentId()`、または`chrome.windows.getLastFocused()`は、
-必ずと言っていいほど、
-最後に生成されたウィンドウの ID を取得するからである
+windowId を取得する方法として次のメソッドを使うことになります。
+
+- `chrome.windows.getCurrentId()`
+- `chrome.windows.getLastFocused()`
+
+これらのメソッドで取得できる`windowId`は、
+
+必ずと言っていいほど、**最後に生成されたウィンドウ**の ID を取得します。
 
 なので
 
-`tabs.query`で今フォーカスしているウィンドウのアクティブなタブを取得したいときは、
+たとえば拡張機能を展開中のタブを含むウィンドウとは別に、あとから新しいウィンドウを生成したときに、
 
-次のオプションを渡すとよい
+その新しいウィンドウで拡張機能を展開しているわけではないのに`chrome.windows.getCurrentId()`または`chrome.windows.getLastFocused()`は
+
+この新しいウィンドウを表す`windowId`を返してしまうのです。
+
+chrome API では頻繁に`tabId`を求められるのですが
+
+このままだと新しいウィンドウを生成した瞬間に`tabs.query`がとんちんかんな`Tab[]`を取得してしまい
+
+拡張機能が機能しなくなってしまうのです。
+
+特に開発中は chrome の DevTools を別窓なんかで開いていたりするので
+
+この開発者ツールの窓の ID なんかも加わってきてさぁ大変です。
+
+#### 解決策
+
+**今フォーカスしているウィンドウ**の**アクティブなタブ**を取得したいときは、
+
+`tab.query`に次のオプションを渡すとよい
 
 ```TypeScript
 {
-  active: true,           // 表示中のタブを指定する
+  active: true,              // 表示中のタブを指定する
   lastFocusedWindow: true,   // 最後にフォーカスしたwindowを指定できる
-  currentWindow: true     // 現在のwindowを指定できる
+  currentWindow: true        // 現在のwindowを指定できる
 }
 ```
 
-`lastFocusedWindow`と`currentWindow`はどちらかだけでもいい
+`lastFocusedWindow`と`currentWindow`はどちらかだけでもいい。
 
-#### message-passing で sendResponse()を非同期に完了させたいならば chrome.runtime.onMessage.addListener()のコールバックは必ず true を返すこと
+`windowId`がとんちんかんになる実験は[こちら](#chromewindows-の-windowid-取得実験)です。
 
-というのは公式に書いてあるので当然かもしれませんが
+#### message-passing で sendResponse()を非同期に完了させたいならば`chrome.runtime.onMessage.addListener()`のコールバックは必ず`true`を返すこと
+
+というのは公式に書いてあるので当然かもしれませんが本当はここで言いたいのは文法の話です。
 
 TypeScript 的にいうと、
 
 `chrome.runtime.onMessage.addListener()`のコールバックは
 
-`(): boolean => { return true }`でないと効果を発揮しないよということ
+- 正しい：`(): boolean => { return true }`
 
-`async (): Promise<boolean> => {return true;}`では無効である
+- 誤り：`async (): Promise<boolean> => {return true;}`
 
-ついつい`async/await`を使いたいからと言って
-async 関数を渡してしまうと非同期処理が無視されて
-`sendResponse()`が非同期に返されるのを待たずに
-送信先が存在しませんという旨の`runtime.lastError`が起きます
+非同期処理を含むからといってついついコールバック関数を`async`関数にしてしまうと
 
-となると
+非同期処理が無視されて、`sendResponse()`が非同期に返されるのを待たずに
 
-`chrome.runtime.onMessage.addListener()`のコールバックは
+送信先が存在しませんという旨の`runtime.lastError`が起きてしまいます。
 
-次の通りに書くべきです
+このエラーが起きると「なんでコールバック関数で`return true`したのに非同期処理にならないんだ」と迷宮入りしてしまいます。
+
+つまり`sendResponse`を非同期に返したいときは次の通りにしなくてはなりません。
+
+- `chrome.runtime.onMessage.addListener()`のコールバックは同期関数を渡さなくてはならない
+- `chrome.runtime.onMessage.addListener()`のコールバックは`true`を返さなくてはならない
+- `chrome.runtime.onMessage.addListener()`のコールバック内で非同期処理をしたいならプロミスチェーンか即時関数内部で`async/await`を使わなくてはならない
+
+よって次の通りに書くべきです
 
 ```TypeScript
-interface iMessage {
   // message-passingでやり取りするオブジェクトの型
+interface iMessage {
+    // ...
 }
 
 chrome.runtime.onMessage.addListener(
+    // 1. 同期関数をcallbackとして渡す
     (
         message: iMessage,
         sender,
-        sendResponse: (response: iResponse) => void
+        sendResponse: (response: iMessage) => void
     ): boolean => {
-        const { order } = message;
-        const response: iResponse = {
-            from: extensionNames.contentScript,
+        const { order, from } = message;
+        const response: iMessage = {
+            from: "content_script",
             to: from,
         };
-        if (to !== extensionNames.contentScript) return;
 
+        // orderの各処理には非同期処理が含まれるとして...
         if (order && order.length) {
-            // 1. Promise chainを用いる
+            // 3-1. 非同期処理を書きたいときはプロミスチェーンを使うか...
             if (order.includes(orders.reset)) {
                 handlerOfReset()
                     .then(() => {
                         sendResponse({
                           ...response
-                            complete: true,
-                            success: true,
+                            complete: true
                         });
                     })
-                    .catch((err) => {
-                        console.error(err);
-                    });
             }
-            // 2. IIFEでasync関数を囲う
-            if (order.includes(orderNames.isPageIncludingMovie)) {
-              (async function() {
-
-              })()
-                console.log('Order: is this page including movie container?');
-                repeatQuerySelector(selectors.videoContainer)
-                    .then((r: boolean) => {
-                        console.log(`result: ${r}`);
-                        sendResponse({
-                            complete: true,
-                            isPageIncludingMovie: r,
-                        });
-                    })
-                    .catch((err) => {
-                        console.error(err);
-                    });
-            }
-
+            // 3-2. IIFEでasync関数を囲う
             if (order.includes(orderNames.turnOff)) {
-                console.log('Order: Turn off');
-                moControlbar.disconnect();
-                controlbar.removeEventListener('click', handlerOfControlbar);
-                // moControlbarとcontrolbarはnullにしておく必要があるかな？
-                // その後のorderによるなぁ
-                sendResponse({complete: true});
+              (async function() {
+                  const result: boolean = await handlerOfTurnOff();
+                    if(result) sendResponse({
+                        ...response,
+                        complete: true
+                    })
+              })()
             }
         }
+        // 2. sendResponse()が非同期に実行されるのを許可するために
+        // `true`を返す
         return true;
     }
 );
 
 ```
 
+これで非同期的に`sendResponse`が返されるまで通信が途切れない。
+
 #### popup の state は background script で管理すること
 
-popup は開かれるたびに、web ページのリロード同様に、毎回リフレッシュされる
+**chrome 拡張の`popup`は開かれるたびに、web ページのリロード同様に、毎回リフレッシュされます**
 
-なので例えば POPUP を React で生成しているようなとき
-一旦 POPUP 表示を消して再表示するとき
-state の値は保存されない
+なので例えば POPUP を React で生成しているようなとき、
+POPUP 再表示後の state は以前の保存内容を記録していません
 
-## chrome-extension-API
+POPUP が表示されるたびに state は毎回初期値になります。
 
-必要に応じて API を確認する
+なので popup は state の値に依存して、その表示内容が変化するようなときは、
 
-### chrome.windows
+background script に state の値を保存してもらうことになります。
 
-結論：
+以下は私が POPUP を React で実装したときに特に問題なく動いたやり方です。
 
-`tabs.query`で今フォーカスしているウィンドウのアクティブなタブを取得するには windowId を絶対指定するな
+`useEffect()`を使って background script から必要な情報を取得しています。
 
-`option: {active: true, currentWindow: true, lastFocusedWindow: true}`を指定しよう
+注意点として、`useEffect()`のコールバック関数は async 関数は使えません
 
-https://developer.chrome.com/docs/extensions/reference/windows/
+```TypeScript
+// popup.tsx
+import React, { useEffect, useState } from "react";
+import ReactDOM from "react-dom";
 
-> ブラウザウィンドウにインタラクトできる API
-> この API でウィンドウを作成、変更、再調整できる
 
-The _current window_:
+const Popup = (): JSX.Element => {
+  const [hoge, setHoge] = useState<boolean>(false);
+  const [fuga, setFuga] = useState<boolean>(false);
 
-*current winodw*というのは、よく
-chrome api の関数の引数として windowId が要求されるときにデフォルトで与えられる「現在の window 情報」である
+  // 表示されたときの初期値だけ取得するので
+  // 第二引数には空の配列を渡します
+  useEffect(() => {
+    sendMessagePromise({
+      from: extensionNames.popup,
+      to: extensionNames.background,
+      order: [orderNames.sendStatus],
+    }).then((res: iResponse) => {
+      const { hogeStatus, fugaStatus } = res.state;
+      setHoge(hogeStatus);
+      setFuga(fugaStatus);
+    });
+  }, []);
 
-**「現在の winodw 情報」というのは必ずしもいまフォーカスしているウィンドウではないし、または一番上にあるウィンドウをではない**
+    //...
+}
+```
 
-しかも状況による!!
+## chrome.windows の windowId 取得実験
 
-ではどうやって判定すればいいのか？下記の調査を行った
+`chrome.windows`のメソッドが実際にはどの`windowId`を取得するのか
+
+それを確認する実験を行いました。
+
+#### 実験内容
+
+POPUP を表示させた時に POPUP は background script へ message passing し
+
+background script は下記コードの`windowIdSurvey()`を実行する。
+
+以下の状況で`windowIdSurvey()`内の各出力が異なる windowId を出すのか確認する
+
+- 検証１：ブラウザのウィンドウが 1 つだけの時
+  windowId はすべて同じになるはず
+
+- 検証２：ブラウザのウィンドウが 2 つの時、もあるウィンドウをフォーカスしたままその POPUP を表示させる
+  windowId は最後にフォーカスしたウィンドウになるはず
+
+- 検証３：あとから生成したウィンドウをフォーカスしている最中に、もとあるウィンドウの方の POPUP を表示させる
+  windowId はあとから生成したウィンドウの id になるはず
+
+- 検証４：あとから生成したウィンドウをフォーカスしている最中に、そちらのウィンドウの方の POPUP を表示させる
+  windowId はあとから生成したウィンドウの id になるはず
 
 ```JavaScript
-/**********************************************
- *
- * NOTE: 調査1 chrome.windows.onFocusChangedの挙動確認
- *
- * onFocusChanged.addListener()内では、
- * getLastFocusedとgetCurrentは両方とも同じwindowを指す
- *
- * ブラウザのウィンドウを２つにして、bakcgroundインスペクターを1つ開いた
- * ブラウザのウィンドウをフォーカスすると必ずwindow.focused === trueになる
- * インスペクターをフォーカスするとwindow.focused === falseになる
- * 各windowのidは異なる
- * インスペクターのwindowIDはなぜか後から開いたブラウザウィンドウのIDと同じになる
- * （インスペクターは本番では関係ないからどうでもいいけれど...）
- *
- * その後、さらにウィンドウを増やすと、そのwindowIdは他と異なることは分かった
- *
- *
- *
- * NOTE: 調査２ POPUPが開かれたwindowのtabを特定できるか？
- *
- * できる
- *
- * 状況：
- * 別のwindowをフォーカスしているときに、
- * それとは別のwindowで表示されたpopupをクリックしてonMessageを発火させてみた
- *
- *
- * NOTE: 教訓
- *
- * 1. tabs.queryはwindowIdをoptionに含めるべきでない
- *
- * どの窓でonMessageをが実行されても、
- * chrome.windowsメソッドで取得できるwindowIdはなぜか必ず
- * 最後に開いたwindowIdで変わらなかった
- *
- * これはめちゃくちゃ困るので
- * tabs.queryとかする時はwindows.windowIdを指定すべきでない
- *
- * 2. tabs.queryで「今フォーカスしている窓」のアクティブなタブを指定するなら下記の通りに
- * option: {active: true, currentWindow: true, lastFocusedWindow: true}
- * これで必ず「今フォーカスしている窓」のタブ情報を取得できる
- *
- * */
+const windowIdSurvey = funciton() {
 
-chrome.runtime.onMessage.addListener((msg) => {
-    if (msg.order === 'survey window') {
-        console.log('---- survey window ----');
-        console.log('Query tabs by some option cases:');
-        // NOTE: 調査２のメモ
-        //
-        // {active: true}
-        // いま開かれているすべてのwindowのアクティブなタブ（表示中のタブ）である
-        // なので複窓のとき、各窓の表示中のタブの情報を取得する
-        chrome.tabs.query({ active: true }, function (tabs) {
-            console.log('option: {active: true}');
-            console.log(tabs);
-        });
-        //
-        // {currentWindow: true}
-        // 状況のPOPUPを表示させていた（つまり最後にフォーカスした）ウィンドウの
-        // すべてのタブ情報を配列で取得した
-        chrome.tabs.query({ currentWindow: true }, function (tabs) {
-            console.log('option: {currentWindow: true}');
-            console.log(tabs);
-        });
-        //
-        // { lastFocusedWindow: true }
-        // {currentWindow: true}と同様
-        chrome.tabs.query({ lastFocusedWindow: true }, function (tabs) {
-            console.log('option: {lastFocusedWindow: true}');
-            console.log(tabs);
-        });
-        //
-        // { active: true, currentWindow: true, lastFocusedWindow: true }
-        // POPUPを開いていたタブだけを取得できた！
-        chrome.tabs.query(
-            { active: true, currentWindow: true, lastFocusedWindow: true },
-            function (tabs) {
-                console.log(
-                    'option: {active: true, currentWindow: true, lastFocusedWindow: true}'
-                );
-                console.log(tabs);
-            }
-        );
+      chrome.tabs.query(
+        { active: true, currentWindow: true, lastFocusedWindow: true },
+        function (tabs) {
+          console.log("windowId by tabs.query() with the option: ");
+          console.log(tabs[0].windowId);
+        }
+      );
 
-        //
-        // NOTE: chrome.windowsメソッドで取得したのは最後にフォーカスした窓の前にフォーカスしていた窓であった!!
-        //
-        // 下記のメソッドで取得できるwindowIdは実際にフォーカスしていた
-        // windowIdではなくてその直前のwindowIdであった
-        //
-        chrome.windows.getLastFocused({}, (w) => {
-            console.log(`window last focused by getLastFocused()`);
-            console.log(w.id);
-        });
-        chrome.windows.getCurrent({}, (w) => {
-            console.log(`getCurrent with no options`);
-            console.log(w.id);
-        });
-    }
-});
-
-// chrome.windows.onFocusChanged.addListener((windowId) => {
-//     console.log(`window focuse changed: ${windowId}`);
-//     chrome.windows.getLastFocused({}, (w) => {
-//         console.log(`window last focused by getLastFocused()`);
-//         console.log(w.id);
-//     });
-//     chrome.windows.getCurrent({}, (w) => {
-//         console.log(`getCurrent with no options`);
-//         console.log(w.id);
-//     });
-// });
+      chrome.windows.getLastFocused({}, (w) => {
+        console.log('windowId by getLastFocused():');
+        console.log(w.id);
+      });
+      chrome.windows.getCurrent({}, (w) => {
+        console.log('windowId by getCurrent():');
+        console.log(w.id);
+      });
+}
 
 ```
 
-これで必ず background script で
-今フォーカスしているウィンドウのアクティブなタブを取得できる
+#### 実験結果
+
+```bash
+# 検証１: 当然ウィンドウが一つしかないから同じwindowIdになる
+windowId by tabs.query() with option
+1
+windowId by getLastFocused():
+1
+windowId by getCurrent():
+1
+
+# 検証２: chrome.windowsメソッドのほうは
+# フォーカスしていないにもかかわらずあとから生成したウィンドウのIDを出力した
+windowId by tabs.query() with option
+1
+windowId by getLastFocused():
+101
+windowId by getCurrent():
+101
+
+# 検証３: 検証2と同じ結果になった
+
+windowId by tabs.query() with option
+1
+windowId by getLastFocused():
+101
+windowId by getCurrent():
+101
+
+# 検証４： 想定通り
+
+windowId by tabs.query() with option
+101
+windowId by getLastFocused():
+101
+windowId by getCurrent():
+101
+```
+
+以上の結果から、`chrome.windows`の２つのメソッドは期待した`windowId`を取得しないことが分かりました。
+
+このように、なぜだか不明ですが、`chrome.widnows.getCurrent()`も`chrome.widnows.getLastFocused()`も
+
+必ず最後に生成したウィンドウの id を返します。
+
+最後にフォーカスしていたかも現在のウィンドウであるかどうかは全く関係ありません。
+
+一方`chrome.tabs.query`のオプションに`{ active: true, currentWindow: true, lastFocusedWindow: true }`を
+
+渡せば必ず最後にフォーカスしたウィンドウの id を取得できます。
+
+公式はどうすればどのウィンドウの id を取得できるのか、どのウィンドウのタブを取得できるのか
+
+チュートリアルでも出してくれればいいのですが、
+
+残念ながら誤解を招くメソッドの説明をするだけでありました。
+
+<!-- ## その他、細かいこと
+
+NOTE: 次回更新するときに記事の根拠とかも詰めて
+
+timerに関するメソッドは、chrome APIが用意してあるからそちらを使ってと公式には書いてあります。
+
+つまり`setTimeout`を使う代わりに`chrome.alarm`APIを使えと言っています。
+
+この理由は長時間のインターバルを設けるとその間にservice workerがアンロードされるから
+
+`setTimeout`にわたしたコールバック関数が実行されるのは保証されないためです。
+
+しかし`chrome.alarm`の問題点は「分」単位でしか指定できず、秒以下は無視するとAPIに書いてあります。
+
+なので`chrome.alarm`の出番は分単位でインターバルを空けるような場面だけになります。 -->
+
+## 最後に
+
+以上の教訓は私が実際に chrome 拡張機能を開発する際に立ちはだかった障害に対して調べたあれこれです。
+
+認識など間違いがあるかもしれませんので、
+
+chrome 拡張機能の開発に強い人は是非ご指摘いただきたいです。
+
+またこんな記事でもこれから chrome 拡張機能の開発をする方の助けに慣れれば幸いです。

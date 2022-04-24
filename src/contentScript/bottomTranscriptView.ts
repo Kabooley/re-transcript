@@ -14,6 +14,24 @@ const BottomTranscriptView = function () {
     ];
 };
 
+// ひとまずハードコーディングなんだわ...
+// <use>とか使えるようになるといいね...
+BottomTranscriptView.prototype.generateSVG = function (): string {
+    return `
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g clip-path="url(#clip0_2_8)">
+    <line x1="-0.707107" y1="38.2929" x2="35.2929" y2="2.29289" stroke="black" stroke-width="2"/>
+    <line x1="-1.29289" y1="-0.707107" x2="34.7071" y2="35.2929" stroke="black" stroke-width="2"/>
+    </g>
+    <defs>
+    <clipPath id="clip0_2_8">
+    <rect width="36" height="36" rx="8" fill="white"/>
+    </clipPath>
+    </defs>
+    </svg>
+    `;
+};
+
 /*
 .ex--dashboard-transcript--cue-container
 .ex--dashboard-transcript--cue--underline
@@ -47,13 +65,14 @@ BottomTranscriptView.prototype.generateSubtitleMarkup = function (
 BottomTranscriptView.prototype.generateMarkup = function (
     subtitleStrings?: string
 ) {
+    const closeButton: string = this.generateSVG();
     return `
     <div class="${selectors.EX.dashboardTranscriptWrapper.slice(1)}">
         <div class="${selectors.EX.dashboardTranscriptHeader.slice(1)}">
             <h2 class="heading-secondary">ExTranscript</h2>
             <button type="button" class="${selectors.EX.closeButton.slice(
                 1
-            )}">X</button>
+            )}">${closeButton}</button>
         </div>
         <div class="${selectors.EX.dashboardTranscriptPanel.slice(1)}">
             ${subtitleStrings === undefined ? '' : subtitleStrings}
