@@ -305,7 +305,7 @@ const handlerOfPopupMessage = async (
             console.log('[background] RUN');
             try {
                 const r: boolean = await handlerOfRun(rest.tabInfo);
-                response.success = r ? true : false;
+                response.success = r;
                 response.complete = true;
                 // TODO: alertHandler()が動作するか動作確認
                 if (!r) {
@@ -514,7 +514,7 @@ const handlerOfControllerMessage = async (
  * "false" mainly means that web page condition is not ready to run this application.
  * @throws - Exception means that application does not executable.
  * 
- * To complete run, there are three phase in this handler.
+ * To complete run, there are five phase in this handler.
  * 
  * 1. Save tab info, url, tabId.
  * 2. Inject contentScript.ts to know page status.
@@ -808,7 +808,7 @@ const turnOffEachContentScripts = async (tabId: number): Promise<void> => {
  * Repeat subtitle acquisition 10 times.
  * 
  * @returns {Promise<subtitle_piece[]>} - Returns array of subtitle_piece as promise solved.
- * @throws {Promise<[]>} - throws empty array as rejected if retry over 10 times.
+ * @throws {[]} - throws empty array as rejected if retry over 10 times.
  * */
 const repeatCaptureSubtitles = async function (
     tabId: number
