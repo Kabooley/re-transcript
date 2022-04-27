@@ -6956,6 +6956,75 @@ const onWindowResizeHandler = (): void => {
 
 解消済
 
+#### Udemy の CC 上のトランスクリプトトグルボタンを押してトランスクリプトを消すと拡張機能で例外が発生する
+
+理由は、controller.ts::resetAutoscrollCheckboxListener で、
+
+閉じられて存在しなくなった DOM の属性を取得しようとしたから
+
+処理の流れはこう
+
+Udemy ページ上でトランスクリプトのトグルボタンがクリックされてトランスクリプトが閉じた
+
+contentScript.ts::handlerOfControlbar が background.ts へ{isTranscriptDisplaying: false}を送信する
+
+background.ts::handlerOfHide()が実行される
+
+background.ts から controller.ts へ`turnOff`オーダーが発令される
+
+controller.ts::handlerOfTurnOff が実行される
+
+sStatus が更新されて、updatePosition が実行され、その内部で resetAutoscrollCheckboxListener が実行されていた
+
+null ガードをつけた
+
+```TypeScript
+
+/**
+ * Reset listener for click event on autoscroll checkbox.
+ *
+ * NOTE: Element A may not be retrieved because the selector does not match. Not only the element is not exist.
+ * So might miss the selector has been updated.
+ * */
+const resetAutoscrollCheckboxListener = (): void => {
+    const cb: HTMLInputElement = document.querySelector(
+        selectors.transcript.autoscroll
+    );
+    // NOTE: ADDED null GUARD
+    if (!cb) return;
+    sStatus.setState({ isAutoscrollOn: cb.checked });
+    if (cb) {
+        cb.removeEventListener('click', autoscrollCheckboxClickHandler);
+        cb.addEventListener('click', autoscrollCheckboxClickHandler);
+    }
+};
+```
+
+```TypeScript
+const handlerOfTurnOff = (): void => {
+    console.log('[controller] handlerOfTurnOff()');
+
+    // REMOVAL Listeners
+    window.removeEventListener('resize', reductionOfwindowResizeHandler);
+    window.removeEventListener('scroll', onWindowScrollHandler);
+
+    // CLEAR ExTranscript
+    const { position } = sStatus.getState();
+    if (position === positionStatus.sidebar) {
+        sidebarTranscriptView.clear();
+    } else {
+        bottomTranscriptView.clear();
+    }
+
+    // REMOVAL MutationObserver
+    transcriptListObserver.disconnect();
+
+    // RESET State
+    sStatus.setState({ ...statusBase });
+    sSubtitles.setState({ ...subtitleBase });
+};
+```
+
 ## ExTranscript のハイライト位置の修正
 
 もうちょい下にする

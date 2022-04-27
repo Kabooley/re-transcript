@@ -829,51 +829,27 @@ const captureSubtitles = repeatPromiseGenerator<subtitle_piece[]>(
     10
 );
 
-// circulaterへ渡すcallback関数
-//
-// 完全にハードコーディング
-// 利用場面に応じて個別に作って
-//
-// 実際に実行したい関数へ渡さなくてはならない引数はここで渡すこと
-// 戻り値は任意であるが、condition関数のgenerics型と同じにすること
-// const cb: iCallbackOfCirculater<subtitle_piece[]> = async (): Promise<
-//     subtitle_piece[]
-// > => {
-//     const { tabId } = await state.get();
-//     const s: subtitle_piece[] = await captureSubtitles();
-//     return s;
-// };
-
-// circulaterへ渡すconditon関数
-//
-// 完全にハードコーディング
-// 利用場面に応じて個別に作って
-//
-// circulaterへ渡す引数callbackの戻り値の型と同じ型をgenericsとして渡すこと
-// const condition: iConditionOfCirculater<subtitle_piece[]> = (
-//     operand: subtitle_piece[]
-// ): boolean => {
-//     return operand.length ? true : false;
-// };
-
-/**********************************************
+/**
  * circulateCaptureSubtitles
  *
  *
  * description:
- * repeactCaptureSubtitles()を3回繰り返す関数
+ * captureSubtitles()を3回繰り返す関数
  * condition()の条件を満たせば即終了し、
  * repeactCaptureSubtitles()が取得した最後の戻り値を返す
  *
  * UdemyのDOMローディングの時間がかかりすぎる場合に対処するための関数
+ *
+ * @returns function - Async function that repeats given function untile given times.
  * */
 const circulateCaptureSubtitles: iClosureOfCirculater<subtitle_piece[]> =
     circulater(
-        captureSubtitles, 
+        captureSubtitles,
         (operand: subtitle_piece[]): boolean => {
             return operand.length ? true : false;
-        }, 
-        2);
+        },
+        2
+    );
 
 /**
  * alertを表示する

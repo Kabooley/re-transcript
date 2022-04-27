@@ -100,24 +100,3 @@ export const repeatPromiseGenerator = function <T>(
 //         console.error(e);
 //     }
 // })();
-
-/*
-
-const captureSubtitles = repeatPromiseGenerator<iResponse>(
-    INTERVAL_TIME, 
-    async function() {
-        const r: iResponse = await sendMessageToTabsPromise(
-            tabId, {
-                from: extensionNames.background,
-                to: extensionNames.captureSubtitle,
-                order: [orderNames.sendSubtitles],
-            });
-            return r;
-    },
-    function(data: iResponse): boolean {
-        return (data.subtitles !== undefined && data.subtitles.length) ? true : false;
-    },
-    10
-);
-
-*/

@@ -1,3 +1,8 @@
+/*************************************************
+ * ここの内容はまるっきりrepeatPromise.tsの内容と同じかも...
+ *
+ * ***********************************************/
+
 // NOTE: iCallbackOfCirculater<T>とiConditionOfCirculater<T>
 // のGenericsのT型は共通であること
 

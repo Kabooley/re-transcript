@@ -51,8 +51,8 @@ import MutationObserver_ from '../utils/MutationObserver_';
 
 //
 // ----- GLOBALS -----------------------------------------
-// 
-chrome.runtime.sendMessage
+//
+chrome.runtime.sendMessage;
 
 // ----- Annotations -------------------------------------
 
@@ -598,13 +598,16 @@ const autoscrollCheckboxClickHandler = (): void => {
 };
 
 /**
- * Reset listener for click event on autoscroll checkbox
+ * Reset listener for click event on autoscroll checkbox.
+ * 
+ * NOTE: Element A may not be retrieved because the selector does not match. Not only the element is not exist.
+ * So might miss the selector has been updated.
  * */
 const resetAutoscrollCheckboxListener = (): void => {
     const cb: HTMLInputElement = document.querySelector(
         selectors.transcript.autoscroll
     );
-    console.log(cb);
+    if (!cb) return;
     sStatus.setState({ isAutoscrollOn: cb.checked });
     if (cb) {
         cb.removeEventListener('click', autoscrollCheckboxClickHandler);
