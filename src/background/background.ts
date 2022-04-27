@@ -32,6 +32,11 @@ import {
     iClosureOfCirculater,
     iConditionOfCirculater,
 } from '../utils/Circulater';
+import {
+    unknownAsyncCallback,
+    unknownConditionFunc,
+    repeatPromiseGenerator,
+} from '../utils/repeatPromise';
 
 //
 // --- GLOBALS -----------------------------------------------
@@ -152,7 +157,7 @@ chrome.tabs.onUpdated.addListener(
                         ? // 次の動画に移った
                           await handlerOfReset(
                               tabIdUpdatedOccured,
-                              await circulateRepeatCaptureSubtitles()
+                              await circulateCaptureSubtitles()
                           )
                         : // 動画を含まないページへ移った
                           await handlerOfHide(tabIdUpdatedOccured);
@@ -248,7 +253,7 @@ const sortMessage = (
  *
  * It is at the top of the processing stage
  * so that exception catching is possible
- * in case an exception occurs and 
+ * in case an exception occurs and
  * `finally` return response
  * unless exception occurs.
  * */
@@ -316,8 +321,8 @@ const handlerOfPopupMessage = async (
                     //     alertMessage: alertMessages.pageIsNotReady,
                     // });
                     alertHandler(
-                      (await tabQuery()).id,
-                      messageTemplate.letPagePrepare
+                        (await tabQuery()).id,
+                        messageTemplate.letPagePrepare
                     );
                 }
             } catch (e) {
@@ -354,13 +359,13 @@ const handlerOfPopupMessage = async (
 
 /**
  * Handler of message from contentScrip.js.
- * 
+ *
  * contentScript sends status of page to embed.
  * Message will have up to two status.
- * 
+ *
  * - Transcript is turning on or not.
- * - Subtitle language is English or not. 
- * 
+ * - Subtitle language is English or not.
+ *
  * Whichever is false, Extension turns off ExTranscript.
  * Both are true, then reset ExTranscript.
  * */
@@ -472,8 +477,8 @@ const handlerOfCaptureSubtitleMessage = async (
     sendResponse: (response?: iResponse) => void
 ): Promise<void> => {
     try {
-      const { order,  ...rest } = message;
-      if(rest.error) throw rest.error;
+        const { order, ...rest } = message;
+        if (rest.error) throw rest.error;
     } catch (e) {
         alertHandler((await tabQuery()).id, messageTemplate.appCannotExecute);
     }
@@ -491,12 +496,12 @@ const handlerOfControllerMessage = async (
     sendResponse: (response?: iResponse) => void
 ): Promise<void> => {
     try {
-        const { order,  ...rest } = message;
+        const { order, ...rest } = message;
 
         if (order && order.length) {
             if (order.includes(orderNames.turnOff)) await handlerOfTurnOff();
         }
-        if(rest.error) throw rest.error;
+        if (rest.error) throw rest.error;
     } catch (e) {
         alertHandler((await tabQuery()).id, messageTemplate.appCannotExecute);
     }
@@ -513,15 +518,15 @@ const handlerOfControllerMessage = async (
  * "false" does not mean that the application is not executable.
  * "false" mainly means that web page condition is not ready to run this application.
  * @throws - Exception means that application does not executable.
- * 
+ *
  * To complete run, there are five phase in this handler.
- * 
+ *
  * 1. Save tab info, url, tabId.
  * 2. Inject contentScript.ts to know page status.
  * 3. Inject captureSubtitle.ts to capture subtitle data.
  * 4. Inject controller.ts to controll ExTranscript.
  * 5. Send subtitle data to controller.ts to display new subtitles.
- * 
+ *
  * TODO: 各処理単位を1行にしたい。わかりづらい。
  * class化とかさらなる関数のラッピングが必要かも
  * */
@@ -585,8 +590,7 @@ const handlerOfRun = async (tabInfo: chrome.tabs.Tab): Promise<boolean> => {
 
         // 字幕取得できるまで10回は繰り返す関数で取得する
         // NOTE: 戻り値が空の配列でも受け入れる
-        const subtitles: subtitle_piece[] =
-            await circulateRepeatCaptureSubtitles();
+        const subtitles: subtitle_piece[] = await circulateCaptureSubtitles();
         await state.set({ subtitles: subtitles });
 
         // <phase 4> inject controller.js
@@ -626,8 +630,8 @@ const handlerOfRun = async (tabInfo: chrome.tabs.Tab): Promise<boolean> => {
  * ExTranscriptを再生成する
  *
  * 処理内容：
- * 
- * - 各content scriptのリセット処理 
+ *
+ * - 各content scriptのリセット処理
  *  一度injectしたcontent scriptはプログラムで除去する手段はないため
  *
  * - controller.jsへ字幕データを渡す
@@ -682,7 +686,7 @@ const handlerOfReset = async (
  * NOTE: これは拡張機能をOFFにするハンドラではない
  * 実際には隠すのではなくて、ExTranscriptを消す処理を実行する
  * handlerOfTurnOff()と区別する
- * 
+ *
  * そのためstateの値はほぼそのままである
  *
  * */
@@ -709,11 +713,11 @@ const handlerOfHide = async (tabId: number): Promise<void> => {
 
 /**
  * Handler of TURN OFF ExTranscript.
- * 
+ *
  * 各content scriptを初期化する
  * stateを初期化する
  * ただしcontent scriptのinject状況だけstateに反映させておく
- * */ 
+ * */
 const handlerOfTurnOff = async (): Promise<void> => {
     try {
         const { tabId } = await state.get();
@@ -735,16 +739,16 @@ const handlerOfTurnOff = async (): Promise<void> => {
     }
 };
 
-// 
+//
 // ---- OTHER METHODS ----------------------------------------
-// 
+//
 
 /**
  * Reset each content script.
  *
  * contentScript.ts, controller.tsへリセット命令を発信する
  * 両scriptで完了の返信があった時点でリセット完了となる
- * 
+ *
  * NOTE: turnOffEachContentScripts()と区別する
  * */
 const resetEachContentScript = async (tabId: number): Promise<void> => {
@@ -776,7 +780,7 @@ const resetEachContentScript = async (tabId: number): Promise<void> => {
  *
  * contentScript.ts, controller.tsへ初期化命令(TurnOff)を発信する
  * 両scriptで完了の返信があった時点でリセット完了となる
- * 
+ *
  * NOTE: resetEachContentScripts()と区別する
  * */
 const turnOffEachContentScripts = async (tabId: number): Promise<void> => {
@@ -803,47 +807,27 @@ const turnOffEachContentScripts = async (tabId: number): Promise<void> => {
     }
 };
 
-
 /***
  * Repeat subtitle acquisition 10 times.
- * 
- * @returns {Promise<subtitle_piece[]>} - Returns array of subtitle_piece as promise solved.
- * @throws {[]} - throws empty array as rejected if retry over 10 times.
+ *
+ * @returns function - Returns a function which repeats second argument callback function while given times or untile third argument function returns true.
  * */
-const repeatCaptureSubtitles = async function (
-    tabId: number
-): Promise<subtitle_piece[]> {
-    return new Promise(async (resolve, reject): Promise<void> => {
-        let intervalId: NodeJS.Timer;
-        let counter: number = 0;
-
-        console.log('[repeatCaptureSubtitles]Begin to capture subtitles... ');
-
-        intervalId = setInterval(async function () {
-            if (counter >= 10) {
-                // Failed
-                console.log(
-                    "[repeatCaptureSubtitles] Time out! It's over 10 times"
-                );
-                clearInterval(intervalId);
-                reject([]);
-            }
-
-            console.log('[repeatCaptureSubtitles] capture again...');
-            const r: iResponse = await sendMessageToTabsPromise(tabId, {
-                from: extensionNames.background,
-                to: extensionNames.captureSubtitle,
-                order: [orderNames.sendSubtitles],
-            });
-            if (r.subtitles !== undefined && r.subtitles.length) {
-                // Succeed
-                console.log('[repeatCaptureSubtitles] Succeed to capture!');
-                clearInterval(intervalId);
-                resolve(r.subtitles);
-            } else counter++;
-        }, INTERVAL_TIME);
-    });
-};
+const captureSubtitles = repeatPromiseGenerator<subtitle_piece[]>(
+    INTERVAL_TIME,
+    async function () {
+        const { tabId } = await state.get();
+        const r: iResponse = await sendMessageToTabsPromise(tabId, {
+            from: extensionNames.background,
+            to: extensionNames.captureSubtitle,
+            order: [orderNames.sendSubtitles],
+        });
+        return r.subtitles;
+    },
+    function (data: subtitle_piece[]): boolean {
+        return data !== undefined && data.length ? true : false;
+    },
+    10
+);
 
 // circulaterへ渡すcallback関数
 //
@@ -852,13 +836,13 @@ const repeatCaptureSubtitles = async function (
 //
 // 実際に実行したい関数へ渡さなくてはならない引数はここで渡すこと
 // 戻り値は任意であるが、condition関数のgenerics型と同じにすること
-const cb: iCallbackOfCirculater<subtitle_piece[]> = async (): Promise<
-    subtitle_piece[]
-> => {
-    const { tabId } = await state.get();
-    const s: subtitle_piece[] = await repeatCaptureSubtitles(tabId);
-    return s;
-};
+// const cb: iCallbackOfCirculater<subtitle_piece[]> = async (): Promise<
+//     subtitle_piece[]
+// > => {
+//     const { tabId } = await state.get();
+//     const s: subtitle_piece[] = await captureSubtitles();
+//     return s;
+// };
 
 // circulaterへ渡すconditon関数
 //
@@ -866,14 +850,14 @@ const cb: iCallbackOfCirculater<subtitle_piece[]> = async (): Promise<
 // 利用場面に応じて個別に作って
 //
 // circulaterへ渡す引数callbackの戻り値の型と同じ型をgenericsとして渡すこと
-const condition: iConditionOfCirculater<subtitle_piece[]> = (
-    operand: subtitle_piece[]
-): boolean => {
-    return operand.length ? true : false;
-};
+// const condition: iConditionOfCirculater<subtitle_piece[]> = (
+//     operand: subtitle_piece[]
+// ): boolean => {
+//     return operand.length ? true : false;
+// };
 
 /**********************************************
- * circulateRepeatCaptureSubtitles
+ * circulateCaptureSubtitles
  *
  *
  * description:
@@ -883,8 +867,13 @@ const condition: iConditionOfCirculater<subtitle_piece[]> = (
  *
  * UdemyのDOMローディングの時間がかかりすぎる場合に対処するための関数
  * */
-const circulateRepeatCaptureSubtitles: iClosureOfCirculater<subtitle_piece[]> =
-    circulater(cb, condition, 2);
+const circulateCaptureSubtitles: iClosureOfCirculater<subtitle_piece[]> =
+    circulater(
+        captureSubtitles, 
+        (operand: subtitle_piece[]): boolean => {
+            return operand.length ? true : false;
+        }, 
+        2);
 
 /**
  * alertを表示する
@@ -904,7 +893,7 @@ const alertHandler = (tabId: number, msg: string): void => {
 
 /*****
  * state module
- * _________________________________________________________________
+ * ______________________________________________________________
  *
  * This module never holds variables.
  * No matter background script unloaded or reloaded,
@@ -1033,7 +1022,7 @@ const state: iStateModule<iModel> = (function () {
 //     // reset 処理: 各content scritpのリセットを実施する
 //     await resetEachContentScript(tabId);
 
-//     const newSubtitles: subtitle_piece[] = await repeatCaptureSubtitles(tabId);
+//     const newSubtitles: subtitle_piece[] = await captureSubtitles(tabId);
 
 //     // If okay, then save subtitles data.
 //     await state.set({

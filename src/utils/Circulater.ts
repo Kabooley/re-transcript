@@ -3,18 +3,18 @@
 
 // Function use this interface must return Promise.
 export interface iCallbackOfCirculater<T> {
-  (): Promise<T>;
+    (): Promise<T>;
 }
 
-// Function use this interface must always take arguments 
+// Function use this interface must always take arguments
 // of the same type as iCallbackOfCirculater function.
 export interface iConditionOfCirculater<T> {
-  (operand: T): boolean;
+    (operand: T): boolean;
 }
 
 // Generics T must same type as iCallbackOfCirculater generics.
 export interface iClosureOfCirculater<T> {
-  (): Promise<T>;
+    (): Promise<T>;
 }
 
 /****************************************
@@ -31,28 +31,26 @@ export interface iClosureOfCirculater<T> {
  * resultが初期化されないのにreturnしているというエラーがでるかも
  * */
 export const circulater = function <T>(
-  callback: iCallbackOfCirculater<T>,
-  condition: iConditionOfCirculater<T>,
-  until: number
+    callback: iCallbackOfCirculater<T>,
+    condition: iConditionOfCirculater<T>,
+    until: number
 ): iClosureOfCirculater<T> {
-  return async function () {
-    // 予めループの外にresult変数を置いて
-    let result: T;
-    for (let i = 0; i < until; i++) {
-      result = await callback();
-      if (condition(result)) return result;
-    }
-    // ループが終わってしまったら最後のresultを返せばいいのだが...
-    // エラーを出すかも:
-    // "TypeScriptがresultが初期化されないままなんだけど"
-    //
-    // 必ずresultはforループで初期化されるからってことを
-    // TypeScriptへ伝えたいけど手段がわからん
-    return result;
-  };
+    return async function () {
+        // 予めループの外にresult変数を置いて
+        let result: T;
+        for (let i = 0; i < until; i++) {
+            result = await callback();
+            if (condition(result)) return result;
+        }
+        // ループが終わってしまったら最後のresultを返せばいいのだが...
+        // エラーを出すかも:
+        // "TypeScriptがresultが初期化されないままなんだけど"
+        //
+        // 必ずresultはforループで初期化されるからってことを
+        // TypeScriptへ伝えたいけど手段がわからん
+        return result;
+    };
 };
-
-
 
 /// USAGE //////////////////////////////////////////////////////
 
