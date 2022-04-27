@@ -609,10 +609,8 @@ const resetAutoscrollCheckboxListener = (): void => {
     );
     if (!cb) return;
     sStatus.setState({ isAutoscrollOn: cb.checked });
-    if (cb) {
-        cb.removeEventListener('click', autoscrollCheckboxClickHandler);
-        cb.addEventListener('click', autoscrollCheckboxClickHandler);
-    }
+    cb.removeEventListener('click', autoscrollCheckboxClickHandler);
+    cb.addEventListener('click', autoscrollCheckboxClickHandler);
 };
 
 /**

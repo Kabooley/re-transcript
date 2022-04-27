@@ -852,6 +852,8 @@ const circulateCaptureSubtitles: iClosureOfCirculater<subtitle_piece[]> =
     );
 
 /**
+ * Alert
+ * 
  * alertを表示する
  * 既存のcontent scriptに対してメッセージを送信するのではなく
  * 関数をそのページに埋め込む
@@ -867,9 +869,9 @@ const alertHandler = (tabId: number, msg: string): void => {
     });
 };
 
-/*****
+/***
  * state module
- * ______________________________________________________________
+ * 
  *
  * This module never holds variables.
  * No matter background script unloaded or reloaded,

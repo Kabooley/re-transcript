@@ -6958,6 +6958,8 @@ const onWindowResizeHandler = (): void => {
 
 #### Udemy の CC 上のトランスクリプトトグルボタンを押してトランスクリプトを消すと拡張機能で例外が発生する
 
+済
+
 理由は、controller.ts::resetAutoscrollCheckboxListener で、
 
 閉じられて存在しなくなった DOM の属性を取得しようとしたから
@@ -7000,30 +7002,6 @@ const resetAutoscrollCheckboxListener = (): void => {
 };
 ```
 
-```TypeScript
-const handlerOfTurnOff = (): void => {
-    console.log('[controller] handlerOfTurnOff()');
-
-    // REMOVAL Listeners
-    window.removeEventListener('resize', reductionOfwindowResizeHandler);
-    window.removeEventListener('scroll', onWindowScrollHandler);
-
-    // CLEAR ExTranscript
-    const { position } = sStatus.getState();
-    if (position === positionStatus.sidebar) {
-        sidebarTranscriptView.clear();
-    } else {
-        bottomTranscriptView.clear();
-    }
-
-    // REMOVAL MutationObserver
-    transcriptListObserver.disconnect();
-
-    // RESET State
-    sStatus.setState({ ...statusBase });
-    sSubtitles.setState({ ...subtitleBase });
-};
-```
 
 ## ExTranscript のハイライト位置の修正
 
@@ -7034,6 +7012,8 @@ const handlerOfTurnOff = (): void => {
 もろもろの点をわかりやすく
 
 #### background.ts::circulateRepeatCaptureSubtitles の関連メソッドを汎用化させる
+
+済
 
 いま、2 つの機能がある
 

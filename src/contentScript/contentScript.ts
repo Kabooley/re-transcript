@@ -1,6 +1,5 @@
 /***********************************************************
 static content script
-___________________________________________________________
 
 
 機能：
@@ -20,6 +19,14 @@ Injectタイミング:
 handlerOfControlbar()でコントロールバー上のクリックイベントを監視する
 moControlbarでコントロールバー上でトランスクリプト・トグルボタンが現れたか消えたかを監視する
 
+
+ TODO: 繰り返し処理を定義するときはrepeatPromiseかcirculaterの利用を検討すること
+
+ - repeatCheckQueryAcquired
+ - repeatQuerySelector
+
+ これらの動作を精査して利用を検討すること
+
 ************************************************************/
 
 import * as selectors from "../utils/selectors";
@@ -36,7 +43,6 @@ import {
 } from "../utils/helpers";
 import {
   DomManipulationError,
-  PageStatusNotReadyError,
   uError,
 } from "../Error/Error";
 
@@ -51,21 +57,29 @@ let moControlbar: MutationObserver = null;
 let controlbar: HTMLElement = null;
 
 //
-// --- chrome API Listeners -------------------------------------
+// --- CHROME API LISTENERS -------------------------------------
 //
 
-/******************************************************
+/**
+ * Message Handler
+ * 
  * @param {iMessage} message
  * @param {function} sendResponse:
  * Invoke this function to response. The function is required.
- * @return {boolean} :
- * `return true` to wait for sendResponse() solved asynchronously.
- * DO NOT return Promise<boolean>.
- * It never works.
- *
- * Any asynchronous function must be solved with Promise Chain.
- * (Or use IIFE to be able to use async/await)
- * And every order should be responsed by invoking sendResponse with `{complete: true}`.
+ * @return {boolean} - MUST RETURN TRUE TO RUN sendResponse asynchronously.
+ * 
+ *  1. sendStatus:
+ *   Survey the subtitle language is English or not,
+ *   and Transcript is open or not.
+ * 
+ *  2. reset
+ *    Run initialize() and respond result.
+ * 
+ *  3. isPageIncludingMovie
+ *    Survey the page is including Movie container or not.
+ * 
+ *  4. turnOff
+ *    Disconnect MutationObserver and remove event listener from Controlbar
  * */
  chrome.runtime.onMessage.addListener(
     (
@@ -153,21 +167,24 @@ let controlbar: HTMLElement = null;
           sendResponse(response);
         }
   
-      //   ALERT
-       if(order.includes(orderNames.alert)){
-           displayAlert(message.alertMessage);
-           response.complete = true;
-           sendResponse(response);
-       }
+      // //   ALERT
+      //  if(order.includes(orderNames.alert)){
+      //      displayAlert(message.alertMessage);
+      //      response.complete = true;
+      //      sendResponse(response);
+      //  }
       }
       return true;
     }
   );
   
 
-/*****************************************
- *  Sends status of injected page to background
- * @param order {object}
+/**
+ *  Sends status of injected page to background.
+ * 
+ * @param order:
+ * @param {boolean} isOpened - True as Transcript is open.
+ * @param {boolean} isEnglish - True as subtitle language is English.
  * */
 const sendToBackground = async (order: {
   isOpened?: boolean;
@@ -191,10 +208,10 @@ const sendToBackground = async (order: {
 };
 
 //
-// ---- Event Handlers -----------------------------------------
+// ---- MAJOUR HANDLERS -----------------------------------------
 //
 
-/*************************************************
+/**
  * Handler of RESET order.
  *
  * controlbar DOMを取得しなおす
@@ -211,7 +228,7 @@ const handlerOfReset = async (): Promise<void> => {
   }
 };
 
-/**************************************************
+/**
  *  Handler of Click Event on Controlbar
  *
  * @param {PointEvent} ev
@@ -262,7 +279,11 @@ const handlerOfControlbar = function (ev: PointerEvent): void {
   }, 200);
 };
 
-/*****************************************************
+// 
+// --- SURVEY METHODS --------------------------------------------
+// 
+
+/**
  * Check Transcript is opened or not.
  *
  * @returns {boolean}: true for open, false for not open.
@@ -317,6 +338,7 @@ const isSubtitleEnglish = (): boolean => {
       "Error: [isSubtitleEnglish()] Something went wrong but No language is selected"
     );
   }
+
   const currentLanguage: string = Array.from(menuList)[i].innerText;
   if (currentLanguage.includes("English") || currentLanguage.includes("英語"))
     return true;
@@ -324,7 +346,7 @@ const isSubtitleEnglish = (): boolean => {
 };
 
 //
-// --- MutationObserver -----------------------------------------
+// --- OBSERVER METHODS -----------------------------------------
 //
 
 // コントロールバーの子要素だけ追加されたのか削除されたのか知りたいので
@@ -392,7 +414,7 @@ const moCallback = (mr: MutationRecord[]): void => {
 };
 
 //
-// ---- Other Methods -------------------------------------------
+// ---- OTHER METHODS -------------------------------------------
 //
 
 /************************************************
@@ -452,14 +474,6 @@ const repeatQuerySelector = async (selector: string): Promise<HTMLElement> => {
   }
 };
 
-
-/************************************************
- * alert() on injected page.
- * 
- * */ 
-const displayAlert = (message: string): void => {
-    alert(message);
-}
 
 
 /*****************************************
@@ -747,3 +761,12 @@ const initialize = async (): Promise<void> => {
 //         }, INTERVAL_TIME);
 //     });
 // };
+
+
+// /************************************************
+//  * alert() on injected page.
+//  * 
+//  * */ 
+// const displayAlert = (message: string): void => {
+//     alert(message);
+// }
