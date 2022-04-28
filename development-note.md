@@ -7128,6 +7128,17 @@ const repeatCaptureSubtitles = repeactPromise<subtitle_piece[]>(
 )
 ```
 
+#### contentScript.tsの繰り返しメソッドのリファクタリング
+
+repeatCheckQueryAcquired: 指定回数渡された関数を実行する。取得失敗でもresolveとしている
+
+```TypeScript
+const callback_ = async(): Promise<boolean> => {
+    const 
+}
+```
+
+
 ## chrome ストアで表示するまで
 
 各ポリシーを確認して要点をまとめ、違反しているかどうか自分でチェックすること
