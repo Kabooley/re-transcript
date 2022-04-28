@@ -20,13 +20,6 @@ handlerOfControlbar()でコントロールバー上のクリックイベント�
 moControlbarでコントロールバー上でトランスクリプト・トグルボタンが現れたか消えたかを監視する
 
 
- TODO: 繰り返し処理を定義するときはrepeatPromiseかcirculaterの利用を検討すること
-
- - repeatCheckQueryAcquired
- - repeatQuerySelector
-
- これらの動作を精査して利用を検討すること
-
 ************************************************************/
 
 import * as selectors from "../utils/selectors";
