@@ -7002,6 +7002,75 @@ const resetAutoscrollCheckboxListener = (): void => {
 };
 ```
 
+#### ExTranscript を閉じても自動ハイライト機能が ON のままになる件
+
+流れ：
+
+ExTranscript 上のバツボタンを押す
+
+handlerOfTurnOff が実行される
+
+sSubtitles.setState({...baseSubtitles});によって updateSubtitle が呼び出される
+
+updateSubtitle()内部で resetDetectScroll()が呼び出される
+
+resetDetectScroll()では`isAutoscrollInitialized`が false だと再設定してしまう
+
+`sStatus.setState({ ...statusBase });`では`isAutoscrollInitialized`が初期値で`false`なので
+ExTranscript は閉じたいのに自動ハイライト機能が勝手に起動してしまう
+
+これの修正結構大変だぞ
+
+TurnOff の発生源と処理の流れ
+
+処理起源：handlerOfTurnOff
+
+1. window につけていたリスナの解除
+2. view の消去
+3. MutationObserver の disconnect
+4. 各 state の初期化
+
+問題は state の初期化で必ず resetDetectScroll()を呼出している点
+
+updateSubtitles と updatePosition の両方で呼び出している
+
+検討：自動スクロール機能のあれこれを分離する
+
+updateSubtitles と updatePosition で呼出しているけど
+
+ここから resetDetectScroll を除去して
+
+別のトリガーに任せてみる。
+
+おさらい：
+
+現在、`Observable`で各 state の変化を通知してもらっている
+
+いずれも各 state の値がどれかひとつでも変化があればすべてのオブザーバが発火することになっている
+
+status.setState({position: 'sidebar'}) ==> status.observable.notify({position: 'sidebar'}, prevState) ==> すべての update 関数に{position: 'sidebar'}, prevState がわたされる
+
+```TypeScript
+
+const updateHighlight = (props, prev): void => {
+  resetDetectScroll();
+}
+```
+
+うーーん....
+
+やっぱり抜本的な見直しが必要な気がする
+
+controller でしなくてはならない処理をダイアグラム化してみよう...
+
+https://stackoverflow.com/questions/899102/how-do-i-store-javascript-functions-in-a-queue-for-them-to-be-executed-eventuall
+
+```TypeScript
+const handlerOfTurnOff = (): void => {
+  const _queue = [];
+
+}
+```
 
 ## ExTranscript のハイライト位置の修正
 
@@ -7128,16 +7197,15 @@ const repeatCaptureSubtitles = repeactPromise<subtitle_piece[]>(
 )
 ```
 
-#### contentScript.tsの繰り返しメソッドのリファクタリング
+#### contentScript.ts の繰り返しメソッドのリファクタリング
 
-repeatCheckQueryAcquired: 指定回数渡された関数を実行する。取得失敗でもresolveとしている
+repeatCheckQueryAcquired: 指定回数渡された関数を実行する。取得失敗でも resolve としている
 
 ```TypeScript
 const callback_ = async(): Promise<boolean> => {
-    const 
+    const
 }
 ```
-
 
 ## chrome ストアで表示するまで
 

@@ -599,7 +599,7 @@ const autoscrollCheckboxClickHandler = (): void => {
 
 /**
  * Reset listener for click event on autoscroll checkbox.
- * 
+ *
  * NOTE: Element A may not be retrieved because the selector does not match. Not only the element is not exist.
  * So might miss the selector has been updated.
  * */
@@ -628,9 +628,6 @@ const resetAutoscrollCheckboxListener = (): void => {
  * MutationObserverのコールバック関数にはこれを避けるための仕組みを設けている
  *
  *
- * TODO: DOM transcriptList が取得できなくてもスルーされちゃうかも？
- *
- * 確認：`new MutationObserver()`の時にnullを渡したらSyntaxErrorになるかな？
  *
  * ***/
 const resetDetectScroll = (): void => {
@@ -752,7 +749,9 @@ const scrollToHighlight = (): void => {
  *  Update subtitles rendering.
  *
  * 常に受け取った字幕データ通りに再レンダリングさせる
- * 同時に、
+ * 
+ * subtitlesが空の配列でも
+ *
  *
  * */
 const updateSubtitle = (prop, prev): void => {
@@ -761,13 +760,15 @@ const updateSubtitle = (prop, prev): void => {
     // 字幕データのアップデート
 
     const { position } = sStatus.getState();
+    const { subtitles } = sSubtitles.getState();
+    console.log(`[controller] updateSubtitle: ${subtitles ? true : false}`);
+    console.log(subtitles);
     // TODO: 'sidebar'と'noSidebar'のハードコーディングをやめて
     // 定数を与えること
     if (position === 'sidebar') {
         renderSidebarTranscript();
-        calcContentHeight();
     }
-    if (position === 'noSidebar') {
+    else if (position === 'noSidebar') {
         renderBottomTranscript();
     }
 
@@ -777,7 +778,10 @@ const updateSubtitle = (prop, prev): void => {
 
 const updatePosition = (prop, prev): void => {
     const { position } = prop;
-    if (position === undefined) return;
+    console.log(`[controller] updatePosition: ${position}`);
+    if (position === undefined || !position) return;
+
+    console.log('[controller] updatePosition running...');
 
     if (position === 'sidebar') renderSidebarTranscript();
     else if (position === 'noSidebar') renderBottomTranscript();
