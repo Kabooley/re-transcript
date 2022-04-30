@@ -505,7 +505,7 @@ const initialize = async (): Promise<void> => {
   }
 };
 
-/**********************************************
+/**
  * Entry Point
  *
  * */
