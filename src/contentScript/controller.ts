@@ -748,44 +748,43 @@ const scrollToHighlight = (): void => {
 /**
  *  Update subtitles rendering.
  *
- * 常に受け取った字幕データ通りに再レンダリングさせる
- * 
- * subtitlesが空の配列でも
+ * 常にExTranscript viewを再レンダリングさせる
+ *
+ * sStatus.positionがnull
+ * またはprop.subtitlesがundefinedであるときは無視する
  *
  *
+ * NOTE: prop.positionがnullであるならば即ちExTranscriptは非表示であるという前提にある
  * */
 const updateSubtitle = (prop, prev): void => {
-    if (prop.subtitles === undefined) return;
-
-    // 字幕データのアップデート
-
     const { position } = sStatus.getState();
-    const { subtitles } = sSubtitles.getState();
-    console.log(`[controller] updateSubtitle: ${subtitles ? true : false}`);
-    console.log(subtitles);
-    // TODO: 'sidebar'と'noSidebar'のハードコーディングをやめて
-    // 定数を与えること
-    if (position === 'sidebar') {
-        renderSidebarTranscript();
-    }
-    else if (position === 'noSidebar') {
-        renderBottomTranscript();
-    }
-
+    if (!position || prop.subtitles === undefined) return;
+    
+    position === positionStatus.sidebar
+        ? renderSidebarTranscript()
+        : renderBottomTranscript();
+    // TODO: 以下の初期化を外部化したい
     initializeIndexList();
     resetDetectScroll();
 };
 
+/**
+ * Update ExTranscript Position
+ *
+ * 常にExTranscript viewを再レンダリングする
+ *
+ * props.positionがundefinedまたはnullのときは無視する
+ *
+ * NOTE: prop.positionがnullであるならば即ちExTranscriptは非表示であるという前提にある
+ * */
 const updatePosition = (prop, prev): void => {
     const { position } = prop;
-    console.log(`[controller] updatePosition: ${position}`);
     if (position === undefined || !position) return;
 
-    console.log('[controller] updatePosition running...');
-
-    if (position === 'sidebar') renderSidebarTranscript();
-    else if (position === 'noSidebar') renderBottomTranscript();
-    // 自動スクロール追跡機能のリセット
+    position === positionStatus.sidebar
+        ? renderSidebarTranscript()
+        : renderBottomTranscript();
+    // TODO: 以下の初期化を外部化したい
     resetDetectScroll();
     resetAutoscrollCheckboxListener();
 };

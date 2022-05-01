@@ -26,6 +26,8 @@ MVC と DDD の設計思想を取り入れたい
 -   [不具合：udemy のページ遷移で原因不明のエラーが出る件](#不具合：udemyのページ遷移で原因不明のエラーが出る件)
 -   [不具合記録](#不具合記録)
 
+-   [controller 見直し](#controller見直し)
+
 -   [refactoring](#refactoring)
 
 -   [chrome ストアで表示するまで](#chromeストアで表示するまで)
