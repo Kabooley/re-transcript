@@ -45,7 +45,7 @@ import {
     positionStatus,
     keyof_positionStatus,
 } from '../utils/constants';
-import Observable from '../utils/Observable';
+import Observable, { iObserver } from '../utils/Observable';
 import State from '../utils/contentScript/State';
 import MutationObserver_ from '../utils/MutationObserver_';
 
@@ -143,8 +143,8 @@ const moCallback = function (
             guard = true;
             try {
                 updateHighlightIndexes();
-                updateExTranscriptHighlight();
-                scrollToHighlight();
+                // updateExTranscriptHighlight();
+                // scrollToHighlight();
             } catch (e) {
                 chrome.runtime.sendMessage({
                     from: extensionNames.controller,
@@ -430,11 +430,12 @@ const initializeIndexList = (): void => {
 };
 
 /**
- * Returns the index number if the list contains an element.
+ * Returns the index number if the list contains passed element.
  *
- * @param {NodeListOf<Element>} from: List of subtitles data.
- * @param {Element} lookFor: Check whether the element is contained in the array.
- * @return {number} Return -1 as element was not contained.
+ * @param {NodeListOf<Element>} from - List of subtitles data.
+ * @param {Element} lookFor - Check whether the element is contained in the array.
+ * @return {number} - Return index number of passed element in passed array.
+ * NOTE: -1 as element was not contained.
  *
  * @throws {Error}
  * If "lookFor" param was null, then an exception is thrown to prevent next step.
@@ -458,32 +459,18 @@ const getElementIndexOfList = (
         if (el === lookFor) return num;
         num++;
     }
-    // NOTE: ありえない値　一致するものがなかった場合
     return -1;
 };
 
 /**
- * Update sStatus.ExHighlight.
- * Invoked by MutationObserver
- * when Udemy highlighted element changed.
+ * Update sStatus.highlight index number everytime transcriptListObserver has been observed.
  *
- * 1. Get latest original highlighted element index.
- * 2. Check if the index number includes in sStaus.indexList.
- *    If not included,
- *    Sets the index closest to the current index number
- *    that is less than the "current highlight.
- *
- * NOTE: ExTranscript index list is different from Original index list.
- *
- * この関数はsStatus.ExHighlightを更新するための関数
- * sStatus更新内容をもとにレンダリング要素を更新するのは以下の関数で行う
- * updateExTranscriptHighlight()
- *
+ * Save index number of latest highlighted element in Transcript.
+ * 
  * @throws {SyntaxError}:
  * SyntaxError possibly occures if DOM unable to caught.
  * @throws {RangeError}:
  * Thrown if getElementIndexOfList() returned -1 not to steps next.
- *
  *
  * */
 const updateHighlightIndexes = (): void => {
@@ -499,37 +486,18 @@ const updateHighlightIndexes = (): void => {
     if (next < 0) throw new RangeError('Returned value is out of range.');
 
     sStatus.setState({ highlight: next });
-
-    // 2. 1で取得した「順番」がstate._subtitlesのindexと一致するか比較して、
-    // ExTranscriptのハイライト要素の番号を保存する
-    const { indexList } = sStatus.getState();
-    if (indexList.includes(next)) {
-        sStatus.setState({ ExHighlight: next });
-    } else {
-        // 一致するindexがない場合
-        // currentHighlightの番号に最も近い、currentHighlightより小さいindexをsetする
-        let prev: number = null;
-        for (let i of indexList) {
-            if (i > next) {
-                sStatus.setState({ ExHighlight: prev });
-                break;
-            }
-            prev = i;
-        }
-    }
 };
 
+
 /**
- * Update ExTranscript highlighted element.
- * Invoked by MutationObserver
- * just after updateHighlightIndexes().
- *
- * Update based on sStatus.ExHighlight.
+ * Highlight ExTranscript element based on sStatus.ExHighlight. 
+ * 
+ * Invoked by updateExHighlight().
  *
  * TODO: (対応)currentもnextもnullであってはならない場面でnullだとsyntaxerrorになる
  * */
-const updateExTranscriptHighlight = (): void => {
-    console.log('[controller] updateExTranscriptHighlight()');
+const highlightExTranscript = (): void => {
+    console.log('[controller] highlightExTranscript()');
     // 次ハイライトする要素のdata-idの番号
     const { ExHighlight, position } = sStatus.getState();
     const next: HTMLElement =
@@ -551,27 +519,161 @@ const updateExTranscriptHighlight = (): void => {
               );
     if (!current) {
         //   初期化時
-        console.log('---- INITIALIZE -----');
+        console.log('initializing...');
         next.classList.add(selectors.EX.highlight.slice(1));
-        console.log(next);
     } else {
         //   更新時
         const currentIndex: number = parseInt(current.getAttribute('data-id'));
 
         // もしも変わらないなら何もしない
         if (currentIndex === ExHighlight) {
-            console.log('--- NO UPDATE ---');
+            console.log('no update...');
             return;
         }
         // 更新ならば、前回のハイライト要素を解除して次の要素をハイライトさせる
         else {
-            console.log('--- UPDATE ---');
+            console.log('update...');
             current.classList.remove(selectors.EX.highlight.slice(1));
             next.classList.add(selectors.EX.highlight.slice(1));
-            console.log(next);
         }
     }
 };
+
+
+/**
+ * Scroll to Highlight Element on ExTranscript
+ *
+ * Make ExTranscript subtitle panel scroll to latest highlighted element.
+ *
+ * - sStatus.isAutoscrollOnがfalseならば何もしない
+ *
+ * - スクロール方法は3通り
+ *
+ * ExTranscriptのコンテンツ・パネル要素、現在のハイライト字幕要素の、
+ * getBoundingClientRect()を取得する
+ * getBoudingClientRect()はviewportの左上を基準とするので...
+ * その要素がviewport上のどこにあるのかと、ウィンドウがスクロールしている場合に影響を受ける
+ *
+ * そのため、
+ *
+ * 1. ハイライト要素がコンテンツ・パネル要素よりも上にあるとき
+ * 2. ハイライト要素がコンテンツ・パネル要素よりも下にいるときで、なおかつハイライト要素のy座標が正であるとき
+ * 3. ２の場合で、ただしハイライト要素のy座標が負であるとき
+ *
+ * の3通りに沿って、コンテンツ・パネル要素のscrollTopプロパティを調整する
+ *
+ * - Element.scrollTopの値で調整する
+ *
+ * Element.scrollTop
+ * 要素はスクロール可能であるならば実際の上辺の位置と表示領域の上辺は異なり
+ * scrollTopはこの差を出力する
+ *
+ * スクロールバーが最も上にあるならばscrollTopは0、
+ * スクロールしているならば表示領域上辺と要素の上辺の差を出力する
+ * そして必ず正の値である
+ *
+ * - ハイライト要素はコンテンツ・パネルの表示領域の上辺から100px下に表示される
+ *
+ * TODO: marginTopを加味した計算方法が正しいのか確認
+ * */
+ const scrollToHighlight = (): void => {
+    console.log('[controller] scrollToHighlight()');
+
+    // そのたびにいまハイライトしている要素を取得する
+    const { ExHighlight, position, isAutoscrollOn } = sStatus.getState();
+    if (!isAutoscrollOn) return;
+
+    const current: HTMLElement =
+        position === positionStatus.sidebar
+            ? document.querySelector<HTMLElement>(
+                  `${selectors.EX.sidebarCueContainer}[data-id="${ExHighlight}"]`
+              )
+            : document.querySelector<HTMLElement>(
+                  `${selectors.EX.dashboardTranscriptCueContainer}[data-id="${ExHighlight}"]`
+              );
+    const panel: HTMLElement =
+        position === positionStatus.sidebar
+            ? document.querySelector(selectors.EX.sidebarContent)
+            : document.querySelector(selectors.EX.dashboardTranscriptPanel);
+
+    const panelRect: DOMRect = panel.getBoundingClientRect();
+    const currentRect: DOMRect = current.getBoundingClientRect();
+
+    const marginTop: number = 100;
+    if (currentRect.y > panelRect.y) {
+        const distance: number = currentRect.y - panelRect.y;
+        panel.scrollTop = distance + panel.scrollTop - marginTop;
+    } else {
+        if (currentRect.y > 0) {
+            const distance: number = panelRect.y - currentRect.y;
+            panel.scrollTop = panel.scrollTop - distance - marginTop;
+            console.log(panel.scrollTop);
+        } else {
+            const distance = panelRect.y + Math.abs(currentRect.y);
+            panel.scrollTop = panel.scrollTop - distance - marginTop;
+            console.log(panel.scrollTop);
+        }
+    }
+};
+
+
+/**
+ * Reset MutationObserver API for detect scroll system.
+ *
+ * Reset based on sStatus.isAutroscrollInitialized.
+ *
+ * Udemyの自動スクロール機能と同じ機能をセットアップする関数
+ *
+ * NOTE: Udemyの字幕はまったく同じ字幕要素が2個も3個も生成されている
+ *
+ * つまりまったく同じ要素が同時に複数存在する状況が発生してしまっている
+ * 多分バグだけど、同じ要素が何個も生成されてしまうとリスナが何度も
+ * 反応してしまう可能性がある
+ * MutationObserverのコールバック関数にはこれを避けるための仕組みを設けている
+ *
+ *
+ *
+ * */
+ const resetDetectScroll = (): void => {
+    console.log('[controller] reset Autro Scroll System');
+
+    const { isAutoscrollInitialized } = sStatus.getState();
+    if (!isAutoscrollInitialized) {
+        // 初期化処理
+        // 一旦リセットしてから
+        if (transcriptListObserver) {
+            transcriptListObserver.disconnect();
+            transcriptListObserver = null;
+        }
+        //   NodeListOf HTMLSpanElement
+        const transcriptList: NodeListOf<Element> = document.querySelectorAll(
+            selectors.transcript.transcripts
+        );
+        transcriptListObserver = new MutationObserver_(
+            moCallback,
+            moConfig,
+            transcriptList
+        );
+        transcriptListObserver.observe();
+
+        sStatus.setState({ isAutoscrollInitialized: true });
+    } else {
+        // リセット処理: targetを変更するだけ
+        transcriptListObserver.disconnect();
+        //   NodeListOf HTMLSpanElement
+        const transcriptList: NodeListOf<Element> = document.querySelectorAll(
+            selectors.transcript.transcripts
+        );
+        transcriptListObserver._target = transcriptList;
+        transcriptListObserver.observe();
+    }
+};
+
+
+// 
+// --- OTHER LISTENERS -----------------------------------
+// 
+
 
 /**
  *
@@ -613,133 +715,6 @@ const resetAutoscrollCheckboxListener = (): void => {
     cb.addEventListener('click', autoscrollCheckboxClickHandler);
 };
 
-/**
- * Reset MutationObserver API for detect scroll system.
- *
- * Reset based on sStatus.isAutroscrollInitialized.
- *
- * Udemyの自動スクロール機能と同じ機能をセットアップする関数
- *
- * NOTE: Udemyの字幕はまったく同じ字幕要素が2個も3個も生成されている
- *
- * つまりまったく同じ要素が同時に複数存在する状況が発生してしまっている
- * 多分バグだけど、同じ要素が何個も生成されてしまうとリスナが何度も
- * 反応してしまう可能性がある
- * MutationObserverのコールバック関数にはこれを避けるための仕組みを設けている
- *
- *
- *
- * ***/
-const resetDetectScroll = (): void => {
-    console.log('[controller] reset Autro Scroll System');
-
-    const { isAutoscrollInitialized } = sStatus.getState();
-    if (!isAutoscrollInitialized) {
-        // 初期化処理
-        // 一旦リセットしてから
-        if (transcriptListObserver) {
-            transcriptListObserver.disconnect();
-            transcriptListObserver = null;
-        }
-        //   NodeListOf HTMLSpanElement
-        const transcriptList: NodeListOf<Element> = document.querySelectorAll(
-            selectors.transcript.transcripts
-        );
-        transcriptListObserver = new MutationObserver_(
-            moCallback,
-            moConfig,
-            transcriptList
-        );
-        transcriptListObserver.observe();
-
-        sStatus.setState({ isAutoscrollInitialized: true });
-    } else {
-        // リセット処理: targetを変更するだけ
-        transcriptListObserver.disconnect();
-        //   NodeListOf HTMLSpanElement
-        const transcriptList: NodeListOf<Element> = document.querySelectorAll(
-            selectors.transcript.transcripts
-        );
-        transcriptListObserver._target = transcriptList;
-        transcriptListObserver.observe();
-    }
-};
-
-/**
- * Scroll to Highlight Element on ExTranscript
- *
- * Make ExTranscript subtitle panel scroll to latest highlighted element.
- *
- * - sStatus.isAutoscrollOnがfalseならば何もしない
- *
- * - スクロール方法は3通り
- *
- * ExTranscriptのコンテンツ・パネル要素、現在のハイライト字幕要素の、
- * getBoundingClientRect()を取得する
- * getBoudingClientRect()はviewportの左上を基準とするので...
- * その要素がviewport上のどこにあるのかと、ウィンドウがスクロールしている場合に影響を受ける
- *
- * そのため、
- *
- * 1. ハイライト要素がコンテンツ・パネル要素よりも上にあるとき
- * 2. ハイライト要素がコンテンツ・パネル要素よりも下にいるときで、なおかつハイライト要素のy座標が正であるとき
- * 3. ２の場合で、ただしハイライト要素のy座標が負であるとき
- *
- * の3通りに沿って、コンテンツ・パネル要素のscrollTopプロパティを調整する
- *
- * - Element.scrollTopの値で調整する
- *
- * Element.scrollTop
- * 要素はスクロール可能であるならば実際の上辺の位置と表示領域の上辺は異なり
- * scrollTopはこの差を出力する
- *
- * スクロールバーが最も上にあるならばscrollTopは0、
- * スクロールしているならば表示領域上辺と要素の上辺の差を出力する
- * そして必ず正の値である
- *
- * - ハイライト要素はコンテンツ・パネルの表示領域の上辺から100px下に表示される
- *
- * TODO: marginTopを加味した計算方法が正しいのか確認
- * */
-const scrollToHighlight = (): void => {
-    console.log('[controller] scrollToHighlight()');
-
-    // そのたびにいまハイライトしている要素を取得する
-    const { ExHighlight, position, isAutoscrollOn } = sStatus.getState();
-    if (!isAutoscrollOn) return;
-
-    const current: HTMLElement =
-        position === positionStatus.sidebar
-            ? document.querySelector<HTMLElement>(
-                  `${selectors.EX.sidebarCueContainer}[data-id="${ExHighlight}"]`
-              )
-            : document.querySelector<HTMLElement>(
-                  `${selectors.EX.dashboardTranscriptCueContainer}[data-id="${ExHighlight}"]`
-              );
-    const panel: HTMLElement =
-        position === positionStatus.sidebar
-            ? document.querySelector(selectors.EX.sidebarContent)
-            : document.querySelector(selectors.EX.dashboardTranscriptPanel);
-
-    const panelRect: DOMRect = panel.getBoundingClientRect();
-    const currentRect: DOMRect = current.getBoundingClientRect();
-
-    const marginTop: number = 100;
-    if (currentRect.y > panelRect.y) {
-        const distance: number = currentRect.y - panelRect.y;
-        panel.scrollTop = distance + panel.scrollTop - marginTop;
-    } else {
-        if (currentRect.y > 0) {
-            const distance: number = panelRect.y - currentRect.y;
-            panel.scrollTop = panel.scrollTop - distance - marginTop;
-            console.log(panel.scrollTop);
-        } else {
-            const distance = panelRect.y + Math.abs(currentRect.y);
-            panel.scrollTop = panel.scrollTop - distance - marginTop;
-            console.log(panel.scrollTop);
-        }
-    }
-};
 
 //
 // --- UPDATE STATE METHODS -----------------------------------
@@ -756,10 +731,10 @@ const scrollToHighlight = (): void => {
  *
  * NOTE: prop.positionがnullであるならば即ちExTranscriptは非表示であるという前提にある
  * */
-const updateSubtitle = (prop, prev): void => {
+const updateSubtitle: iObserver<iSubtitles> = (prop, prev): void => {
     const { position } = sStatus.getState();
     if (!position || prop.subtitles === undefined) return;
-    
+
     position === positionStatus.sidebar
         ? renderSidebarTranscript()
         : renderBottomTranscript();
@@ -777,7 +752,7 @@ const updateSubtitle = (prop, prev): void => {
  *
  * NOTE: prop.positionがnullであるならば即ちExTranscriptは非表示であるという前提にある
  * */
-const updatePosition = (prop, prev): void => {
+const updatePosition: iObserver<iController> = (prop, prev): void => {
     const { position } = prop;
     if (position === undefined || !position) return;
 
@@ -789,19 +764,53 @@ const updatePosition = (prop, prev): void => {
     resetAutoscrollCheckboxListener();
 };
 
-// NOTE: リファクタリング未定...
-// const updateHighlight = (prop, prev): void => {
-//   const { highlight } = prop;
-//   if (highlight === undefined) return;
-//   console.log("[controller] UPDATED Highlight");
-// };
+/**
+ * Invoked when sStatus.highlight changed.
+ *
+ * Actually, update sStatus.ExHighlight based on updated sStatus.highlight.
+ *
+ * */
+const updateHighlight: iObserver<iController> = (prop, prev): void => {
+    const { isAutoscrollInitialized, indexList } = sStatus.getState();
 
-// NOTE: リファクタリング未定...
-// const updateExHighlight = (prop, prev): void => {
-//   const { highlight } = prop;
-//   if (highlight === undefined) return;
-//   console.log("[controller] UPDATED ExHighlight");
-// };
+    if (prop.highlight === undefined || !isAutoscrollInitialized) return;
+
+    console.log('[controller] updateHighlight running...');
+
+    // ExTranscriptのハイライト要素の番号を保存する
+    const next: number = prop.highlight;
+    if (indexList.includes(next)) {
+        sStatus.setState({ ExHighlight: next });
+    } else {
+        // 一致するindexがない場合
+        // currentHighlightの番号に最も近い、currentHighlightより小さいindexをsetする
+        let prev: number = null;
+        for (let i of indexList) {
+            if (i > next) {
+                sStatus.setState({ ExHighlight: prev });
+                break;
+            }
+            prev = i;
+        }
+    }
+};
+
+/**
+ * Invoked when sStatus.ExHighlight changed.
+ *
+ * Triggers highlightExTranscript() everytime sStatus.ExHighlight changed.
+ *
+ * */
+const updateExHighlight: iObserver<iController> = (prop, prev): void => {
+    const { isAutoscrollInitialized } = sStatus.getState();
+    if (prop.ExHighlight === undefined || !isAutoscrollInitialized) return;
+
+    console.log('[controller] updateExHighlight running...');
+
+    highlightExTranscript();
+    scrollToHighlight();
+};
+
 
 /**
  * Entry Point
@@ -817,6 +826,8 @@ const updatePosition = (prop, prev): void => {
 
     sSubtitles.observable.register(updateSubtitle);
     sStatus.observable.register(updatePosition);
+    sStatus.observable.register(updateHighlight);
+    sStatus.observable.register(updateExHighlight);
     //   TODO: (未定)下記update関数が機能するようにリファクタリングするかも...
     //   sStatus.observable.register(updateHighlight);
     //   sStatus.observable.register(updateExHighlight);

@@ -1,4 +1,4 @@
-type iObserver<TYPE> = (
+export type iObserver<TYPE> = (
     prop: { [Property in keyof TYPE]?: TYPE[Property] },
     prev: TYPE
 ) => void;

@@ -26,8 +26,6 @@ MVC と DDD の設計思想を取り入れたい
 -   [不具合：udemy のページ遷移で原因不明のエラーが出る件](#不具合：udemyのページ遷移で原因不明のエラーが出る件)
 -   [不具合記録](#不具合記録)
 
--   [controller 見直し](#controller見直し)
-
 -   [refactoring](#refactoring)
 
 -   [chrome ストアで表示するまで](#chromeストアで表示するまで)
@@ -7207,6 +7205,181 @@ repeatCheckQueryAcquired: 指定回数渡された関数を実行する。取得
 const callback_ = async(): Promise<boolean> => {
     const
 }
+```
+
+#### controller.ts 自動ハイライト機能のupdaterの実装
+
+自動ハイライト機能関連を
+現在のように直接関数を呼出すのではなくて、
+sStatusの更新によって連鎖的に発生するようにしたい
+
+
+そもそも処理の流れ
+
+前提：
+
+- MutationObserverのインスタンスはモジュール内部においてグローバル変数である
+
+- isAutoscrollInitializedはresetDetectScroll()のなかでのみ利用される
+
+- positionの更新ののちすぐさまupdateSubtitles()が呼び出されることが前提になっている
+
+初期化時：
+
+entryポイントでsStatus.positionが更新
+
+updatePositionが発火し、resetDetectScroll()が呼び出される
+
+
+MOインスタンス.disconnect()
+
+MOインスタンスの初期化（要素取得から再登録まで）
+
+MOインスタンス.observe()
+
+---
+
+moCallback内で...
+
+updateHighlightIndexs()
+
+updateExTranscriptHighlight()
+
+scrollToHighlight()
+
+---
+
+
+
+```TypeScript
+// 現在
+const updateHighlightIndexes = (): void => {
+    console.log('[controller] updateHighlightIndexes()');
+    // １．本家のハイライト要素を取得して、その要素群の中での「順番」を保存する
+    const nextHighlight: Element = document.querySelector<Element>(
+        selectors.transcript.highlight
+    );
+    const list: NodeListOf<HTMLSpanElement> = document.querySelectorAll(
+        selectors.transcript.transcripts
+    );
+    const next: number = getElementIndexOfList(list, nextHighlight);
+    if (next < 0) throw new RangeError('Returned value is out of range.');
+
+    sStatus.setState({ highlight: next });
+
+    // 2. 1で取得した「順番」がstate._subtitlesのindexと一致するか比較して、
+    // ExTranscriptのハイライト要素の番号を保存する
+    const { indexList } = sStatus.getState();
+    if (indexList.includes(next)) {
+        sStatus.setState({ ExHighlight: next });
+    } else {
+        // 一致するindexがない場合
+        // currentHighlightの番号に最も近い、currentHighlightより小さいindexをsetする
+        let prev: number = null;
+        for (let i of indexList) {
+            if (i > next) {
+                sStatus.setState({ ExHighlight: prev });
+                break;
+            }
+            prev = i;
+        }
+    }
+};
+
+```
+
+sStatus.setState({highlight: next})したらあとはupdate関数に任せてもいいかも
+
+```TypeScript
+
+/**
+ * Invoked when sStatus.highlight changed.
+ * 
+ * Actually, update sStatus.ExHighlight based on updated sStatus.highlight.
+ * 
+ * */ 
+const updateHighlight: iObserver<iController> = (prop, prev): void => {
+  const { isAutoscrollInitialized, indexList} = sStatus.getState();
+
+  if(prop.highlight === undefined || !isAutoscrollInitialized) return;
+
+  console.log("[controller] updateHighlight running...");
+
+  // ExTranscriptのハイライト要素の番号を保存する
+  const next: number = prop.highlight;
+  const { indexList } = sStatus.getState();
+  if (indexList.includes(next)) {
+      sStatus.setState({ ExHighlight: next });
+  } else {
+      // 一致するindexがない場合
+      // currentHighlightの番号に最も近い、currentHighlightより小さいindexをsetする
+      let prev: number = null;
+      for (let i of indexList) {
+          if (i > next) {
+              sStatus.setState({ ExHighlight: prev });
+              break;
+          }
+          prev = i;
+      }
+  }
+}
+
+
+/**
+ * Invoked when sStatus.ExHighlight changed.
+ * 
+ * Triggers highlightExTranscript() everytime sStatus.ExHighlight changed.
+ * 
+ * */ 
+const updateExHighlight: iObserver<iController> = (prop, prev): void => {
+  const { isAutoscrollInitialized } = sStatus.getState();
+  if(prop.ExHighlight === undefined || !isAutoscrollInitialized) return;
+
+  console.log("[controller] updateExHighlight running...");
+
+  // TODO: updateExTranscriptHighlightの名称をhighlightExTranscriptにする
+  highlightExTranscript();
+};
+
+// TODO: in Entry point. Add above updater to Observable register.
+// ....
+sStatus.observable.register(updateHighlight);
+sStatus.observable.register(updateExHighlight);
+```
+
+TODO: うまくいけばmoCallbackは以下の通りになる
+
+```diff
+const moCallback = function (
+    this: MutationObserver_,
+    mr: MutationRecord[]
+): void {
+    let guard: boolean = false;
+    mr.forEach((record: MutationRecord) => {
+        if (
+            record.type === 'attributes' &&
+            record.attributeName === 'class' &&
+            record.oldValue === '' &&
+            !guard
+        ) {
+            console.log('OBSERVED');
+            guard = true;
+            try {
+                // この関数の呼び出しだけで済むようになる
+                updateHighlightIndexes();
+-                updateExTranscriptHighlight();
+-                scrollToHighlight();
+            } catch (e) {
+                chrome.runtime.sendMessage({
+                    from: extensionNames.controller,
+                    to: extensionNames.background,
+                    error: e,
+                });
+            }
+        }
+    });
+};
+
 ```
 
 ## chrome ストアで表示するまで
