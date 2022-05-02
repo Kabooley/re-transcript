@@ -34,12 +34,7 @@ import {
   delay,
   repeatActionPromise,
 } from "../utils/helpers";
-import {
-  DomManipulationError,
-  uError,
-} from "../Error/Error";
-
-
+import { DomManipulationError, uError } from "../Error/Error";
 
 //
 // --- GLOBALS ---------------------------------------------------
@@ -55,126 +50,125 @@ let controlbar: HTMLElement = null;
 
 /**
  * Message Handler
- * 
+ *
  * @param {iMessage} message
  * @param {function} sendResponse:
  * Invoke this function to response. The function is required.
  * @return {boolean} - MUST RETURN TRUE TO RUN sendResponse asynchronously.
- * 
+ *
  *  1. sendStatus:
  *   Survey the subtitle language is English or not,
  *   and Transcript is open or not.
- * 
+ *
  *  2. reset
  *    Run initialize() and respond result.
- * 
+ *
  *  3. isPageIncludingMovie
  *    Survey the page is including Movie container or not.
- * 
+ *
  *  4. turnOff
  *    Disconnect MutationObserver and remove event listener from Controlbar
  * */
- chrome.runtime.onMessage.addListener(
-    (
-      message: iMessage,
-      sender,
-      sendResponse: (response: iResponse) => void
-    ): boolean => {
-      console.log("CONTENT SCRIPT GOT MESSAGE");
-      const { from, order, to } = message;
-      const response: iResponse = {
-        from: extensionNames.contentScript,
-        to: from,
-      };
-      if (to !== extensionNames.contentScript) return;
-  
-      // ORDERS:
-      if (order && order.length) {
-        // SEND STATUS
-        if (order.includes(orderNames.sendStatus)) {
-          console.log("Order: SEND STATUS");
-          try {
-            const isEnglish: boolean = isSubtitleEnglish();
-            let isOpen: boolean = false;
-            const toggle: HTMLElement = document.querySelector<HTMLElement>(
-              selectors.controlBar.transcript.toggleButton
-            );
-            if (!toggle) isOpen = false;
-            else isOpen = isTranscriptOpen();
-  
-            response.language = isEnglish;
-            response.isTranscriptDisplaying = isOpen;
-            // response.success = true;
-            response.complete = true;
-          } catch (err) {
-            // response.success = false;
-            response.error = err;
-            response.complete = false;
-          } finally {
-            sendResponse(response);
-          }
-        }
-        // RESET
-        if (order.includes(orderNames.reset)) {
-          console.log("Order: RESET");
-          handlerOfReset()
-            .then(() => {
-              response.success = true;
-              response.complete = true;
-            })
-            .catch((e: uError) => {
-              console.error(e.message);
-              response.success = false;
-              response.complete = false;
-              response.error = e;
-            })
-            .finally(() => {
-              sendResponse(response);
-            });
-        }
-  
-        // Require to make sure the page is including movie container or not.
-        if (order.includes(orderNames.isPageIncludingMovie)) {
-          console.log("Order: Is this page including movie container?");
-          repeatCheckQueryAcquired(selectors.videoContainer, true)
-            .then((r: boolean) => {
-              response.isPageIncludingMovie = r;
-              response.complete = true;
-            })
-            .catch((err) => {
-              console.error(err);
-              response.complete = false;
-              response.error = err;
-            })
-            .finally(() => {
-              sendResponse(response);
-            });
-        }
-        // TURN OFF
-        if (order.includes(orderNames.turnOff)) {
-          console.log("Order: Turn off");
-          moControlbar.disconnect();
-          controlbar.removeEventListener("click", handlerOfControlbar);
-          // TODO: moControlbar, controlbarはnullにする必要があるか？
+chrome.runtime.onMessage.addListener(
+  (
+    message: iMessage,
+    sender,
+    sendResponse: (response: iResponse) => void
+  ): boolean => {
+    console.log("CONTENT SCRIPT GOT MESSAGE");
+    const { from, order, to } = message;
+    const response: iResponse = {
+      from: extensionNames.contentScript,
+      to: from,
+    };
+    if (to !== extensionNames.contentScript) return;
+
+    // ORDERS:
+    if (order && order.length) {
+      // SEND STATUS
+      if (order.includes(orderNames.sendStatus)) {
+        console.log("Order: SEND STATUS");
+        try {
+          const isEnglish: boolean = isSubtitleEnglish();
+          let isOpen: boolean = false;
+          const toggle: HTMLElement = document.querySelector<HTMLElement>(
+            selectors.controlBar.transcript.toggleButton
+          );
+          if (!toggle) isOpen = false;
+          else isOpen = isTranscriptOpen();
+
+          response.language = isEnglish;
+          response.isTranscriptDisplaying = isOpen;
+          // response.success = true;
           response.complete = true;
+        } catch (err) {
+          // response.success = false;
+          response.error = err;
+          response.complete = false;
+        } finally {
           sendResponse(response);
         }
-  
+      }
+      // RESET
+      if (order.includes(orderNames.reset)) {
+        console.log("Order: RESET");
+        handlerOfReset()
+          .then(() => {
+            response.success = true;
+            response.complete = true;
+          })
+          .catch((e: uError) => {
+            console.error(e.message);
+            response.success = false;
+            response.complete = false;
+            response.error = e;
+          })
+          .finally(() => {
+            sendResponse(response);
+          });
+      }
+
+      // Require to make sure the page is including movie container or not.
+      if (order.includes(orderNames.isPageIncludingMovie)) {
+        console.log("Order: Is this page including movie container?");
+        repeatCheckQueryAcquired(selectors.videoContainer, true)
+          .then((r: boolean) => {
+            response.isPageIncludingMovie = r;
+            response.complete = true;
+          })
+          .catch((err) => {
+            console.error(err);
+            response.complete = false;
+            response.error = err;
+          })
+          .finally(() => {
+            sendResponse(response);
+          });
+      }
+      // TURN OFF
+      if (order.includes(orderNames.turnOff)) {
+        console.log("Order: Turn off");
+        moControlbar.disconnect();
+        controlbar.removeEventListener("click", handlerOfControlbar);
+        // TODO: moControlbar, controlbarはnullにする必要があるか？
+        response.complete = true;
+        sendResponse(response);
+      }
+
       // //   ALERT
       //  if(order.includes(orderNames.alert)){
       //      displayAlert(message.alertMessage);
       //      response.complete = true;
       //      sendResponse(response);
       //  }
-      }
-      return true;
     }
-  );
-  
+    return true;
+  }
+);
 
 /**
  *  Sends status of injected page to background.
- * 
+ *
  * @param order:
  * @param {boolean} isOpened - True as Transcript is open.
  * @param {boolean} isEnglish - True as subtitle language is English.
@@ -231,6 +225,7 @@ const handlerOfReset = async (): Promise<void> => {
  *
  * */
 const handlerOfControlbar = function (ev: PointerEvent): void {
+  console.log("[contentScript] click event on controlbar");
   // Clickイベント中にDOMを取得しておく...
   // イベントバブリングpath
   const path: EventTarget[] = ev.composedPath();
@@ -266,15 +261,20 @@ const handlerOfControlbar = function (ev: PointerEvent): void {
     // cc popup menu内部でクリックイベントが起こったら
     // 字幕が変更されたのか調べる
     if (path.includes(ccPopupMenu)) {
-      const r: boolean = isSubtitleEnglish();
-      sendToBackground({ isEnglish: r });
+      // DEBUG:
+      console.log("[contentScript] clicked on CC popup menu");
+      // NOTE: new function added.
+      if (isItSelectLanguageMenu()) {
+        const r: boolean = isSubtitleEnglish();
+        sendToBackground({ isEnglish: r });
+      }
     }
   }, 200);
 };
 
-// 
+//
 // --- SURVEY METHODS --------------------------------------------
-// 
+//
 
 /**
  * Check Transcript is opened or not.
@@ -298,15 +298,15 @@ const isTranscriptOpen = (): boolean => {
  * Exception might be happen when selector is not matches.
  *
  * Get DOM everytime this function invoked.
- * 
+ *
  * checkButtons: CCポップアップメニューのリスト要素で、button要素。選択中であるかどうかの属性を含み、その順番を取得する。
- * 
+ *
  * menuList: 上記button要素の子要素である。innertTextにメニューに表示されている文字列を含む。字幕の言語や字幕設定などの文字列。
  * 先の順番を基にmenuListのなかの要素のinenrTextをしらべて選択中の言を特定する
- * 
+ *
  * TODO: Fix: 上記要素のうち言語と関係ないもの(字幕設定など)もリストに含まれているので
  * その時は無視するようにする
- * 
+ *
  */
 const isSubtitleEnglish = (): boolean => {
   const listParent: HTMLElement = document.querySelector<HTMLElement>(
@@ -345,7 +345,7 @@ const isSubtitleEnglish = (): boolean => {
   // 2. 1でしらべた順番にある要素の中のinnerTextから選択中の言語を特定する
   const currentLanguage: string = Array.from(menuList)[i].innerText;
   // NOTE: TEST -------------------------------------
-  if(currentLanguage.includes("字幕設定")) {
+  if (currentLanguage.includes("字幕設定")) {
     console.log("clicked 字幕設定");
   }
   // ----------------------------------------------------
@@ -353,6 +353,51 @@ const isSubtitleEnglish = (): boolean => {
     return true;
   else return false;
 };
+// const isSubtitleEnglish = (): boolean => {
+//   const listParent: HTMLElement = document.querySelector<HTMLElement>(
+//     selectors.controlBar.cc.menuListParent
+//   );
+//   const checkButtons: NodeListOf<HTMLElement> =
+//     listParent.querySelectorAll<HTMLElement>(
+//       // TODO: selectors.controlBar.cc.checkButtonsに変更してテスト
+//       selectors.controlBar.cc.menuCheckButtons
+//     );
+//   const menuList: NodeListOf<HTMLElement> =
+//     listParent.querySelectorAll<HTMLElement>(selectors.controlBar.cc.menuList);
+
+//   if (!listParent || !checkButtons || !menuList)
+//     throw new DomManipulationError("Failed to manipulate DOM");
+
+//   // 1. メニューリストのうちどの言語が選択中なのか調べる
+//   // 選択中であるかどうかを示す属性のbooleanをチェックして
+//   // trueであったときの順番を記憶する
+//   let counter: number = 0;
+//   let i: number = null;
+//   const els: HTMLElement[] = Array.from<HTMLElement>(checkButtons);
+//   for (const btn of els) {
+//     if (btn.getAttribute("aria-checked") === "true") {
+//       i = counter;
+//       break;
+//     }
+//     counter++;
+//   }
+//   if (!i) {
+//     throw new Error(
+//       "Error: [isSubtitleEnglish()] Something went wrong but No language is selected"
+//     );
+//   }
+
+//   // 2. 1でしらべた順番にある要素の中のinnerTextから選択中の言語を特定する
+//   const currentLanguage: string = Array.from(menuList)[i].innerText;
+//   // NOTE: TEST -------------------------------------
+//   if(currentLanguage.includes("字幕設定")) {
+//     console.log("clicked 字幕設定");
+//   }
+//   // ----------------------------------------------------
+//   if (currentLanguage.includes("English") || currentLanguage.includes("英語"))
+//     return true;
+//   else return false;
+// };
 
 //
 // --- OBSERVER METHODS -----------------------------------------
@@ -483,7 +528,21 @@ const repeatQuerySelector = async (selector: string): Promise<HTMLElement> => {
   }
 };
 
-
+/***
+ * 表示中のCC popup menuが、
+ * 「字幕言語選択画面」なのか「字幕設定画面」なのか判定する
+ *
+ * このCSSセレクタで取得できる要素があれば前者
+ * nullなら後者という判定になる
+ *
+ * NOTE: CC popup menu上でのonClickイベント時には必ず呼び出すこと
+ * */
+const isItSelectLanguageMenu = (): boolean => {
+  const menu: HTMLElement = document.querySelector<HTMLElement>(
+    'div.control-bar-dropdown--menu--2bFbL.control-bar-dropdown--menu-dark--3cSQg > ul[data-purpose="captions-dropdown-menu"] > li[role="none"] > ul[aria-label="字幕"] > button'
+  );
+  return menu ? true : false;
+};
 
 /*****************************************
  *  Initialize for detecting injected page status.
@@ -771,11 +830,10 @@ const initialize = async (): Promise<void> => {
 //     });
 // };
 
-
 // /************************************************
 //  * alert() on injected page.
-//  * 
-//  * */ 
+//  *
+//  * */
 // const displayAlert = (message: string): void => {
 //     alert(message);
 // }

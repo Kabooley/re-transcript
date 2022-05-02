@@ -7078,6 +7078,168 @@ const handlerOfTurnOff = (): void => {
 
 字幕設定を選択したときにcontentScript.ts::currentLanguageが何を示すのか確認のこと
 
+問題は言語リストのほかに「字幕設定」も取得してしまっているから
+
+なのでDOM取得の時点でこいつを除外するようにする
+
+```TypeScript
+const handlerOfControlbar = function (ev: PointerEvent): void {
+  // Clickイベント中にDOMを取得しておく...
+  // イベントバブリングpath
+  const path: EventTarget[] = ev.composedPath();
+
+  // ...
+
+  // クローズド・キャプション・メニュー
+  const ccPopupMenu: HTMLElement = document.querySelector<HTMLElement>(
+    selectors.controlBar.cc.menuListParent
+  );
+
+  // [動作確認済] clickイベント完了後に実行したい事柄はsetTimeoutで
+  setTimeout(function () {
+
+    // ...
+
+    // cc popup menu内部でクリックイベントが起こったら
+    // 字幕が変更されたのか調べる
+    if (path.includes(ccPopupMenu)) {
+        // DEBUG: 
+        console.log("[contentScript] clicked on CC popup menu");
+      // isSubtitleEnglish()の前に、 
+      const r: boolean = isSubtitleEnglish();
+      sendToBackground({ isEnglish: r });
+    }
+  }, 200);
+};
+```
+
+CC Popup menuには２つあって
+
+言語選択メニューのほう
+
+`div.control-bar-dropdown--menu--2bFbL.control-bar-dropdown--menu-dark--3cSQg`
+    `ul[data-purpose="captions-dropdown-menu"]`
+        `li[role="none"]`
+            `ul[aria-label="字幕"]`
+                `button`
+
+```html
+<div id="control-bar-dropdown-menu--518" class="control-bar-dropdown--menu--2bFbL control-bar-dropdown--menu-dark--3cSQg" style="max-height: 32.3498rem;">
+    <ul role="menu" aria-labelledby="control-bar-dropdown-trigger--517" data-purpose="captions-dropdown-menu" class="unstyled-list udlite-block-list">
+        <li role="none">
+            <ul class="unstyled-list" role="group" aria-label="字幕">
+                <button type="button" role="menuitemradio" tabindex="-1" aria-checked="false" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">オフ</div></button><button type="button" role="menuitemradio" tabindex="-1" aria-checked="true" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">英語 [自動]</div></button><button type="button" role="menuitemradio" tabindex="-1" aria-checked="false" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">インドネシア語 [自動]</div></button><button type="button" role="menuitemradio" tabindex="-1" aria-checked="false" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">イタリア語 [自動]</div></button><button type="button" role="menuitemradio" tabindex="-1" aria-checked="false" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">オランダ語 [自動]</div></button><button type="button" role="menuitemradio" tabindex="-1" aria-checked="false" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">スペイン語 [自動]</div></button><button type="button" role="menuitemradio" tabindex="-1" aria-checked="false" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">ドイツ語 [自動]</div></button><button type="button" role="menuitemradio" tabindex="-1" aria-checked="false" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">フランス語 [自動]</div></button><button type="button" role="menuitemradio" tabindex="-1" aria-checked="false" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">ポルトガル語 [自動]</div></button></ul></li><li role="separator"></li><li role="none"><button type="button" role="menuitem" tabindex="-1" data-purpose="go-to-settings" aria-haspopup="menu" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">字幕設定<svg aria-hidden="true" focusable="false" class="udlite-icon udlite-icon-small video-control-bar-dropdown--next-icon--3crbc"><use xlink:href="#icon-next"></use></svg></div></button></li></ul></div>
+```
+
+字幕設定メニューのほう
+
+`div.control-bar-dropdown--menu--2bFbL.control-bar-dropdown--menu-dark--3cSQg`
+    `ul[data-purpose="captions-dropdown-menu"]`
+        `li[role="none"]`
+            `button`
+
+
+```html
+<div id="control-bar-dropdown-menu--518" class="control-bar-dropdown--menu--2bFbL control-bar-dropdown--menu-dark--3cSQg" style="max-height: 32.3498rem;">
+    <ul role="menu" aria-labelledby="control-bar-dropdown-trigger--517" data-purpose="captions-dropdown-menu" class="unstyled-list udlite-block-list">
+        <li role="none">
+            <button type="button" role="menuitem" tabindex="-1" data-purpose="go-to-tracks" aria-label="キャプションメニューに戻る" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral">
+                <div class="udlite-block-list-item-content">
+                    <svg aria-hidden="true" focusable="false" class="udlite-icon udlite-icon-small video-control-bar-dropdown--prev-icon--3yd9N"><use xlink:href="#icon-previous"></use></svg>
+                    字幕設定
+                </div>
+            </button>
+        </li>
+        <li role="separator"></li>
+        <li role="none">
+            <ul class="unstyled-list" role="group" aria-label="字幕設定">
+                <button type="button" role="menuitem" tabindex="-1" data-purpose="go-to-font-size" aria-haspopup="menu" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral">
+                    <div class="udlite-block-list-item-content">フォントサイズ<span data-purpose="current-font-size" class="video-control-bar-dropdown--current-value--18O0E">100%</span>
+                        <svg aria-hidden="true" focusable="false" class="udlite-icon udlite-icon-small video-control-bar-dropdown--next-icon--3crbc"><use xlink:href="#icon-next"></use></svg></div></button><button type="button" role="menuitem" tabindex="-1" data-purpose="go-to-opacity" aria-haspopup="menu" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">背景の透明度<span data-purpose="current-opacity" class="video-control-bar-dropdown--current-value--18O0E">75%</span><svg aria-hidden="true" focusable="false" class="udlite-icon udlite-icon-small video-control-bar-dropdown--next-icon--3crbc"><use xlink:href="#icon-next"></use></svg></div></button><button type="button" role="menuitemcheckbox" tabindex="-1" aria-checked="true" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">ビデオの下に表示<span class="control-bar-dropdown--checkbox-slider--1LPlb"></span></div></button><button type="button" role="menuitem" tabindex="-1" data-purpose="reset" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">リセット</div></button></ul></li></ul></div>
+```
+
+つまり両者の違いは、
+
+button要素群の親要素に`ul[aria-label="字幕"]`があるかないかである
+
+となると、CC popup menuでclickイベントが起こるたびに
+
+上記のDOMがあるかないかで、
+
+現在表示中のPOPUP menuが言語選択画面なのか、
+
+もしくは字幕設定画面なのか
+
+変別することが可能になりそうである
+
+言語選択画面判定セレクタ
+
+`div.control-bar-dropdown--menu--2bFbL.control-bar-dropdown--menu-dark--3cSQg > ul[data-purpose="captions-dropdown-menu"] > li[role="none"] > ul[aria-label="字幕"] > button`
+
+（確認済）上記とマッチする要素がある ? 言語選択画面 : それ以外の画面
+
+同時に、言語選択画面中の選択言語要素であるbutton要素すべてを取得するのにも使える
+
+「字幕設定」は含まない
+
+```TypeScript
+/***
+ * 表示中のCC popup menuが、
+ * 「字幕言語選択画面」なのか「字幕設定画面」なのか判定する
+ * 
+ * このCSSセレクタで取得できる要素があれば前者
+ * nullなら後者という判定になる
+ * 
+ * NOTE: CC popup menu上でのonClickイベント時には必ず呼び出すこと
+ * */ 
+const isItSelectLanguageMenu = (): boolean => {
+    const menu: HTMLElement = document.querySelector<HTMLElement>(
+        'div.control-bar-dropdown--menu--2bFbL.control-bar-dropdown--menu-dark--3cSQg > ul[data-purpose="captions-dropdown-menu"] > li[role="none"] > ul[aria-label="字幕"] > button'
+    );
+    return menu ? true : false;
+};
+
+const handlerOfControlbar = function (ev: PointerEvent): void {
+  // Clickイベント中にDOMを取得しておく...
+  // イベントバブリングpath
+  const path: EventTarget[] = ev.composedPath();
+
+  // ...
+
+  // クローズド・キャプション・メニュー
+  const ccPopupMenu: HTMLElement = document.querySelector<HTMLElement>(
+    selectors.controlBar.cc.menuListParent
+  );
+
+  // [動作確認済] clickイベント完了後に実行したい事柄はsetTimeoutで
+  setTimeout(function () {
+
+    // ...
+
+    // cc popup menu内部でクリックイベントが起こったら
+    // 字幕が変更されたのか調べる
+    if (path.includes(ccPopupMenu)) {
+        // DEBUG: 
+        console.log("[contentScript] clicked on CC popup menu");
+    //   NOTE: new function added.
+        if(isItSelectLanguageMenu()) {
+          const r: boolean = isSubtitleEnglish();
+          sendToBackground({ isEnglish: r });
+        }
+    }
+  }, 200);
+};
+```
+
+なんかしらんが、
+
+isItSelectLanguageMenu ~ sendToBackgroundまで期待通りに動いているのに
+
+なぜかbackgroundで非表示にせよの判定になる...
+
+なぜ？
+
+
 ## ExTranscript のハイライト位置の修正
 
 もうちょい下にする
