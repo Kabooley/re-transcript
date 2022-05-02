@@ -7072,6 +7072,12 @@ const handlerOfTurnOff = (): void => {
 }
 ```
 
+#### CCポップアップメニューで「字幕設定」メニューに入るとExTranscritpが消える件
+
+あと「字幕設定」メニューからCCポップアップメニューに戻るとExTranscriptも戻る
+
+字幕設定を選択したときにcontentScript.ts::currentLanguageが何を示すのか確認のこと
+
 ## ExTranscript のハイライト位置の修正
 
 もうちょい下にする
@@ -7207,39 +7213,37 @@ const callback_ = async(): Promise<boolean> => {
 }
 ```
 
-#### controller.ts 自動ハイライト機能のupdaterの実装
+#### controller.ts 自動ハイライト機能の updater の実装
 
 自動ハイライト機能関連を
 現在のように直接関数を呼出すのではなくて、
-sStatusの更新によって連鎖的に発生するようにしたい
-
+sStatus の更新によって連鎖的に発生するようにしたい
 
 そもそも処理の流れ
 
 前提：
 
-- MutationObserverのインスタンスはモジュール内部においてグローバル変数である
+-   MutationObserver のインスタンスはモジュール内部においてグローバル変数である
 
-- isAutoscrollInitializedはresetDetectScroll()のなかでのみ利用される
+-   isAutoscrollInitialized は resetDetectScroll()のなかでのみ利用される
 
-- positionの更新ののちすぐさまupdateSubtitles()が呼び出されることが前提になっている
+-   position の更新ののちすぐさま updateSubtitles()が呼び出されることが前提になっている
 
 初期化時：
 
-entryポイントでsStatus.positionが更新
+entry ポイントで sStatus.position が更新
 
-updatePositionが発火し、resetDetectScroll()が呼び出される
+updatePosition が発火し、resetDetectScroll()が呼び出される
 
+MO インスタンス.disconnect()
 
-MOインスタンス.disconnect()
+MO インスタンスの初期化（要素取得から再登録まで）
 
-MOインスタンスの初期化（要素取得から再登録まで）
-
-MOインスタンス.observe()
+MO インスタンス.observe()
 
 ---
 
-moCallback内で...
+moCallback 内で...
 
 updateHighlightIndexs()
 
@@ -7248,8 +7252,6 @@ updateExTranscriptHighlight()
 scrollToHighlight()
 
 ---
-
-
 
 ```TypeScript
 // 現在
@@ -7288,16 +7290,16 @@ const updateHighlightIndexes = (): void => {
 
 ```
 
-sStatus.setState({highlight: next})したらあとはupdate関数に任せてもいいかも
+sStatus.setState({highlight: next})したらあとは update 関数に任せてもいいかも
 
 ```TypeScript
 
 /**
  * Invoked when sStatus.highlight changed.
- * 
+ *
  * Actually, update sStatus.ExHighlight based on updated sStatus.highlight.
- * 
- * */ 
+ *
+ * */
 const updateHighlight: iObserver<iController> = (prop, prev): void => {
   const { isAutoscrollInitialized, indexList} = sStatus.getState();
 
@@ -7327,10 +7329,10 @@ const updateHighlight: iObserver<iController> = (prop, prev): void => {
 
 /**
  * Invoked when sStatus.ExHighlight changed.
- * 
+ *
  * Triggers highlightExTranscript() everytime sStatus.ExHighlight changed.
- * 
- * */ 
+ *
+ * */
 const updateExHighlight: iObserver<iController> = (prop, prev): void => {
   const { isAutoscrollInitialized } = sStatus.getState();
   if(prop.ExHighlight === undefined || !isAutoscrollInitialized) return;
@@ -7347,7 +7349,7 @@ sStatus.observable.register(updateHighlight);
 sStatus.observable.register(updateExHighlight);
 ```
 
-TODO: うまくいけばmoCallbackは以下の通りになる
+TODO: うまくいけば moCallback は以下の通りになる
 
 ```diff
 const moCallback = function (
@@ -7381,6 +7383,7 @@ const moCallback = function (
 };
 
 ```
+
 
 ## chrome ストアで表示するまで
 

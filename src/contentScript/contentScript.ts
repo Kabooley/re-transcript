@@ -298,6 +298,15 @@ const isTranscriptOpen = (): boolean => {
  * Exception might be happen when selector is not matches.
  *
  * Get DOM everytime this function invoked.
+ * 
+ * checkButtons: CCポップアップメニューのリスト要素で、button要素。選択中であるかどうかの属性を含み、その順番を取得する。
+ * 
+ * menuList: 上記button要素の子要素である。innertTextにメニューに表示されている文字列を含む。字幕の言語や字幕設定などの文字列。
+ * 先の順番を基にmenuListのなかの要素のinenrTextをしらべて選択中の言を特定する
+ * 
+ * TODO: Fix: 上記要素のうち言語と関係ないもの(字幕設定など)もリストに含まれているので
+ * その時は無視するようにする
+ * 
  */
 const isSubtitleEnglish = (): boolean => {
   const listParent: HTMLElement = document.querySelector<HTMLElement>(
@@ -305,6 +314,7 @@ const isSubtitleEnglish = (): boolean => {
   );
   const checkButtons: NodeListOf<HTMLElement> =
     listParent.querySelectorAll<HTMLElement>(
+      // TODO: selectors.controlBar.cc.checkButtonsに変更してテスト
       selectors.controlBar.cc.menuCheckButtons
     );
   const menuList: NodeListOf<HTMLElement> =
@@ -313,6 +323,9 @@ const isSubtitleEnglish = (): boolean => {
   if (!listParent || !checkButtons || !menuList)
     throw new DomManipulationError("Failed to manipulate DOM");
 
+  // 1. メニューリストのうちどの言語が選択中なのか調べる
+  // 選択中であるかどうかを示す属性のbooleanをチェックして
+  // trueであったときの順番を記憶する
   let counter: number = 0;
   let i: number = null;
   const els: HTMLElement[] = Array.from<HTMLElement>(checkButtons);
@@ -323,16 +336,19 @@ const isSubtitleEnglish = (): boolean => {
     }
     counter++;
   }
-
-  // NOTE: 字幕リストで何も選択されていないというのは起こりえないはず
-  // なのでこのチェック自体が無意味かも
-  if (i === null) {
+  if (!i) {
     throw new Error(
       "Error: [isSubtitleEnglish()] Something went wrong but No language is selected"
     );
   }
 
+  // 2. 1でしらべた順番にある要素の中のinnerTextから選択中の言語を特定する
   const currentLanguage: string = Array.from(menuList)[i].innerText;
+  // NOTE: TEST -------------------------------------
+  if(currentLanguage.includes("字幕設定")) {
+    console.log("clicked 字幕設定");
+  }
+  // ----------------------------------------------------
   if (currentLanguage.includes("English") || currentLanguage.includes("英語"))
     return true;
   else return false;
