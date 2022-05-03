@@ -391,8 +391,15 @@ const handlerOfContentScriptMessage = async (
     }
 
     // ExTRanscriptを表示する条件が揃わなくなったとき...
-    if (!rest.isTranscriptDisplaying || !rest.language) {
+    // if (!rest.isTranscriptDisplaying || !rest.language) {
+    if ((rest.isTranscriptDisplaying !== undefined && !rest.isTranscriptDisplaying) || (rest.language !== undefined && !rest.language)) {
         try {
+            // DEBUG:------------------------
+            const current = await state.get();
+            console.log(current);
+            console.log(rest.language);
+            console.log(rest.isTranscriptDisplaying);
+            // ---------------------------------
             // ExTranscriptを非表示にするかする
             // もしもトランスクリプトが表示中であったならば
             if (isExTranscriptStructured && isTranscriptDisplaying) {
@@ -853,7 +860,7 @@ const circulateCaptureSubtitles: iClosureOfCirculater<subtitle_piece[]> =
 
 /**
  * Alert
- * 
+ *
  * alertを表示する
  * 既存のcontent scriptに対してメッセージを送信するのではなく
  * 関数をそのページに埋め込む
@@ -871,7 +878,7 @@ const alertHandler = (tabId: number, msg: string): void => {
 
 /***
  * state module
- * 
+ *
  *
  * This module never holds variables.
  * No matter background script unloaded or reloaded,

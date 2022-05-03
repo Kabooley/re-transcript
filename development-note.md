@@ -27,6 +27,7 @@ MVC と DDD の設計思想を取り入れたい
 -   [不具合記録](#不具合記録)
 
 -   [refactoring](#refactoring)
+    TODO: `undefined`の評価部分の修正
 
 -   [chrome ストアで表示するまで](#chromeストアで表示するまで)
 
@@ -7235,9 +7236,71 @@ const handlerOfControlbar = function (ev: PointerEvent): void {
 
 isItSelectLanguageMenu ~ sendToBackgroundまで期待通りに動いているのに
 
-なぜかbackgroundで非表示にせよの判定になる...
+なぜかbackgroundで非表示にせよの判定になる...なぜ？
 
-なぜ？
+答えは`!undefined`は`true`になる点にあった！！！！
+
+```TypeScript
+// background.ts
+
+
+// handlerOfContentScriptMessage()
+// 
+    // ...
+    // 下記のrestプロパティはいずれかがundefinedだと実行される！！
+    if (!rest.isTranscriptDisplaying || !rest.language) {
+        try {
+          // ...
+```
+
+つまり
+
+今回メッセージをcontentScriptからbackgroundtへ送信するときに
+
+{language: true}だけ送信したけれど、
+
+受け取った側の条件判定で
+
+`!rest.isTranscriptDisplaying || !rest.language`
+
+を評価するのだけれど
+
+`isTranscriptDisplaying`はundefinedなので
+
+つまり`!undefined`を出力している
+
+結果`!undefined || false`で評価するので
+
+条件判定は真になる！
+
+ということでbackground scriptの修正
+
+```TypeScript
+
+// handlerOfContentScriptMessage()
+
+// if (!rest.isTranscriptDisplaying || !rest.language) {
+
+// この評価値は、
+// rest.isTranscriptDisplayingがtrueならば偽となり
+// rest.isTranscriptDisplayingがfalseならば真となり
+// rest.isTranscriptDisplayingがundefinedならば偽となり
+
+if ((rest.isTranscriptDisplaying !== undefined && !rest.isTranscriptDisplaying) || (rest.language !== undefined && !rest.language)) {
+  // ...
+}
+
+```
+
+#### JavaScript Tips: undefinedの扱い
+
+知らんかった...`!undefined`がtrueなんて...
+
+`undefined`は`false`らしいです
+
+これに伴っていろんな場面を修正しないといかん...
+
+
 
 
 ## ExTranscript のハイライト位置の修正
