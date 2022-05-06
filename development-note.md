@@ -7826,6 +7826,17 @@ const moCallback = function (
 
 https://developer.chrome.com/docs/webstore/best_practices/
 
+頒布までにやること：
+
+- TODO: 日本語対応
+- TODO: Manifestバージョンをx.x.x.xにする
+- TODO: 拡張機能説明などドキュメントを作成
+- TODO: POPUPに表示させる説明文の生成
+- TODO: ストア表示用などのiconの生成
+- TODO: CWS用アカウント生成
+
+
+
 #### 頒布手順確認
 
 https://developer.chrome.com/docs/webstore/publish/

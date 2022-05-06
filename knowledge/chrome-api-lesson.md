@@ -14,21 +14,21 @@ V3 特有の話と、よく嵌りやすい点についてまとめました。
 
 次を確認してみてください。
 
-- `png`を提供しているか
+-   `png`を提供しているか
 
 `pbg`以外の拡張子、例えば`svg`とかは無視されます
 
 次の 3 つのサイズ(DIP: デバイスに依存しないピクセル)を提供しているか
 
-- 128 \* 128
+-   128 \* 128
 
 > インストール中および Chrome ウェブストアで使用されます
 
-- 48 \* 48
+-   48 \* 48
 
 > 拡張機能管理ページ（chrome://extensions）で使用される 48x48 アイコンも提供する必要があります
 
-- 16 \* 16
+-   16 \* 16
 
 > 拡張機能のページのファビコンとして使用する 16x16 アイコンを指定することもできます。
 > 16x16 アイコンは、実験的な拡張情報バー機能にも表示されます。
@@ -268,8 +268,8 @@ chrome API の`tabs.query`を使って取得することになります。
 
 windowId を取得する方法として次のメソッドを使うことになります。
 
-- `chrome.windows.getCurrentId()`
-- `chrome.windows.getLastFocused()`
+-   `chrome.windows.getCurrentId()`
+-   `chrome.windows.getLastFocused()`
 
 これらのメソッドで取得できる`windowId`は、
 
@@ -319,9 +319,9 @@ TypeScript 的にいうと、
 
 `chrome.runtime.onMessage.addListener()`のコールバックは
 
-- 正しい：`(): boolean => { return true }`
+-   正しい：`(): boolean => { return true }`
 
-- 誤り：`async (): Promise<boolean> => {return true;}`
+-   誤り：`async (): Promise<boolean> => {return true;}`
 
 非同期処理を含むからといってついついコールバック関数を`async`関数にしてしまうと
 
@@ -333,9 +333,9 @@ TypeScript 的にいうと、
 
 つまり`sendResponse`を非同期に返したいときは次の通りにしなくてはなりません。
 
-- `chrome.runtime.onMessage.addListener()`のコールバックは同期関数を渡さなくてはならない
-- `chrome.runtime.onMessage.addListener()`のコールバックは`true`を返さなくてはならない
-- `chrome.runtime.onMessage.addListener()`のコールバック内で非同期処理をしたいならプロミスチェーンか即時関数内部で`async/await`を使わなくてはならない
+-   `chrome.runtime.onMessage.addListener()`のコールバックは同期関数を渡さなくてはならない
+-   `chrome.runtime.onMessage.addListener()`のコールバックは`true`を返さなくてはならない
+-   `chrome.runtime.onMessage.addListener()`のコールバック内で非同期処理をしたいならプロミスチェーンか即時関数内部で`async/await`を使わなくてはならない
 
 よって次の通りに書くべきです
 
@@ -452,17 +452,17 @@ background script は下記コードの`windowIdSurvey()`を実行する。
 
 以下の状況で`windowIdSurvey()`内の各出力が異なる windowId を出すのか確認する
 
-- 検証１：ブラウザのウィンドウが 1 つだけの時
-  windowId はすべて同じになるはず
+-   検証１：ブラウザのウィンドウが 1 つだけの時
+    windowId はすべて同じになるはず
 
-- 検証２：ブラウザのウィンドウが 2 つの時、もあるウィンドウをフォーカスしたままその POPUP を表示させる
-  windowId は最後にフォーカスしたウィンドウになるはず
+-   検証２：ブラウザのウィンドウが 2 つの時、もあるウィンドウをフォーカスしたままその POPUP を表示させる
+    windowId は最後にフォーカスしたウィンドウになるはず
 
-- 検証３：あとから生成したウィンドウをフォーカスしている最中に、もとあるウィンドウの方の POPUP を表示させる
-  windowId はあとから生成したウィンドウの id になるはず
+-   検証３：あとから生成したウィンドウをフォーカスしている最中に、もとあるウィンドウの方の POPUP を表示させる
+    windowId はあとから生成したウィンドウの id になるはず
 
-- 検証４：あとから生成したウィンドウをフォーカスしている最中に、そちらのウィンドウの方の POPUP を表示させる
-  windowId はあとから生成したウィンドウの id になるはず
+-   検証４：あとから生成したウィンドウをフォーカスしている最中に、そちらのウィンドウの方の POPUP を表示させる
+    windowId はあとから生成したウィンドウの id になるはず
 
 ```JavaScript
 const windowIdSurvey = funciton() {
@@ -569,3 +569,19 @@ timerに関するメソッドは、chrome APIが用意してあるからそち�
 chrome 拡張機能の開発に強い人は是非ご指摘いただきたいです。
 
 またこんな記事でもこれから chrome 拡張機能の開発をする方の助けに慣れれば幸いです。
+
+## 未更新部分
+
+## `setTimeout`, `setInterval`を background script で使うな
+
+解決
+
+https://developer.chrome.com/docs/extensions/mv3/migrating_to_service_workers/#alarms
+
+https://developer.chrome.com/docs/extensions/reference/alarms/
+
+かわりに chrome.alarms API を使いなさいとのこと
+
+> In order to reduce the load on the user's machine, Chrome limits alarms to at most once every 1 minute but may delay them an arbitrary amount more. That is, setting delayInMinutes or periodInMinutes to less than 1 will not be honored and will cause a warning. when can be set to less than 1 minute after "now" without warning but won't actually cause the alarm to fire for at least 1 minute.
+
+> ユーザーのマシンの負荷を軽減するために、**Chrome はアラームを最大で 1 分に 1 回に制限します**が、アラームをさらに任意の量だけ遅延させる場合があります。つまり、delayInMinutes または periodInMinutes を 1 未満に設定すると、適用されず、警告が発生します。**警告なしに「今」から 1 分未満に設定できますが、実際には少なくとも 1 分間はアラームが発生しません。**
