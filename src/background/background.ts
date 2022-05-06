@@ -25,16 +25,11 @@ import {
     tabQuery,
 } from '../utils/helpers';
 import { iModel, modelBase, iStateModule } from './annotations';
-import { alertMessages } from '../Error/templates';
 import {
     circulater,
-    iCallbackOfCirculater,
     iClosureOfCirculater,
-    iConditionOfCirculater,
 } from '../utils/Circulater';
 import {
-    unknownAsyncCallback,
-    unknownConditionFunc,
     repeatPromiseGenerator,
 } from '../utils/repeatPromise';
 
@@ -280,7 +275,6 @@ const handlerOfPopupMessage = async (
                 };
                 response.complete = true;
             } catch (e) {
-                // TODO: stateが取得できなかったときの挙動 alertだす
                 response.complete = false;
                 response.error = e;
 
@@ -312,14 +306,7 @@ const handlerOfPopupMessage = async (
                 const r: boolean = await handlerOfRun(rest.tabInfo);
                 response.success = r;
                 response.complete = true;
-                // TODO: alertHandler()が動作するか動作確認
                 if (!r) {
-                    // chrome.tabs.sendMessage(rest.tabInfo.id, {
-                    //     from: extensionNames.background,
-                    //     to: extensionNames.contentScript,
-                    //     order: orderNames.alert,
-                    //     alertMessage: alertMessages.pageIsNotReady,
-                    // });
                     alertHandler(
                         (await tabQuery()).id,
                         messageTemplate.letPagePrepare
@@ -394,12 +381,6 @@ const handlerOfContentScriptMessage = async (
     // if (!rest.isTranscriptDisplaying || !rest.language) {
     if ((rest.isTranscriptDisplaying !== undefined && !rest.isTranscriptDisplaying) || (rest.language !== undefined && !rest.language)) {
         try {
-            // DEBUG:------------------------
-            const current = await state.get();
-            console.log(current);
-            console.log(rest.language);
-            console.log(rest.isTranscriptDisplaying);
-            // ---------------------------------
             // ExTranscriptを非表示にするかする
             // もしもトランスクリプトが表示中であったならば
             if (isExTranscriptStructured && isTranscriptDisplaying) {
@@ -534,7 +515,7 @@ const handlerOfControllerMessage = async (
  * 4. Inject controller.ts to controll ExTranscript.
  * 5. Send subtitle data to controller.ts to display new subtitles.
  *
- * TODO: 各処理単位を1行にしたい。わかりづらい。
+ * TODO: [低優先] 各処理単位を1行にしたい。わかりづらい。
  * class化とかさらなる関数のラッピングが必要かも
  * */
 const handlerOfRun = async (tabInfo: chrome.tabs.Tab): Promise<boolean> => {

@@ -41,6 +41,8 @@ import { DomManipulationError, uError } from "../Error/Error";
 //
 
 const INTERVAL_TIME = 500;
+// Delay to wait finish event.
+const DELAY_AFTER_EVENT = 200;
 let moControlbar: MutationObserver = null;
 let controlbar: HTMLElement = null;
 
@@ -259,17 +261,14 @@ const handlerOfControlbar = function (ev: PointerEvent): void {
     }
 
     // cc popup menu内部でクリックイベントが起こったら
-    // 字幕が変更されたのか調べる
+    // 字幕設定が変更されたのか、字幕言語が変更されたのか区別するために調べる
     if (path.includes(ccPopupMenu)) {
-      // DEBUG:
-      console.log("[contentScript] clicked on CC popup menu");
-      // NOTE: new function added.
       if (isItSelectLanguageMenu()) {
         const r: boolean = isSubtitleEnglish();
         sendToBackground({ isEnglish: r });
       }
     }
-  }, 200);
+  }, DELAY_AFTER_EVENT);
 };
 
 //
@@ -314,7 +313,7 @@ const isSubtitleEnglish = (): boolean => {
   );
   const checkButtons: NodeListOf<HTMLElement> =
     listParent.querySelectorAll<HTMLElement>(
-      // TODO: selectors.controlBar.cc.checkButtonsに変更してテスト
+      // TODO: [低優先] selectors.controlBar.cc.checkButtonsに変更してテスト
       selectors.controlBar.cc.menuCheckButtons
     );
   const menuList: NodeListOf<HTMLElement> =
@@ -353,51 +352,6 @@ const isSubtitleEnglish = (): boolean => {
     return true;
   else return false;
 };
-// const isSubtitleEnglish = (): boolean => {
-//   const listParent: HTMLElement = document.querySelector<HTMLElement>(
-//     selectors.controlBar.cc.menuListParent
-//   );
-//   const checkButtons: NodeListOf<HTMLElement> =
-//     listParent.querySelectorAll<HTMLElement>(
-//       // TODO: selectors.controlBar.cc.checkButtonsに変更してテスト
-//       selectors.controlBar.cc.menuCheckButtons
-//     );
-//   const menuList: NodeListOf<HTMLElement> =
-//     listParent.querySelectorAll<HTMLElement>(selectors.controlBar.cc.menuList);
-
-//   if (!listParent || !checkButtons || !menuList)
-//     throw new DomManipulationError("Failed to manipulate DOM");
-
-//   // 1. メニューリストのうちどの言語が選択中なのか調べる
-//   // 選択中であるかどうかを示す属性のbooleanをチェックして
-//   // trueであったときの順番を記憶する
-//   let counter: number = 0;
-//   let i: number = null;
-//   const els: HTMLElement[] = Array.from<HTMLElement>(checkButtons);
-//   for (const btn of els) {
-//     if (btn.getAttribute("aria-checked") === "true") {
-//       i = counter;
-//       break;
-//     }
-//     counter++;
-//   }
-//   if (!i) {
-//     throw new Error(
-//       "Error: [isSubtitleEnglish()] Something went wrong but No language is selected"
-//     );
-//   }
-
-//   // 2. 1でしらべた順番にある要素の中のinnerTextから選択中の言語を特定する
-//   const currentLanguage: string = Array.from(menuList)[i].innerText;
-//   // NOTE: TEST -------------------------------------
-//   if(currentLanguage.includes("字幕設定")) {
-//     console.log("clicked 字幕設定");
-//   }
-//   // ----------------------------------------------------
-//   if (currentLanguage.includes("English") || currentLanguage.includes("英語"))
-//     return true;
-//   else return false;
-// };
 
 //
 // --- OBSERVER METHODS -----------------------------------------
@@ -837,3 +791,49 @@ const initialize = async (): Promise<void> => {
 // const displayAlert = (message: string): void => {
 //     alert(message);
 // }
+
+// const isSubtitleEnglish = (): boolean => {
+//   const listParent: HTMLElement = document.querySelector<HTMLElement>(
+//     selectors.controlBar.cc.menuListParent
+//   );
+//   const checkButtons: NodeListOf<HTMLElement> =
+//     listParent.querySelectorAll<HTMLElement>(
+//       // TODO: selectors.controlBar.cc.checkButtonsに変更してテスト
+//       selectors.controlBar.cc.menuCheckButtons
+//     );
+//   const menuList: NodeListOf<HTMLElement> =
+//     listParent.querySelectorAll<HTMLElement>(selectors.controlBar.cc.menuList);
+
+//   if (!listParent || !checkButtons || !menuList)
+//     throw new DomManipulationError("Failed to manipulate DOM");
+
+//   // 1. メニューリストのうちどの言語が選択中なのか調べる
+//   // 選択中であるかどうかを示す属性のbooleanをチェックして
+//   // trueであったときの順番を記憶する
+//   let counter: number = 0;
+//   let i: number = null;
+//   const els: HTMLElement[] = Array.from<HTMLElement>(checkButtons);
+//   for (const btn of els) {
+//     if (btn.getAttribute("aria-checked") === "true") {
+//       i = counter;
+//       break;
+//     }
+//     counter++;
+//   }
+//   if (!i) {
+//     throw new Error(
+//       "Error: [isSubtitleEnglish()] Something went wrong but No language is selected"
+//     );
+//   }
+
+//   // 2. 1でしらべた順番にある要素の中のinnerTextから選択中の言語を特定する
+//   const currentLanguage: string = Array.from(menuList)[i].innerText;
+//   // NOTE: TEST -------------------------------------
+//   if(currentLanguage.includes("字幕設定")) {
+//     console.log("clicked 字幕設定");
+//   }
+//   // ----------------------------------------------------
+//   if (currentLanguage.includes("English") || currentLanguage.includes("英語"))
+//     return true;
+//   else return false;
+// };

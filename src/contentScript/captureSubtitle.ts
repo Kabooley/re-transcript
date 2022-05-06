@@ -41,7 +41,6 @@ import {
 
 /**
  * chrome.runtime.onMessage.addListener()
- * _______________________________________
  *
  * 次のorderに応対する
  * - captureSubtitle: 字幕を取得して送信する

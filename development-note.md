@@ -7073,15 +7073,15 @@ const handlerOfTurnOff = (): void => {
 }
 ```
 
-#### CCポップアップメニューで「字幕設定」メニューに入るとExTranscritpが消える件
+#### CC ポップアップメニューで「字幕設定」メニューに入ると ExTranscritp が消える件
 
-あと「字幕設定」メニューからCCポップアップメニューに戻るとExTranscriptも戻る
+あと「字幕設定」メニューから CC ポップアップメニューに戻ると ExTranscript も戻る
 
-字幕設定を選択したときにcontentScript.ts::currentLanguageが何を示すのか確認のこと
+字幕設定を選択したときに contentScript.ts::currentLanguage が何を示すのか確認のこと
 
 問題は言語リストのほかに「字幕設定」も取得してしまっているから
 
-なのでDOM取得の時点でこいつを除外するようにする
+なので DOM 取得の時点でこいつを除外するようにする
 
 ```TypeScript
 const handlerOfControlbar = function (ev: PointerEvent): void {
@@ -7104,9 +7104,9 @@ const handlerOfControlbar = function (ev: PointerEvent): void {
     // cc popup menu内部でクリックイベントが起こったら
     // 字幕が変更されたのか調べる
     if (path.includes(ccPopupMenu)) {
-        // DEBUG: 
+        // DEBUG:
         console.log("[contentScript] clicked on CC popup menu");
-      // isSubtitleEnglish()の前に、 
+      // isSubtitleEnglish()の前に、
       const r: boolean = isSubtitleEnglish();
       sendToBackground({ isEnglish: r });
     }
@@ -7114,39 +7114,184 @@ const handlerOfControlbar = function (ev: PointerEvent): void {
 };
 ```
 
-CC Popup menuには２つあって
+CC Popup menu には２つあって
 
 言語選択メニューのほう
 
 `div.control-bar-dropdown--menu--2bFbL.control-bar-dropdown--menu-dark--3cSQg`
-    `ul[data-purpose="captions-dropdown-menu"]`
-        `li[role="none"]`
-            `ul[aria-label="字幕"]`
-                `button`
+`ul[data-purpose="captions-dropdown-menu"]`
+`li[role="none"]`
+`ul[aria-label="字幕"]`
+`button`
 
 ```html
-<div id="control-bar-dropdown-menu--518" class="control-bar-dropdown--menu--2bFbL control-bar-dropdown--menu-dark--3cSQg" style="max-height: 32.3498rem;">
-    <ul role="menu" aria-labelledby="control-bar-dropdown-trigger--517" data-purpose="captions-dropdown-menu" class="unstyled-list udlite-block-list">
+<div
+    id="control-bar-dropdown-menu--518"
+    class="control-bar-dropdown--menu--2bFbL control-bar-dropdown--menu-dark--3cSQg"
+    style="max-height: 32.3498rem;"
+>
+    <ul
+        role="menu"
+        aria-labelledby="control-bar-dropdown-trigger--517"
+        data-purpose="captions-dropdown-menu"
+        class="unstyled-list udlite-block-list"
+    >
         <li role="none">
             <ul class="unstyled-list" role="group" aria-label="字幕">
-                <button type="button" role="menuitemradio" tabindex="-1" aria-checked="false" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">オフ</div></button><button type="button" role="menuitemradio" tabindex="-1" aria-checked="true" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">英語 [自動]</div></button><button type="button" role="menuitemradio" tabindex="-1" aria-checked="false" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">インドネシア語 [自動]</div></button><button type="button" role="menuitemradio" tabindex="-1" aria-checked="false" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">イタリア語 [自動]</div></button><button type="button" role="menuitemradio" tabindex="-1" aria-checked="false" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">オランダ語 [自動]</div></button><button type="button" role="menuitemradio" tabindex="-1" aria-checked="false" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">スペイン語 [自動]</div></button><button type="button" role="menuitemradio" tabindex="-1" aria-checked="false" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">ドイツ語 [自動]</div></button><button type="button" role="menuitemradio" tabindex="-1" aria-checked="false" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">フランス語 [自動]</div></button><button type="button" role="menuitemradio" tabindex="-1" aria-checked="false" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">ポルトガル語 [自動]</div></button></ul></li><li role="separator"></li><li role="none"><button type="button" role="menuitem" tabindex="-1" data-purpose="go-to-settings" aria-haspopup="menu" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">字幕設定<svg aria-hidden="true" focusable="false" class="udlite-icon udlite-icon-small video-control-bar-dropdown--next-icon--3crbc"><use xlink:href="#icon-next"></use></svg></div></button></li></ul></div>
+                <button
+                    type="button"
+                    role="menuitemradio"
+                    tabindex="-1"
+                    aria-checked="false"
+                    class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"
+                >
+                    <div class="udlite-block-list-item-content">
+                        オフ
+                    </div></button
+                ><button
+                    type="button"
+                    role="menuitemradio"
+                    tabindex="-1"
+                    aria-checked="true"
+                    class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"
+                >
+                    <div class="udlite-block-list-item-content">
+                        英語 [自動]
+                    </div></button
+                ><button
+                    type="button"
+                    role="menuitemradio"
+                    tabindex="-1"
+                    aria-checked="false"
+                    class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"
+                >
+                    <div class="udlite-block-list-item-content">
+                        インドネシア語 [自動]
+                    </div></button
+                ><button
+                    type="button"
+                    role="menuitemradio"
+                    tabindex="-1"
+                    aria-checked="false"
+                    class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"
+                >
+                    <div class="udlite-block-list-item-content">
+                        イタリア語 [自動]
+                    </div></button
+                ><button
+                    type="button"
+                    role="menuitemradio"
+                    tabindex="-1"
+                    aria-checked="false"
+                    class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"
+                >
+                    <div class="udlite-block-list-item-content">
+                        オランダ語 [自動]
+                    </div></button
+                ><button
+                    type="button"
+                    role="menuitemradio"
+                    tabindex="-1"
+                    aria-checked="false"
+                    class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"
+                >
+                    <div class="udlite-block-list-item-content">
+                        スペイン語 [自動]
+                    </div></button
+                ><button
+                    type="button"
+                    role="menuitemradio"
+                    tabindex="-1"
+                    aria-checked="false"
+                    class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"
+                >
+                    <div class="udlite-block-list-item-content">
+                        ドイツ語 [自動]
+                    </div></button
+                ><button
+                    type="button"
+                    role="menuitemradio"
+                    tabindex="-1"
+                    aria-checked="false"
+                    class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"
+                >
+                    <div class="udlite-block-list-item-content">
+                        フランス語 [自動]
+                    </div></button
+                ><button
+                    type="button"
+                    role="menuitemradio"
+                    tabindex="-1"
+                    aria-checked="false"
+                    class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"
+                >
+                    <div class="udlite-block-list-item-content">
+                        ポルトガル語 [自動]
+                    </div>
+                </button>
+            </ul>
+        </li>
+        <li role="separator"></li>
+        <li role="none">
+            <button
+                type="button"
+                role="menuitem"
+                tabindex="-1"
+                data-purpose="go-to-settings"
+                aria-haspopup="menu"
+                class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"
+            >
+                <div class="udlite-block-list-item-content">
+                    字幕設定<svg
+                        aria-hidden="true"
+                        focusable="false"
+                        class="udlite-icon udlite-icon-small video-control-bar-dropdown--next-icon--3crbc"
+                    >
+                        <use xlink:href="#icon-next"></use>
+                    </svg>
+                </div>
+            </button>
+        </li>
+    </ul>
+</div>
 ```
 
 字幕設定メニューのほう
 
 `div.control-bar-dropdown--menu--2bFbL.control-bar-dropdown--menu-dark--3cSQg`
-    `ul[data-purpose="captions-dropdown-menu"]`
-        `li[role="none"]`
-            `button`
-
+`ul[data-purpose="captions-dropdown-menu"]`
+`li[role="none"]`
+`button`
 
 ```html
-<div id="control-bar-dropdown-menu--518" class="control-bar-dropdown--menu--2bFbL control-bar-dropdown--menu-dark--3cSQg" style="max-height: 32.3498rem;">
-    <ul role="menu" aria-labelledby="control-bar-dropdown-trigger--517" data-purpose="captions-dropdown-menu" class="unstyled-list udlite-block-list">
+<div
+    id="control-bar-dropdown-menu--518"
+    class="control-bar-dropdown--menu--2bFbL control-bar-dropdown--menu-dark--3cSQg"
+    style="max-height: 32.3498rem;"
+>
+    <ul
+        role="menu"
+        aria-labelledby="control-bar-dropdown-trigger--517"
+        data-purpose="captions-dropdown-menu"
+        class="unstyled-list udlite-block-list"
+    >
         <li role="none">
-            <button type="button" role="menuitem" tabindex="-1" data-purpose="go-to-tracks" aria-label="キャプションメニューに戻る" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral">
+            <button
+                type="button"
+                role="menuitem"
+                tabindex="-1"
+                data-purpose="go-to-tracks"
+                aria-label="キャプションメニューに戻る"
+                class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"
+            >
                 <div class="udlite-block-list-item-content">
-                    <svg aria-hidden="true" focusable="false" class="udlite-icon udlite-icon-small video-control-bar-dropdown--prev-icon--3yd9N"><use xlink:href="#icon-previous"></use></svg>
+                    <svg
+                        aria-hidden="true"
+                        focusable="false"
+                        class="udlite-icon udlite-icon-small video-control-bar-dropdown--prev-icon--3yd9N"
+                    >
+                        <use xlink:href="#icon-previous"></use>
+                    </svg>
                     字幕設定
                 </div>
             </button>
@@ -7154,20 +7299,85 @@ CC Popup menuには２つあって
         <li role="separator"></li>
         <li role="none">
             <ul class="unstyled-list" role="group" aria-label="字幕設定">
-                <button type="button" role="menuitem" tabindex="-1" data-purpose="go-to-font-size" aria-haspopup="menu" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral">
-                    <div class="udlite-block-list-item-content">フォントサイズ<span data-purpose="current-font-size" class="video-control-bar-dropdown--current-value--18O0E">100%</span>
-                        <svg aria-hidden="true" focusable="false" class="udlite-icon udlite-icon-small video-control-bar-dropdown--next-icon--3crbc"><use xlink:href="#icon-next"></use></svg></div></button><button type="button" role="menuitem" tabindex="-1" data-purpose="go-to-opacity" aria-haspopup="menu" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">背景の透明度<span data-purpose="current-opacity" class="video-control-bar-dropdown--current-value--18O0E">75%</span><svg aria-hidden="true" focusable="false" class="udlite-icon udlite-icon-small video-control-bar-dropdown--next-icon--3crbc"><use xlink:href="#icon-next"></use></svg></div></button><button type="button" role="menuitemcheckbox" tabindex="-1" aria-checked="true" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">ビデオの下に表示<span class="control-bar-dropdown--checkbox-slider--1LPlb"></span></div></button><button type="button" role="menuitem" tabindex="-1" data-purpose="reset" class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"><div class="udlite-block-list-item-content">リセット</div></button></ul></li></ul></div>
+                <button
+                    type="button"
+                    role="menuitem"
+                    tabindex="-1"
+                    data-purpose="go-to-font-size"
+                    aria-haspopup="menu"
+                    class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"
+                >
+                    <div class="udlite-block-list-item-content">
+                        フォントサイズ<span
+                            data-purpose="current-font-size"
+                            class="video-control-bar-dropdown--current-value--18O0E"
+                            >100%</span
+                        >
+                        <svg
+                            aria-hidden="true"
+                            focusable="false"
+                            class="udlite-icon udlite-icon-small video-control-bar-dropdown--next-icon--3crbc"
+                        >
+                            <use xlink:href="#icon-next"></use>
+                        </svg>
+                    </div></button
+                ><button
+                    type="button"
+                    role="menuitem"
+                    tabindex="-1"
+                    data-purpose="go-to-opacity"
+                    aria-haspopup="menu"
+                    class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"
+                >
+                    <div class="udlite-block-list-item-content">
+                        背景の透明度<span
+                            data-purpose="current-opacity"
+                            class="video-control-bar-dropdown--current-value--18O0E"
+                            >75%</span
+                        ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            class="udlite-icon udlite-icon-small video-control-bar-dropdown--next-icon--3crbc"
+                        >
+                            <use xlink:href="#icon-next"></use>
+                        </svg>
+                    </div></button
+                ><button
+                    type="button"
+                    role="menuitemcheckbox"
+                    tabindex="-1"
+                    aria-checked="true"
+                    class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"
+                >
+                    <div class="udlite-block-list-item-content">
+                        ビデオの下に表示<span
+                            class="control-bar-dropdown--checkbox-slider--1LPlb"
+                        ></span>
+                    </div></button
+                ><button
+                    type="button"
+                    role="menuitem"
+                    tabindex="-1"
+                    data-purpose="reset"
+                    class="udlite-btn udlite-btn-large udlite-btn-ghost udlite-text-sm udlite-block-list-item udlite-block-list-item-small udlite-block-list-item-neutral"
+                >
+                    <div class="udlite-block-list-item-content">リセット</div>
+                </button>
+            </ul>
+        </li>
+    </ul>
+</div>
 ```
 
 つまり両者の違いは、
 
-button要素群の親要素に`ul[aria-label="字幕"]`があるかないかである
+button 要素群の親要素に`ul[aria-label="字幕"]`があるかないかである
 
-となると、CC popup menuでclickイベントが起こるたびに
+となると、CC popup menu で click イベントが起こるたびに
 
-上記のDOMがあるかないかで、
+上記の DOM があるかないかで、
 
-現在表示中のPOPUP menuが言語選択画面なのか、
+現在表示中の POPUP menu が言語選択画面なのか、
 
 もしくは字幕設定画面なのか
 
@@ -7179,7 +7389,7 @@ button要素群の親要素に`ul[aria-label="字幕"]`があるかないかで�
 
 （確認済）上記とマッチする要素がある ? 言語選択画面 : それ以外の画面
 
-同時に、言語選択画面中の選択言語要素であるbutton要素すべてを取得するのにも使える
+同時に、言語選択画面中の選択言語要素である button 要素すべてを取得するのにも使える
 
 「字幕設定」は含まない
 
@@ -7187,12 +7397,12 @@ button要素群の親要素に`ul[aria-label="字幕"]`があるかないかで�
 /***
  * 表示中のCC popup menuが、
  * 「字幕言語選択画面」なのか「字幕設定画面」なのか判定する
- * 
+ *
  * このCSSセレクタで取得できる要素があれば前者
  * nullなら後者という判定になる
- * 
+ *
  * NOTE: CC popup menu上でのonClickイベント時には必ず呼び出すこと
- * */ 
+ * */
 const isItSelectLanguageMenu = (): boolean => {
     const menu: HTMLElement = document.querySelector<HTMLElement>(
         'div.control-bar-dropdown--menu--2bFbL.control-bar-dropdown--menu-dark--3cSQg > ul[data-purpose="captions-dropdown-menu"] > li[role="none"] > ul[aria-label="字幕"] > button'
@@ -7220,7 +7430,7 @@ const handlerOfControlbar = function (ev: PointerEvent): void {
     // cc popup menu内部でクリックイベントが起こったら
     // 字幕が変更されたのか調べる
     if (path.includes(ccPopupMenu)) {
-        // DEBUG: 
+        // DEBUG:
         console.log("[contentScript] clicked on CC popup menu");
     //   NOTE: new function added.
         if(isItSelectLanguageMenu()) {
@@ -7234,9 +7444,9 @@ const handlerOfControlbar = function (ev: PointerEvent): void {
 
 なんかしらんが、
 
-isItSelectLanguageMenu ~ sendToBackgroundまで期待通りに動いているのに
+isItSelectLanguageMenu ~ sendToBackground まで期待通りに動いているのに
 
-なぜかbackgroundで非表示にせよの判定になる...なぜ？
+なぜか background で非表示にせよの判定になる...なぜ？
 
 答えは`!undefined`は`true`になる点にあった！！！！
 
@@ -7245,7 +7455,7 @@ isItSelectLanguageMenu ~ sendToBackgroundまで期待通りに動いているの
 
 
 // handlerOfContentScriptMessage()
-// 
+//
     // ...
     // 下記のrestプロパティはいずれかがundefinedだと実行される！！
     if (!rest.isTranscriptDisplaying || !rest.language) {
@@ -7255,7 +7465,7 @@ isItSelectLanguageMenu ~ sendToBackgroundまで期待通りに動いているの
 
 つまり
 
-今回メッセージをcontentScriptからbackgroundtへ送信するときに
+今回メッセージを contentScript から backgroundt へ送信するときに
 
 {language: true}だけ送信したけれど、
 
@@ -7265,7 +7475,7 @@ isItSelectLanguageMenu ~ sendToBackgroundまで期待通りに動いているの
 
 を評価するのだけれど
 
-`isTranscriptDisplaying`はundefinedなので
+`isTranscriptDisplaying`は undefined なので
 
 つまり`!undefined`を出力している
 
@@ -7273,7 +7483,7 @@ isItSelectLanguageMenu ~ sendToBackgroundまで期待通りに動いているの
 
 条件判定は真になる！
 
-ということでbackground scriptの修正
+ということで background script の修正
 
 ```TypeScript
 
@@ -7292,16 +7502,13 @@ if ((rest.isTranscriptDisplaying !== undefined && !rest.isTranscriptDisplaying) 
 
 ```
 
-#### JavaScript Tips: undefinedの扱い
+#### JavaScript Tips: undefined の扱い
 
-知らんかった...`!undefined`がtrueなんて...
+知らんかった...`!undefined`が true なんて...
 
 `undefined`は`false`らしいです
 
 これに伴っていろんな場面を修正しないといかん...
-
-
-
 
 ## ExTranscript のハイライト位置の修正
 
@@ -7609,18 +7816,99 @@ const moCallback = function (
 
 ```
 
-
 ## chrome ストアで表示するまで
 
-各ポリシーを確認して要点をまとめ、違反しているかどうか自分でチェックすること
+各種ポリシーに違反しないか確認
 
-これめちゃ大変...
+手順確認
 
 参考：
 
 https://developer.chrome.com/docs/webstore/best_practices/
 
-#### google プログラムポリシーに違反していないか？
+#### 頒布手順確認
+
+https://developer.chrome.com/docs/webstore/publish/
+
+> Chrome ウェブストアにアイテムを公開するには、次の手順に従います。
+
+-   アイテムの ZIP ファイルを作成します。
+-   デベロッパー アカウントを作成し、設定します。
+-   アイテムをアップロードする。
+-   アイテムのアセットを追加します。
+-   アイテムを送信して公開する。
+
+1. アイテムの ZIP ファイルを作成します。
+
+Manifest.json がルート・ディレクトリにあること
+
+少なくとも
+
+`name`, `version`, `icons`, `description`が定義されていること
+
+`name`は Chrome web ストアに公開される名前であること
+
+`descriotion`は少なくとも 132 文字以上の拡張機能に関する説明であること
+
+`version`はとても低い数値から始めるのが推奨される
+
+小さいアップデートなど重ねることになるだろうから
+
+2. Chrome Web Store の開発者アカウントを作成し設定する
+
+https://developer.chrome.com/docs/webstore/register/
+
+上記に公式の手順が...
+
+個人アカウントとはべつのパブリッシュなアカウントを作成することを推奨する
+
+CWS アカウント用のメールアドレスには重要なアナウンスが送られてくる場合があるので時々確認するように
+
+いちど削除したアカウントに関連付けられたメールアドレスは再利用できない
+
+#### ユーザ・プライバシーの扱い
+
+> 拡張機能がアクセスできる API は、マニフェストのパーミッション・フィールドで指定されます。
+> 許可されたパーミッションが多ければ多いほど、攻撃者が情報を傍受する手段は増えます。
+> 拡張機能が依存する API のみをリストアップし、より侵襲性の低いオプションを考慮する必要があります。拡張機能が要求するパーミッションが少なければ少ないほど、ユーザーに表示されるパーミッションの警告は少なくなります。
+> ユーザは警告が少ない拡張機能をインストールする可能性が高くなります。
+
+つまり、
+
+Manifest.json の`permission`に含める API には使うかどうかわからなような
+
+あいまいな API を含めることを良しとせず、
+
+必要十分な API だけにとどめることが望ましいと言っている
+
+そのためのコツ：
+
+-   オプショナル・パーミッションを利用する
+
+https://developer.chrome.com/docs/extensions/mv3/user_privacy/#optional_permissions
+
+機能の実行許可をユーザにゆだねたい場合は、`optional_permissions`を利用しよう
+
+-   最小限のユーザ・データを要求すること
+
+ユーザデータは慎重に扱わなければならない
+
+> ドメインが登録されている安全なサーバーにデータを保存および取得します。
+> 拡張機能のストレージは暗号化されていないため、常に HTTPS を使用して接続し、拡張機能のクライアント側に機密性の高いユーザーデータを保持しないようにします。
+
+開発中の拡張機能はこれらのポリシーに抵触しない
+
+そもそもユーザデータは求めない。
+
+ただし、Udemy の字幕を取得し、ローカルストレージに保存するので
+
+ユーザがページから離れたらこれらのデータを間違いなく削除するようにしないと
+
+Udemy からなんか言われるかも....
+
+TODO: ユーザがページから離れたら字幕データを間違いなく削除するようにする
+
+#### google 開発者プログラムポリシー
 
 https://developer.chrome.com/docs/webstore/program_policies/
 
@@ -7674,6 +7962,63 @@ No
 賭博性はあるか？
 
 No
+
+規制されているものを販売しようとしていないか？
+
+No
+
+ウィルスなど含む悪意のある製品でないか？
+
+No
+
+コード可読性の要求
+
+> 開発者は、コードを難読化したり、拡張機能の機能を隠したりしてはなりません
+> これは、拡張パッケージによってフェッチされたすべての外部コードまたはリソースにも当てはまります。
+> 次のフォームを含める限りは、縮小が許可されます。
+
+ホワイトスペース、改行、コードコメント、ブロック区切りの削除
+変数名や関数名の短縮
+ファイルの折りたたみ
+
+とにかく「隠れて」いなければいいので
+
+自分のものは問題ない
+
+二段階認証の要求
+
+すべての CWS アカウントは 2 段階認証が要求される
+
+Google アカウント標準の 2 段階認証保護を利用することになる
+
+Manifest V3 における追加の要求
+
+> Manifest V3 を使用する拡張機能は、拡張機能のコードに関連する追加要件を満たす必要があります。
+> 特に、拡張機能の全機能は、提出されたコードから容易に識別できる必要があります。
+> これは、各拡張機能がどのように動作するかのロジックが自己完結している必要があることを意味します。
+> 拡張機能は、拡張機能の外部のデータおよびその他の情報ソースを参照およびロードすることができますが、これらの外部リソースはいかなるロジックも含んでいてはいけません。
+
+たとえば
+
+-   `<script>`で拡張機能パッケージ外のリソースを参照する場合
+-   `eval()`を使ったリモートリソースをフェッチする行為
+-   リモートソースから複雑なコマンドを実行させるようなインタプリタを生成する行為
+
+つかっている外部のリソースといえば Material Ui くらいで
+
+これは完全にただの CSS である
+
+ロジックは関係ない
+
+禁止商品
+
+-   ペイウォールの回避やログイン制限など、Web サイト上のコンテンツへの不正アクセスを促進する 著作権で保護されたコンテンツまたはメディアの不正アクセス
+-   ダウンロード、またはストリーミングを奨励、促進、または有効化する
+-   暗号通貨
+
+そもそもユーザがログインして購入したコンテンツじゃないと表示さえされないので
+
+これは大丈夫なのでは？
 
 #### 準備するもの
 
