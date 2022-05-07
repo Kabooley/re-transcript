@@ -370,8 +370,9 @@ const onWindowResizeHandler = (): void => {
         sStatus.setState({ position: positionStatus.noSidebar });
     }
 
-    // sidebar transcriptの高さの更新
-    if (position === positionStatus.sidebar) calcContentHeight();
+    // 最新のpositionを取得してから
+    
+    if (sStatus.getState().position === 'sidebar') calcContentHeight();
 };
 
 /**
@@ -401,15 +402,16 @@ const closeButtonHandler = (): void => {
  *
  * */
 const calcContentHeight = (): void => {
+    console.log('[controller] calcContentHeight');
     const footer: HTMLElement = document.querySelector(
-        '.transcript--autoscroll-wrapper--oS-dz.transcript--bottom--2wFKl'
+        // '.transcript--autoscroll-wrapper--oS-dz.transcript--bottom--2wFKl'
+        '.transcript--autoscroll-wrapper--oS-dz'
     );
     const height: number = parseInt(
         window.getComputedStyle(footer).height.replace('px', '')
     );
     console.log(height);
     sidebarTranscriptView.updateContentHeight(height);
-
 };
 
 //
