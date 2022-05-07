@@ -409,6 +409,7 @@ const calcContentHeight = (): void => {
     );
     console.log(height);
     sidebarTranscriptView.updateContentHeight(height);
+
 };
 
 //
@@ -466,7 +467,7 @@ const getElementIndexOfList = (
  * Update sStatus.highlight index number everytime transcriptListObserver has been observed.
  *
  * Save index number of latest highlighted element in Transcript.
- * 
+ *
  * @throws {SyntaxError}:
  * SyntaxError possibly occures if DOM unable to caught.
  * @throws {RangeError}:
@@ -488,10 +489,9 @@ const updateHighlightIndexes = (): void => {
     sStatus.setState({ highlight: next });
 };
 
-
 /**
- * Highlight ExTranscript element based on sStatus.ExHighlight. 
- * 
+ * Highlight ExTranscript element based on sStatus.ExHighlight.
+ *
  * Invoked by updateExHighlight().
  *
  * TODO: (対応)currentもnextもnullであってはならない場面でnullだとsyntaxerrorになる
@@ -539,7 +539,6 @@ const highlightExTranscript = (): void => {
     }
 };
 
-
 /**
  * Scroll to Highlight Element on ExTranscript
  *
@@ -576,7 +575,7 @@ const highlightExTranscript = (): void => {
  *
  * TODO: marginTopを加味した計算方法が正しいのか確認
  * */
- const scrollToHighlight = (): void => {
+const scrollToHighlight = (): void => {
     console.log('[controller] scrollToHighlight()');
 
     // そのたびにいまハイライトしている要素を取得する
@@ -616,7 +615,6 @@ const highlightExTranscript = (): void => {
     }
 };
 
-
 /**
  * Reset MutationObserver API for detect scroll system.
  *
@@ -634,7 +632,7 @@ const highlightExTranscript = (): void => {
  *
  *
  * */
- const resetDetectScroll = (): void => {
+const resetDetectScroll = (): void => {
     console.log('[controller] reset Autro Scroll System');
 
     const { isAutoscrollInitialized } = sStatus.getState();
@@ -669,11 +667,9 @@ const highlightExTranscript = (): void => {
     }
 };
 
-
-// 
+//
 // --- OTHER LISTENERS -----------------------------------
-// 
-
+//
 
 /**
  *
@@ -714,7 +710,6 @@ const resetAutoscrollCheckboxListener = (): void => {
     cb.removeEventListener('click', autoscrollCheckboxClickHandler);
     cb.addEventListener('click', autoscrollCheckboxClickHandler);
 };
-
 
 //
 // --- UPDATE STATE METHODS -----------------------------------
@@ -810,7 +805,6 @@ const updateExHighlight: iObserver<iController> = (prop, prev): void => {
     highlightExTranscript();
     scrollToHighlight();
 };
-
 
 /**
  * Entry Point

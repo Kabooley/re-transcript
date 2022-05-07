@@ -23,12 +23,18 @@ const TIMERS = {
   slideTimer: 1600,
 } as const;
 
+const templates = {
+  complete: "COMPLETE!",
+  rebuilding: "REBUILDING...",
+  turnOff: "TURN OFF"
+} as const;
+
 /*********************************************************************
  * @param props
- * @param props.built: 拡張機能が実行中ならばtrue
- * @param props.building: 拡張機能がRUNされて構築中ならばtrue
- * @param props.correctUrl: Popupが開かれたときのURLが許可URLなのかどうか
- * @param props.handlerOfToggle: 実行/OFFボタンが押されたときに発火する関数
+ * @param { boolean} built - 拡張機能が実行中ならばtrue
+ * @param { boolean} building - 拡張機能がRUNされて構築の最中ならばtrue
+ * @param { boolean} correctUrl - Popupが開かれたときのURLが許可URLなのかどうか
+ * @param { funciton } handlerOfToggle - 実行/OFFボタンが押されたときに発火する関数
  *
  * */
 export default function Content(props): JSX.Element {

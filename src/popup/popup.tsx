@@ -9,7 +9,7 @@ TODO:
     - verifyValidPage()はじめ各メソッドで例外が派生する場合の対処
     - 後回しでいい LoadingButtonのLoadingの色を薄くしない
 */
-// 'React'の宣言はMaterial UIに必須なので消さないこと
+// NOTE: 'React'の宣言はMaterial UIに必須なので消さないこと
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import {
@@ -47,7 +47,7 @@ const Popup = (): JSX.Element => {
     const [building, setBuilding] = useState<boolean>(false);
     // 正常に拡張機能が実行されたらtrue
     const [built, setBuilt] = useState<boolean>(false);
-    // Saves Tab いらないかも...
+    // chrome.tabs.Tab情報
     const [tabInfo, setTabInfo] = useState<chrome.tabs.Tab>(null);
     // toggleボタンがonならtrue
     const [turningOn, setTurningOn] = useState<boolean>(false);
@@ -73,7 +73,10 @@ const Popup = (): JSX.Element => {
     }, []);
 
     // Check if active tab URL is valid.
+    //
+    // If it's valid URL, save that chrome.tabs.Tab[0] into tabInfo
     const verifyValidPage = (): void => {
+        console.log('[popup] verify valid page');
         chrome.tabs
             .query({
                 active: true,
@@ -89,6 +92,8 @@ const Popup = (): JSX.Element => {
                 if (r && r.length) {
                     setCorrectUrl(true);
                     setTabInfo(tabs[0]);
+                    console.log('[popup] saved Tab info');
+                    console.log(tabs[0]);
                 } else {
                     setCorrectUrl(false);
                 }
@@ -103,7 +108,7 @@ const Popup = (): JSX.Element => {
     const handlerOfRun = (): void => {
         if (!tabInfo) throw new Error('Error: tabInfo is null');
         setBuilding(true);
-        console.log('[popup] Rebuilding...');
+        console.log('[popup] handler of run: Rebuilding...');
 
         sendMessagePromise({
             from: extensionNames.popup,
@@ -122,12 +127,13 @@ const Popup = (): JSX.Element => {
                 setBuilt(false);
                 setBuilding(false);
                 setTurningOn(false);
-                console.error(e.message);
-                // TODO: 実行不可能であることをViewで示す
+                // NOTE: 実行不可能であることはalertを出すのでpopupでは何も表示しない
+                console.error(e);
             });
     };
 
     const handlerOfTurnOff = (): void => {
+        console.log('[popup] handler of toggle');
         sendMessagePromise({
             from: extensionNames.popup,
             to: extensionNames.background,
@@ -139,20 +145,24 @@ const Popup = (): JSX.Element => {
                 setTurningOn(false);
             })
             .catch((e) => {
-                // TODO: 実行不可能であることをViewで示す
+                setBuilt(false);
+                setBuilding(false);
+                setTurningOn(false);
+                // NOTE: 実行不可能であることはalertを出すのでpopupでは何も表示しない
                 console.error(e);
             });
     };
 
+    // toggles handler according to turningOn value.
+    //
     const handlerOfToggle = (): void => {
+        console.log('[popup] handler of toggle');
         turningOn
             ? (function () {
-                  console.log('[popup] Turning off...');
                   setTurningOn(false);
                   handlerOfTurnOff();
               })()
             : (function () {
-                  console.log('[popup] Turning on...');
                   setTurningOn(true);
                   handlerOfRun();
               })();
@@ -173,5 +183,3 @@ const Popup = (): JSX.Element => {
 const root = document.createElement('div');
 document.body.appendChild(root);
 ReactDOM.render(<Popup />, root);
-
-// legacy code -------------

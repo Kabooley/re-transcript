@@ -6922,7 +6922,33 @@ intersection observer API の導入の検討
 
 ## 不具合記録
 
-4/22: ブラウザでウィンドウを小さくしたら ExTranscritp が sidebar にい続けた
+#### 5/7: sidebar表示になるときにrunするとcontroller.tsでgetComputedStyleのせいで例外吐き出す件について
+
+
+ついにこいつと決着つけるときが...
+
+避けられなくなったので対処
+
+```TypeScript
+const calcContentHeight = (): void => {
+  const footer: HTMLElement = document.querySelector(
+      '.transcript--autoscroll-wrapper--oS-dz.transcript--bottom--2wFKl'
+  );
+  const height: number = parseInt(
+      window.getComputedStyle(footer).height.replace('px', '')
+  );
+  console.log(height);
+  sidebarTranscriptView.updateContentHeight(height);
+};
+
+```
+
+原因は、主にfooterがnullになるからというのがよくある
+
+よくみたらセレクタを生で渡しているなぁ...
+
+
+#### 4/22: ブラウザでウィンドウを小さくしたら ExTranscritp が sidebar にい続けた
 
 ```TypeScript
 const onWindowResizeHandler = (): void => {
