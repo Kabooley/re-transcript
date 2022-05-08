@@ -31,6 +31,8 @@ export const transcript = {
     // Controlbar
     controlbar:
         "div.control-bar--control-bar--MweER[data-purpose='video-controls']",
+    // Footer of Transcript when it is sidebar.
+    footerOfSidebar: '.transcript--autoscroll-wrapper--oS-dz',
     // NOTE: new added. 自動スクロールチェックボックス
     // AutoScroll Checkbox
     autoscroll: "[name='autoscroll-checkbox']",

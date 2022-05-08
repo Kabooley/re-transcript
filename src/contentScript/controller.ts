@@ -371,7 +371,7 @@ const onWindowResizeHandler = (): void => {
     }
 
     // 最新のpositionを取得してから
-    
+
     if (sStatus.getState().position === 'sidebar') calcContentHeight();
 };
 
@@ -404,8 +404,8 @@ const closeButtonHandler = (): void => {
 const calcContentHeight = (): void => {
     console.log('[controller] calcContentHeight');
     const footer: HTMLElement = document.querySelector(
-        // '.transcript--autoscroll-wrapper--oS-dz.transcript--bottom--2wFKl'
-        '.transcript--autoscroll-wrapper--oS-dz'
+        // '.transcript--autoscroll-wrapper--oS-dz'
+        selectors.transcript.footerOfSidebar
     );
     const height: number = parseInt(
         window.getComputedStyle(footer).height.replace('px', '')
