@@ -1,6 +1,6 @@
 # Note: Refactoring controller.ts
 
-UdemyのTypeScriptコースの内容をうまいことプロジェクトに取り込めないか
+Udemy の TypeScript コースの内容をうまいことプロジェクトに取り込めないか
 
 やってみる
 
@@ -8,25 +8,41 @@ UdemyのTypeScriptコースの内容をうまいことプロジェクトに取�
 
 標準イベント
 
-- `onResize`
-- `onScroll`
-- `onClick`: AutroScrollToggleButton
-- `onClick`: CloseButton
+-   `onResize`
+-   `onScroll`
+-   `onClick`: AutroScrollToggleButton
+-   `onClick`: CloseButton
 
 独自イベント
 
-- `reset`
-- `turnOff`
-- `position-changed`: sidebar or noSidebar
-- `subtitle-sent`: When get subtitles
-- `window-too-small`:
+-   `reset`
+-   `turnOff`
+-   `position-changed`: sidebar or noSidebar
+-   `subtitle-sent`: When get subtitles
+-   `window-too-small`:
 
-## interface
+## Events と Attributes だけつけた Model を実装してみた
+
+現時点で、`change`イベントだけ登録してある
 
 ```TypeScript
+/**************************************
+ * 動作確認済
+ *
+ * これで何が変わったかといえば、
+ *
+ * sStatusの代わりに_modelを使えるようになった
+ * そんだけ
+ *
+ * あまりイベントは活躍しない
+ * 今のところ'change'イベントしか必要ないから
+ *
+ * NOTE: 以下の定義のすべてのT型はすべてたった一つに統一される
+ *
+ * **/
 interface iController {
     // 本家Transcriptのポジション2通り
-    position: keyof_positionStatus;
+    position: string;
     // 本家Transcriptでハイライトされている字幕の要素の順番
     highlight: number;
     // ExTranscriptの字幕要素のうち、いまハイライトしている要素の順番
@@ -41,16 +57,25 @@ interface iController {
     isAutoscrollOn: boolean;
 }
 
-// Annotation of sSubtitles.
-interface iSubtitles {
-    subtitles: subtitle_piece[];
-}
+// T型のオブジェクトのプロパティなら、その一部でも全部でも受け付ける
+type iProps<T> = {[Property in keyof T]?: T[Property]}
+// iProps型のオブジェクトを受け付ける関数
+type Callback<T> = (prop: iProps<T>) => void;
 
-```
 
-## Attributes
+// Base object of sStatus.
+const statusBase: iController = {
+    // NOTE: position, viewの初期値は意味をなさず、
+    // すぐに変更されることが前提である
+    position: null,
+    highlight: null,
+    ExHighlight: null,
+    indexList: null,
+    isAutoscrollInitialized: false,
+    isWindowTooSmall: false,
+    isAutoscrollOn: false,
+};
 
-```TypeScript
 export class Attributes<T> {
     // Requires Storage instance
     constructor(private data: T) {
@@ -59,109 +84,145 @@ export class Attributes<T> {
     }
 
     // prop can have part of data
-    set({prop: {
-        [Property in keyof T]?: T[Property];
-    }}): void {
+    set(prop: iProps<T>): void {
         this.data = {
-            ...this.data, ...prop
-        }
-    };
+            ...this.data,
+            ...prop,
+        };
+    }
 
     // get always returns all.
     get(): T {
-        return {...this.data};
+        return { ...this.data };
     }
-} 
-```
+}
 
-## Model
-
-```TypeScript
 export class Model<T> {
-    constructor(
-        private attributes: Attributes<T>,
-        private events: Events,
-    ){};
+    constructor(private attributes: Attributes<T>, private events: Events<T>) {}
 
     get get() {
-        this.attributes.get;
-    };
+        return this.attributes.get;
+    }
 
     get on() {
-        this.events.on;
+        return this.events.on;
     }
 
     get trigger() {
-        this.events.trigger;
+        return this.events.trigger;
     }
 
-    set({prop: {
-        [Property in keyof T]?: T[Property];
-    }}) {
+    set(prop: iProps<T>) {
         this.attributes.set(prop);
-        this.events.trigger('change');
+        // NOTE: DO PASS prop
+        this.events.trigger('change', prop);
+        //
+        // DEBUG:
+        //
+        // Make sure how this.attributes.data changed
+        console.log('--------------------------');
+        console.log('prop:');
+        console.log(prop);
+        console.log('Updated data:');
+        console.log(this.attributes.get());
+        console.log('--------------------------');
     }
-
 }
-```
 
-## Events 
 
-講義のそのまま
-
-```TypeScript
-type Callback = () => void;
-
-export class Eventing {
-    constructor(public events: { [key: string]: Callback[] }) {
+export class Events<T> {
+    public events: { [key: string]: Callback<T>[] };
+    constructor() {
         this.events = {};
         this.on = this.on.bind(this);
-        this.trigger = this.trigger(this);
+        this.trigger = this.trigger.bind(this);
     }
 
-    on(eventName: string, callback: Callback): void {
+    on(eventName: string, callback: Callback<T>): void {
         const handlers = this.events[eventName] || [];
         handlers.push(callback);
         this.events[eventName] = handlers;
-    };
+    }
 
-    trigger(eventName: string): void {
+    trigger(eventName: string, prop: iProps<T>): void {
         const handlers = this.events[eventName];
         if (handlers === undefined || !handlers.length) return;
         handlers.forEach((cb) => {
-            cb();
+            cb(prop);
         });
-    };
+    }
 }
-```
 
-## Event Handlers
-
-いまのところ
-
-「どのプロパティが来たときにどれをトリガーする」という具合に
-
-選ぶことはできない
-
-すべて呼出になる
-
-でもそれはプロジェクトの方となんら変わらない
-
-雑に使ってみる
-
-```TypeScript
 export class ControllerModel extends Model<iController> {
     static build(sStatusBase: iController): ControllerModel {
         return new ControllerModel(
             new Attributes<iController>(sStatusBase),
-            new Events(),
+            new Events<iController>()
         );
     }
 }
 
-const _model = ControllerModel.build();
+const updatePosition = (prop: iProps<iController>): void => {
+    if(prop.position === undefined) return;
+    console.log('update psotion');
+};
+
+const updateHighlight = (prop: iProps<iController>): void => {
+    if(prop.highlight === undefined) return;
+    console.log('update highlight');
+};
+
+const updateExHighlight = (prop: iProps<iController>): void => {
+    if(prop.ExHighlight === undefined) return;
+    console.log('update ExHighlight');
+};
+
+const _model = ControllerModel.build(statusBase);
 
 _model.on('change', updatePosition);
 _model.on('change', updateHighlight);
 _model.on('change', updateExHighlight);
+
+
+_model.set({ position: 'sidebar' });
+_model.set({ highlight: 11 });
+_model.set({ ExHighlight: 12 });
+_model.set(statusBase);
+
+// 定義時にわたしたinterfaceに定義されているプロパティを
+// 返すことをTypeScriptは理解できている
+// なので以下はエラーにならない
+const { position } = _model.get();
+
 ```
+
+## turnOff, reset イベント
+
+検討：
+
+`turnOff`というイベントを登録する？
+
+つまり、各発火場所での呼び出しを、
+
+handlerOfTurnOff ではなくて代わりに trigger を呼び出す
+
+```TypeScript
+// Fire point
+_model.trigger('turnOff');
+
+// 予めhandlerOfTurnOffを登録しておく
+_model.on('turnOff', handlerOfTurnOff);
+
+const handlerOfTurnOff = (): void => {
+    console.log('[controller] handlerOfTurnOff()');
+    // ...
+}
+```
+
+どっちでも変わらない
+
+ただし、今のところ Events.trigger には第二引数として prop が必須な点である...
+
+## 後始末
+
+...そもそも必要なかったわ...
