@@ -6,6 +6,7 @@ const SidebarTranscriptView = function () {
     // insert position for Element.insertAdjaccentHTML()
     this.insertPosition = 'afterbegin';
     this.insertParentSelector = selectors.EX.sidebarParent;
+    // TODO: 配列じゃなくていい
     this.transcriptSelectors = [selectors.EX.sidebarWrapper];
 };
 

@@ -8,18 +8,18 @@ Udemy の TypeScript コースの内容をうまいことプロジェクトに�
 
 標準イベント
 
--   `onResize`
--   `onScroll`
--   `onClick`: AutroScrollToggleButton
--   `onClick`: CloseButton
+- `onResize`
+- `onScroll`
+- `onClick`: AutroScrollToggleButton
+- `onClick`: CloseButton
 
 独自イベント
 
--   `reset`
--   `turnOff`
--   `position-changed`: sidebar or noSidebar
--   `subtitle-sent`: When get subtitles
--   `window-too-small`:
+- `reset`
+- `turnOff`
+- `position-changed`: sidebar or noSidebar
+- `subtitle-sent`: When get subtitles
+- `window-too-small`:
 
 ## Events と Attributes だけつけた Model を実装してみた
 
@@ -223,6 +223,187 @@ const handlerOfTurnOff = (): void => {
 
 ただし、今のところ Events.trigger には第二引数として prop が必須な点である...
 
+どっちでも変わらないのならば、別にやらなくてもいいかな
+
 ## 後始末
 
 ...そもそも必要なかったわ...
+
+## View
+
+の導入検討
+
+講義のほうの View の特徴とは
+
+- Model インスタンスが必須である
+- 'change'イベントで必ず render()させる
+- render()で必ずイベントハンドラをバインドさせている
+- イベントハンドラは Model のインスタンスにアクセスできる
+
+```TypeScript
+export class View<T exntends Model<K>, K> {
+    constructor(public parent: Element, public model: T) {
+        this.bindModel();
+    }
+
+    abstract eventsMap(): { [key: string]: () => void };
+    abstract template(): string;
+
+
+    bindModel(): void {
+        // NOTE: 必ずしも`change`イベントにしなくてもいいかも
+        // たとえば`render`イベントとか
+        this.model.on('change', () => {
+            this.render();
+        });
+    }
+
+    bindEvents(fragment: DocumentFragment): void {
+        const eventsMap = this.eventsMap();
+
+        for (let eventKey in eventsMap) {
+            const [eventName, selector] = eventKey.split(':');
+            fragment.querySelectorAll(selector).forEach((element) => {
+                element.addEventListener(eventName, eventsMap[eventKey]);
+            });
+        }
+    }
+
+    render(): void {
+        this.parent.innerHTML = '';
+
+        // NOTE: inject先でtemplateを使われている可能性はある
+        const templateElement = document.createElement('template');
+        templateElement.innerHTML = this.template();
+
+        this.bindEvents(templateElement.content);
+
+        this.parent.append(templateElement.content);
+    }
+}
+```
+
+ひとまずプロジェクトの各 view のもとになりそうな class を実装してみる
+
+```TypeScript
+export class ExTranscriptView {
+    constructor(
+        private parentSelector: string,
+        private insertPosition: InsertPosition,
+        // ExTranscript要素のなかで一番外側の要素
+        private exTranscriptSelector: string,
+        private markupGenerator: (subtitle_piece[]) => string,
+        private templateId: string
+    ) {}
+
+    template(subtitles?: subtitle_piece[]): string {
+        // インスタンスごとに異なるmarkupを出力できるようにする
+        return this.markupGenerator(subtitles);
+    }
+
+    // renderする場所は動的に変化するので必ずその都度DOMを取得する
+    render(subtitles?: subtitle_piece[]): void {
+        // 毎回レンダリング前に消去する
+        this.clear();
+
+        // 挿入先の親要素DOM取得
+        const parent: HTMLElement = document.querySelector<HTMLElement>(this.parentSelector);
+
+        // TODO: Bottom ExTranscriptだけに必要な措置...
+        // 親要素のCSS positionプロパティを強制的に追加
+        parent.style.position = 'relative';
+
+
+        // const html: string = (subtitles.length && subtitles !== undefined)
+        //     ? this.generateMarkup(subtitles) : this.generateMarkup();
+
+        // NOTE: bindEvents()を使えるようにするためにtemplateを導入
+        //
+        const template = document.createElement('template');
+        template.setAttribute("id", this.templateId);
+        template.innerHTML = this.template(subtitles);
+
+        // NOTE: bindElements()はViewで定義してあるやつ
+        this.bindElements(template.content);
+
+        // 挿入
+        parent.insertAdjacentHTML(this.insertPosition, template.content);
+    }
+
+    clear(): void {
+        document.querySelector(this.exTranscriptSelector).remove();
+        // TODO: Bottom ExTranscriptは親要素のposition: relativeを解除しないといけない
+    }
+
+    eventsMap(): { [key: string]: () => void } {
+        return {
+            // closeButtonHandlerはcontroller.tsで定義されているやつ
+            `click:${selectors.EX.closeButton}`: closeButtonHandler,
+        };
+    }
+}
+
+
+// for example. sidebar ExTranscript Markup generator
+//
+const sidebarMarkup = (subtitles?: subtitle_piece[]): string => {
+    const s: string = (subtitles.length && subtitles !== undefined) ? generateSubtitle(subtitles) : '';
+    const closeButton: string = generateCloseButton();
+    return `
+          <div class="${selectors.EX.sidebarWrapper.slice(1)}">
+              <section class="${selectors.EX.sidebarSection.slice(1)}">
+                  <div class="${selectors.EX.sidebarHeader.slice(1)}">
+                      <h2 class="heading-secondary">ExTranscript</h2>
+                      <button type="button" class="${selectors.EX.closeButton.slice(
+                          1
+                      )}">${closeButton}</button>
+                  </div>
+                  <div class="${selectors.EX.sidebarContent.slice(1)}">
+                    <div class="${selectors.EX.sidebarContentPanel.slice(1)}">
+                      ${s}
+                    </div>
+                  </div>
+              </section>
+          </div>
+      `;
+}
+
+const generateSubtitle = (subtitles: subtitle_piece[]): string => {
+    let m: string = '';
+    for (const s of subtitles) {
+        const _m: string = `
+        <div class="${selectors.EX.sidebarCueContainer.slice(1)}" data-id="${
+            s.index
+        }">
+          <p class="${selectors.EX.sidebarCue.slice(1)}">
+            <span data-purpose="${selectors.EX.sidebarCueSpan}">${
+            s.subtitle
+        }</span>
+          </p>
+        </div>
+      `;
+        m = m.concat(_m);
+    }
+    return m;
+}
+
+const generateCloseButton = (): string => {
+    return `
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g clip-path="url(#clip0_2_8)">
+    <line x1="-0.707107" y1="38.2929" x2="35.2929" y2="2.29289" stroke="black" stroke-width="2"/>
+    <line x1="-1.29289" y1="-0.707107" x2="34.7071" y2="35.2929" stroke="black" stroke-width="2"/>
+    </g>
+    <defs>
+    <clipPath id="clip0_2_8">
+    <rect width="36" height="36" rx="8" fill="white"/>
+    </clipPath>
+    </defs>
+    </svg>
+    `;
+}
+
+const sidebar: ExTranscriptView = new ExTranscriptView(
+    selectors.EX.sidebarParent, 'afterbegin', selectors.EX.sidebarWrapper, sidebarMarkup
+)
+```

@@ -1,23 +1,21 @@
-import * as selectors from '../utils/selectors';
-import { subtitle_piece } from '../utils/constants';
-import './exTranscript.scss';
+import * as selectors from "../utils/selectors";
+import { subtitle_piece } from "../utils/constants";
+import "./exTranscript.scss";
 
 const BottomTranscriptView = function () {
-    // insert position for Element.insertAdjaccentHTML()
-    this.insertPosition = 'afterbegin';
-    this.insertParentSelector = selectors.EX.noSidebarParent;
-    this.transcriptSelectors = [
-        selectors.EX.dashboardTranscriptWrapper,
-        selectors.EX.dashboardTranscriptHeader,
-        selectors.EX.dashboardTranscriptPanel,
-        selectors.EX.dashboardTranscriptBottom,
-    ];
+  // insert position for Element.insertAdjaccentHTML()
+  this.insertPosition = "afterbegin";
+  this.insertParentSelector = selectors.EX.noSidebarParent;
+  // TODO: 配列じゃなくていい
+  this.transcriptSelectors = [
+    selectors.EX.dashboardTranscriptWrapper,
+  ];
 };
 
 // ひとまずハードコーディングなんだわ...
 // <use>とか使えるようになるといいね...
 BottomTranscriptView.prototype.generateSVG = function (): string {
-    return `
+  return `
     <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g clip-path="url(#clip0_2_8)">
     <line x1="-0.707107" y1="38.2929" x2="35.2929" y2="2.29289" stroke="black" stroke-width="2"/>
@@ -39,16 +37,16 @@ span[data-purpose="ex--dashboard-cue-text"]
 
 */
 BottomTranscriptView.prototype.generateSubtitleMarkup = function (
-    subtitles: subtitle_piece[]
+  subtitles: subtitle_piece[]
 ): string {
-    var mu: string = '';
-    for (const s of subtitles) {
-        const _mu: string = `
+  var mu: string = "";
+  for (const s of subtitles) {
+    const _mu: string = `
         <div class="${selectors.EX.dashboardTranscriptCueContainer.slice(
-            1
+          1
         )}" data-id="${s.index}">
             <p data-purpose="ex-transcript-cue" class="${selectors.EX.dashboardTranscriptCue.slice(
-                1
+              1
             )}">
                 <span data-purpose="${selectors.EX.dashboardTranscriptCueText}">
                     ${s.subtitle}
@@ -56,73 +54,73 @@ BottomTranscriptView.prototype.generateSubtitleMarkup = function (
             </p>
         </div>
     `;
-        // concatでいいのかな...
-        mu = mu.concat(_mu);
-    }
-    return mu;
+    // concatでいいのかな...
+    mu = mu.concat(_mu);
+  }
+  return mu;
 };
 
 BottomTranscriptView.prototype.generateMarkup = function (
-    subtitleStrings?: string
+  subtitleStrings?: string
 ) {
-    const closeButton: string = this.generateSVG();
-    return `
+  const closeButton: string = this.generateSVG();
+  return `
     <div class="${selectors.EX.dashboardTranscriptWrapper.slice(1)}">
         <div class="${selectors.EX.dashboardTranscriptHeader.slice(1)}">
             <h2 class="heading-secondary">ExTranscript</h2>
             <button type="button" class="${selectors.EX.closeButton.slice(
-                1
+              1
             )}">${closeButton}</button>
         </div>
         <div class="${selectors.EX.dashboardTranscriptPanel.slice(1)}">
-            ${subtitleStrings === undefined ? '' : subtitleStrings}
+            ${subtitleStrings === undefined ? "" : subtitleStrings}
         </div>
     </div>
     `;
 };
 
 BottomTranscriptView.prototype.render = function (
-    subtitles?: subtitle_piece[]
+  subtitles?: subtitle_piece[]
 ): void {
-    //   親要素を`position: relative`にする
-    const e: HTMLElement = document.querySelector<HTMLElement>(
-        this.insertParentSelector
-    );
-    e.style.position = 'relative';
-    const p: InsertPosition = this.insertPosition;
-    var html: string = '';
-    if (subtitles.length > 0) {
-        const s: string = this.generateSubtitleMarkup(subtitles);
-        html = this.generateMarkup(s);
-    } else {
-        html = this.generateMarkup();
-    }
-    e.insertAdjacentHTML(p, html);
+  //   親要素を`position: relative`にする
+  const e: HTMLElement = document.querySelector<HTMLElement>(
+    this.insertParentSelector
+  );
+  e.style.position = "relative";
+  const p: InsertPosition = this.insertPosition;
+  var html: string = "";
+  if (subtitles.length > 0) {
+    const s: string = this.generateSubtitleMarkup(subtitles);
+    html = this.generateMarkup(s);
+  } else {
+    html = this.generateMarkup();
+  }
+  e.insertAdjacentHTML(p, html);
 };
 
 // Udemyページのコンテンツを間違っても消してしまわないように
 BottomTranscriptView.prototype.clear = function (): void {
-    this.transcriptSelectors.forEach((s: string) => {
-        const e: Element = document.querySelector(s);
-        if (e) e.remove();
-    });
-    //   親要素につけていた`position: relative`を解除する
-    const parent: HTMLElement = document.querySelector<HTMLElement>(
-        this.insertParentSelector
-    );
-    parent.style.position = '';
+  this.transcriptSelectors.forEach((s: string) => {
+    const e: Element = document.querySelector(s);
+    if (e) e.remove();
+  });
+  //   親要素につけていた`position: relative`を解除する
+  const parent: HTMLElement = document.querySelector<HTMLElement>(
+    this.insertParentSelector
+  );
+  parent.style.position = "";
 };
 
 BottomTranscriptView.prototype.renderSpinner = function (): void {
-    console.log('[BottomTranscriptView] render spinner');
+  console.log("[BottomTranscriptView] render spinner");
 };
 
 BottomTranscriptView.prototype.renderError = function (): void {
-    console.log('[BottomTranscriptView] render error');
+  console.log("[BottomTranscriptView] render error");
 };
 
 BottomTranscriptView.prototype.renderMessage = function (): void {
-    console.log('[BottomTranscriptView] render message');
+  console.log("[BottomTranscriptView] render message");
 };
 
 export default new BottomTranscriptView();
