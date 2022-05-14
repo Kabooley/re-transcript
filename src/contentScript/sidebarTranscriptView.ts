@@ -81,19 +81,41 @@ SidebarTranscriptView.prototype.generateSubtitleMarkup = function (
 // - subtitles の中身の有無でgenerateMarkupの呼出を条件分岐させる
 //
 // これでsubtitleがあってもなくても両方の場合に対応できる
+//
+// DEBUG: リファクタリングのために、一時的に他の関数に置き換わる
+//
+// SidebarTranscriptView.prototype.render = function (
+//     subtitles?: subtitle_piece[]
+// ): void {
+//     const e: Element = document.querySelector(this.insertParentSelector);
+//     const p: InsertPosition = this.insertPosition;
+//     var html: string = '';
+//     if (subtitles.length > 0) {
+//         const s: string = this.generateSubtitleMarkup(subtitles);
+//         html = this.generateMarkup(s);
+//     } else {
+//         html = this.generateMarkup();
+//     }
+//     e.insertAdjacentHTML(p, html);
+// };
+
+// DEBUG: この関数に置き換わる
 SidebarTranscriptView.prototype.render = function (
     subtitles?: subtitle_piece[]
 ): void {
-    const e: Element = document.querySelector(this.insertParentSelector);
-    const p: InsertPosition = this.insertPosition;
-    var html: string = '';
-    if (subtitles.length > 0) {
+    const template = document.createElement('template');
+
+    if (subtitles.length > 0 && subtitles !== undefined) {
         const s: string = this.generateSubtitleMarkup(subtitles);
-        html = this.generateMarkup(s);
+        template.innerHTML = this.generateMarkup(s);
     } else {
-        html = this.generateMarkup();
+        template.innerHTML = this.generateMarkup();
     }
-    e.insertAdjacentHTML(p, html);
+    const parent = document.querySelector(this.insertParentSelector);
+    if (parent) {
+        // parentの一番最初の子要素として登録される
+        parent.prepend(template.content);
+    }
 };
 
 SidebarTranscriptView.prototype.clear = function (): void {

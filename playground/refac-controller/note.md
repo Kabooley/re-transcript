@@ -8,18 +8,18 @@ Udemy の TypeScript コースの内容をうまいことプロジェクトに�
 
 標準イベント
 
-- `onResize`
-- `onScroll`
-- `onClick`: AutroScrollToggleButton
-- `onClick`: CloseButton
+-   `onResize`
+-   `onScroll`
+-   `onClick`: AutroScrollToggleButton
+-   `onClick`: CloseButton
 
 独自イベント
 
-- `reset`
-- `turnOff`
-- `position-changed`: sidebar or noSidebar
-- `subtitle-sent`: When get subtitles
-- `window-too-small`:
+-   `reset`
+-   `turnOff`
+-   `position-changed`: sidebar or noSidebar
+-   `subtitle-sent`: When get subtitles
+-   `window-too-small`:
 
 ## Events と Attributes だけつけた Model を実装してみた
 
@@ -235,10 +235,10 @@ const handlerOfTurnOff = (): void => {
 
 講義のほうの View の特徴とは
 
-- Model インスタンスが必須である
-- 'change'イベントで必ず render()させる
-- render()で必ずイベントハンドラをバインドさせている
-- イベントハンドラは Model のインスタンスにアクセスできる
+-   Model インスタンスが必須である
+-   'change'イベントで必ず render()させる
+-   render()で必ずイベントハンドラをバインドさせている
+-   イベントハンドラは Model のインスタンスにアクセスできる
 
 ```TypeScript
 export class View<T exntends Model<K>, K> {
@@ -406,4 +406,102 @@ const generateCloseButton = (): string => {
 const sidebar: ExTranscriptView = new ExTranscriptView(
     selectors.EX.sidebarParent, 'afterbegin', selectors.EX.sidebarWrapper, sidebarMarkup
 )
+```
+
+DOM の挿入方法の模索
+
+まず、以下の方法をプロジェクトの view に適用できるか試す
+
+```TypeScript
+document.getElementById("app").innerHTML = `
+<h1>Hello Vanilla!</h1>
+<div>
+  We use the same configuration as Parcel to bundle this sandbox, you can find more
+  info about Parcel
+  <a href="https://parceljs.org" target="_blank" rel="noopener noreferrer">here</a>.
+</div>
+<div id="rroot">
+  <div class="children">children</div>
+  <div class="children">children</div>
+  <div class="children">children</div>
+  <div class="children">children</div>
+  <div class="children">children</div>
+</div>
+`;
+
+const template: HTMLTemplateElement = document.createElement('template');
+
+const templateGenerator = (): string => {
+  return `
+    <div class="container">
+      <h4>HOGE</h4>
+      <input class="input" />
+    </div>
+  `;
+};
+
+template.innerHTML = templateGenerator();
+const input = template.content.querySelector<HTMLInputElement>('input');
+if(input) {
+  input.addEventListener("change", () => {
+    console.log(input.value);
+  })
+}
+else {
+  console.log("input cannot acquired");
+}
+
+// const parent = document.querySelector(".rroot");
+const parent = document.getElementById('rroot');
+if(parent){
+  // Element.appendはElementの一番最後の子要素として挿入する
+  // parent.append(template.content)
+  // 上記と同様
+  // parent.insertBefore(template.content, null);
+  // parentの一番初めの子要素として挿入される
+  parent.prepend(template.content)
+}
+else {
+  console.log("rroot cannot acquired");
+}
+```
+
+```TypeScript
+// sidebarTranscriptView.ts
+
+SidebarTranscriptView.prototype.render = function (
+    subtitles?: subtitle_piece[]
+): void {
+    // e is parent element.
+    const e: Element = document.querySelector(this.insertParentSelector);
+    const p: InsertPosition = this.insertPosition;
+    var html: string = '';
+    if (subtitles.length > 0) {
+        const s: string = this.generateSubtitleMarkup(subtitles);
+        html = this.generateMarkup(s);
+    } else {
+        html = this.generateMarkup();
+    }
+    e.insertAdjacentHTML(p, html);
+};
+
+// 今のところ、generateMarkupはstringを返すだけということで...
+SidebarTranscriptView.prototype.render = function (
+    subtitles?: subtitle_piece[]
+): void {
+    const template = document.createElement('template');
+
+    if (subtitles.length > 0 && subtitles !== undefined) {
+        const s: string = this.generateSubtitleMarkup(subtitles);
+        html = this.generateMarkup(s);
+    } else {
+        html = this.generateMarkup();
+    }
+    const parent = document.querySelector(this.insertParentSelector);
+    if(parent) {
+        // parentの一番最初の子要素として登録される
+        parent.prepend(template.content)
+    }
+}
+
 ```
