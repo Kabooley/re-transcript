@@ -1,167 +1,174 @@
-/**************************************
- * 動作確認済
- * 
- * これで何が変わったかといえば、
- * 
- * sStatusの代わりに_modelを使えるようになった
- * そんだけ
- * 
- * あまりイベントは活躍しない
- * 今のところ'change'イベントしか必要ないから
- * 
- * NOTE: 以下の定義のすべてのT型はすべてたった一つに統一される
- * 
- * **/ 
-interface iController {
-    // 本家Transcriptのポジション2通り
-    position: string;
-    // 本家Transcriptでハイライトされている字幕の要素の順番
-    highlight: number;
-    // ExTranscriptの字幕要素のうち、いまハイライトしている要素の順番
-    ExHighlight: number;
-    // _subtitlesのindexプロパティからなる配列
-    indexList: number[];
-    // 自動スクロール機能が展開済かどうか
-    isAutoscrollInitialized: boolean;
-    // ブラウザサイズが小さすぎる状態かどうか
-    isWindowTooSmall: boolean;
-    // Udemyの自動スクロール機能がONかOFFか
-    isAutoscrollOn: boolean;
+import * as selectors from "../../src/utils/selectors";
+
+
+// Viewではselectors.EXのみ必要な模様なので...
+
+type iEXSelectors = {[Property in keyof typeof selectors.EX]: typeof selectors.EX[Property]};
+
+interface iSelectors extends iEXSelectors {};
+
+interface subtitle_piece {
+  index: number;
+  subtitle: string;
 }
 
-// T型のオブジェクトのプロパティなら、その一部でも全部でも受け付ける
-type iProps<T> = {[Property in keyof T]?: T[Property]}
-// iProps型のオブジェクトを受け付ける関数
-type Callback<T> = (prop: iProps<T>) => void;
+
+const closeButtonHandler = (): void => {
+  console.log("close button clicked");
+}
 
 
-// Base object of sStatus.
-const statusBase: iController = {
-    // NOTE: position, viewの初期値は意味をなさず、
-    // すぐに変更されることが前提である
-    position: null,
-    highlight: null,
-    ExHighlight: null,
-    indexList: null,
-    isAutoscrollInitialized: false,
-    isWindowTooSmall: false,
-    isAutoscrollOn: false,
+const generateSubtitleMarkup = (
+    selectors: iSelectors,
+  subtitles: subtitle_piece[]
+  ): string => {
+  let mu: string = '';
+  for (const s of subtitles) {
+      const _mu: string = `
+      <div class="${selectors.sidebarCueContainer.slice(1)}" data-id="${
+          s.index
+      }">
+        <p class="${selectors.sidebarCue.slice(1)}">
+          <span data-purpose="${selectors.sidebarCueSpan}">${
+          s.subtitle
+      }</span>
+        </p>
+      </div>
+    `;
+      // concatでいいのかな...
+      mu = mu.concat(_mu);
+  }
+  return mu;
+}
+
+const generateCloseButton = (): string => {
+  return `
+  <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g clip-path="url(#clip0_2_8)">
+  <line x1="-0.707107" y1="38.2929" x2="35.2929" y2="2.29289" stroke="black" stroke-width="2"/>
+  <line x1="-1.29289" y1="-0.707107" x2="34.7071" y2="35.2929" stroke="black" stroke-width="2"/>
+  </g>
+  <defs>
+  <clipPath id="clip0_2_8">
+  <rect width="36" height="36" rx="8" fill="white"/>
+  </clipPath>
+  </defs>
+  </svg>
+  `;
 };
 
-export class Attributes<T> {
-    // Requires Storage instance
-    constructor(private data: T) {
-        this.set = this.set.bind(this);
-        this.get = this.get.bind(this);
+
+// TODO: どうやってselectorを渡すか...
+// 
+const generateMarkup = (
+    selectors: iSelectors,
+  subtitles?: subtitle_piece[]
+  ): string => {
+    const s: string = (subtitles.length > 0 && subtitles !== undefined) 
+    ? generateSubtitleMarkup(selectors, subtitles) : "";
+
+    const closeButton: string = generateCloseButton();
+
+    return `
+        <div class="${selectors.sidebarWrapper.slice(1)}">
+            <section class="${selectors.sidebarSection.slice(1)}">
+                <div class="${selectors.sidebarHeader.slice(1)}">
+                    <h2 class="heading-secondary">ExTranscript</h2>
+                    <button type="button" class="${selectors.closeButton.slice(
+                        1
+                    )}">${closeButton}</button>
+                </div>
+                <div class="${selectors.sidebarContent.slice(1)}">
+                <div class="${selectors.sidebarContentPanel.slice(1)}">
+                    ${s}
+                </div>
+                </div>
+            </section>
+        </div>
+    `;
+}
+
+
+
+export class ExTranscriptView {
+    constructor(
+        private _selectors: iSelectors,
+        // parentSelectorは_selectorsに含まれるけど、汎用性のために区別する
+        private parentSelector: string,
+        // 同様に。
+        // ExTranscript要素のなかで一番外側の要素
+        private exTranscriptSelector: string,
+        // TODO: markupGeneratorのinterfaceを作ること
+        private markupGenerator: (s: iSelectors, subtitles?: subtitle_piece[]) => string,
+        // Udemyに埋め込むので、念のためtemplateに識別子をつける
+        private templateId: string
+    ) {}
+
+    templates(subtitles?: subtitle_piece[]): string {
+        // インスタンスごとに異なるmarkupを出力できるようにする
+        return this.markupGenerator(this._selectors, subtitles);
     }
 
-    // prop can have part of data
-    set(prop: iProps<T>): void {
-        this.data = {
-            ...this.data,
-            ...prop,
+    // renderする場所は動的に変化するので必ずその都度DOMを取得する
+    // 
+    render(subtitles?: subtitle_piece[]): void {
+        // 毎回レンダリング前に消去する
+        this.clear();
+
+        // TODO: Bottom ExTranscriptだけに必要な措置...
+        // 親要素のCSS positionプロパティを強制的に追加
+        // これは外部でやっても問題ないかも...
+        // parent.style.position = 'relative';
+
+        const template = document.createElement('template');
+        template.setAttribute("id", this.templateId);
+
+        // The determination of whether or not an argument exists 
+        // is delegated to the calling function.
+        template.innerHTML = this.templates(subtitles);
+
+        // this.bindEvents(template.content);
+
+        // 挿入先の親要素DOM取得
+        const parent = document.querySelector<Element>(this.parentSelector);
+        if(parent) {
+            parent.prepend(template.content);
+        }
+    }
+
+    clear(): void {
+        const e = document.querySelector(this.exTranscriptSelector)
+        if(e) e.remove();
+        // TODO: Bottom ExTranscriptは親要素のposition: relativeを解除しないといけない
+    }
+
+    // TODO: Fix this. このinterfaceだと`${}`がつかえない
+    eventsMap(): { [key: string]: () => void } {
+        return {
+            // closeButtonHandlerはcontroller.tsで定義されているやつ
+            'click:.btn__close': closeButtonHandler,
         };
-    }
+    };
 
-    // get always returns all.
-    get(): T {
-        return { ...this.data };
-    }
-}
 
-export class Model<T> {
-    constructor(private attributes: Attributes<T>, private events: Events<T>) {}
+    bindEvents(fragment: DocumentFragment): void {
+        const eventsMap = this.eventsMap();
 
-    get get() {
-        return this.attributes.get;
-    }
-
-    get on() {
-        return this.events.on;
-    }
-
-    get trigger() {
-        return this.events.trigger;
-    }
-
-    set(prop: iProps<T>) {
-        this.attributes.set(prop);
-        // NOTE: DO PASS prop
-        this.events.trigger('change', prop);
-        //
-        // DEBUG:
-        //
-        // Make sure how this.attributes.data changed
-        console.log('--------------------------');
-        console.log('prop:');
-        console.log(prop);
-        console.log('Updated data:');
-        console.log(this.attributes.get());
-        console.log('--------------------------');
+        for (let eventKey in eventsMap) {
+            const [eventName, selector] = eventKey.split(':');
+            fragment.querySelectorAll(selector).forEach((element) => {
+                element.addEventListener(eventName, eventsMap[eventKey]);
+            });
+        }
     }
 }
 
 
-export class Events<T> {
-    public events: { [key: string]: Callback<T>[] };
-    constructor() {
-        this.events = {};
-        this.on = this.on.bind(this);
-        this.trigger = this.trigger.bind(this);
-    }
 
-    on(eventName: string, callback: Callback<T>): void {
-        const handlers = this.events[eventName] || [];
-        handlers.push(callback);
-        this.events[eventName] = handlers;
-    }
+const sidebar = new ExTranscriptView(
+    selectors.EX, selectors.EX.noSidebarParent, 
+    selectors.EX.dashboardTranscriptWrapper,
+    generateMarkup,
+    "awesomeTemplateId"
+);
 
-    trigger(eventName: string, prop: iProps<T>): void {
-        const handlers = this.events[eventName];
-        if (handlers === undefined || !handlers.length) return;
-        handlers.forEach((cb) => {
-            cb(prop);
-        });
-    }
-}
-
-export class ControllerModel extends Model<iController> {
-    static build(sStatusBase: iController): ControllerModel {
-        return new ControllerModel(
-            new Attributes<iController>(sStatusBase),
-            new Events<iController>()
-        );
-    }
-}
-
-const updatePosition = (prop: iProps<iController>): void => {
-    if(prop.position === undefined) return;
-    console.log('update psotion');
-};
-
-const updateHighlight = (prop: iProps<iController>): void => {
-    if(prop.highlight === undefined) return;
-    console.log('update highlight');
-};
-
-const updateExHighlight = (prop: iProps<iController>): void => {
-    if(prop.ExHighlight === undefined) return;
-    console.log('update ExHighlight');
-};
-
-const _model = ControllerModel.build(statusBase);
-
-_model.on('change', updatePosition);
-_model.on('change', updateHighlight);
-_model.on('change', updateExHighlight);
-
-
-_model.set({ position: 'sidebar' });
-_model.set({ highlight: 11 });
-_model.set({ ExHighlight: 12 });
-_model.set(statusBase);
-
-// 定義時にわたしたinterfaceに定義されているプロパティを
-// 返すことをTypeScriptは理解できている
-// なので以下はエラーにならない
-const { position } = _model.get(); 

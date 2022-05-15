@@ -537,8 +537,15 @@ BottomTranscriptView.prototype.render = function (
 
 
 ```TypeScript
+
+type iEXSelectors = {[Property in keyof typeof selectors.EX]?: typeof selectors.EX[Property]};
+
+interface iSelectors extends iEXSelectors {};
+
+
 export class ExTranscriptView {
     constructor(
+        private _selectors: iSelectors,
         private parentSelector: string,
         private insertPosition: InsertPosition,
         // ExTranscript要素のなかで一番外側の要素
@@ -652,3 +659,67 @@ const generateSubtitleMarkup = (subtitles: subtitle_piece[]): string => {
     return mu;
 }
 ```
+
+
+## TypeScript Tips: 諸略可能な引数の後に必須引数を追加することはできない
+
+```TypeScript
+
+const generateMarkup = (
+  subtitles?: subtitle_piece[],
+    // ERROR:
+    //  A required parameter cannot follow an optional parameter.
+  selectors: iSelectors
+  ): string => {
+      // ...
+  }
+```
+correct way.
+
+```TypeScript
+
+const generateMarkup = (
+  selectors: iSelectors,
+  subtitles?: subtitle_piece[]
+  ): string => {
+      // ...
+  }
+```
+
+つまり`?`つきの仮引数は仮引数群の末尾に追加していくこと
+
+必須仮引数は頭に追加していくこと
+
+理由は省略されると`selectors`が`subtitles`として認識されてしまうから
+
+
+## TypeScript Tips: type `[key: string]: () => void` に template literalは通用しない
+
+参考：
+
+https://www.typescriptlang.org/docs/handbook/2/template-literal-types.html
+
+```TypeScript
+// CORRECT
+    eventsMap(): { [key: string]: () => void } {
+        return {
+            'click:.btn__close': closeButtonHandler,
+        };
+    };
+
+// WRONG
+    eventsMap(): { [key: string]: () => void } {
+        return {
+            `click:.${selectors.closeButton}`: closeButtonHandler,
+        };
+    };
+```
+
+っちゅうわけでテンプレート・リテラルはそれはそれで別物ってわけだそうです
+
+公式の前半の方ではunionを使うのは小規模なプロジェクトならばいいんじゃない
+
+ってことだそうで
+
+やっぱりちゃんとやるにはめんどい方法になります
+
