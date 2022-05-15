@@ -723,3 +723,67 @@ https://www.typescriptlang.org/docs/handbook/2/template-literal-types.html
 
 やっぱりちゃんとやるにはめんどい方法になります
 
+
+## TypeScript Tips: 必須プロパティと任意プロパティ
+
+わたされたオブジェクト型定義のプロパティを必須とする型と
+
+同様に任意とする型を生成する標準の型がある
+
+- 必須： `Required<T>`
+- 任意：`Partial<T>`
+
+```TypeScript
+type Person = {
+  surname: string;
+  middleName?: string;
+  givenName: string;
+};
+type RequiredPerson = Required<Person>;
+/*
+type RequiredPerson = {
+    surname: string;
+    middleName: string;
+    givenName: string;
+}
+*/
+```
+
+```TypeScript
+type Person = {
+  surname: string;
+  middleName?: string;
+  givenName: string;
+};
+type PartialPerson = Partial<Person>;
+/*
+type PartialPerson = {
+    surname?: string | undefined;
+    middleName?: string | undefined;
+    givenName?: string | undefined;
+}
+*/ 
+```
+
+## TypeScript Tips: Intersection 
+
+Union型が「いずれか」を表すならば、
+
+Intersection型は「いずれも」を表す
+
+まぁ直感的に、`|`と`&`ならわかると思う
+
+ここに先のRequired<>とPartial<>を組み合わせると強そう
+
+
+#### Intersection Types で Template Literal を受け付ける型を作る
+
+```TypeScript
+interface Person {
+  surname: string;
+  middleName?: string;
+  givenName: string;
+};
+
+type iTemplateLiteral = string & keyof Person;
+```

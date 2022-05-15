@@ -172,3 +172,47 @@ const sidebar = new ExTranscriptView(
     "awesomeTemplateId"
 );
 
+
+const selectors_ = {
+    button: "button",
+    div: "div"
+}
+
+
+type iEventBindSetKey = `${string}:${keyof typeof selectors_}`;
+type iEventBindSet<T> = {
+    T[key: iEventBindSet]: () => void;
+}
+
+
+// 要は、オブジェクトのkeyを任意の文字列にしたくて
+// type ooo<T> = {
+//     `click:${selectors_.button}`: () => void
+// }
+
+
+// NOTE: そもそもオブジェクトのキーに値を与える方法について
+// 
+var key = "happyNumber";
+var obj = {};
+
+obj[key] = 7;
+console.log(obj);
+// {happyNumber: 7}
+
+
+interface StringArray {
+    [index: number]: string;
+}
+
+// Correct
+const nums: StringArray = {
+    1: "11"
+}
+
+// Wrong
+// 
+// つまり、indexという命名は自由である
+// const nums2: StringArray = {
+//     index: "11"
+// }
