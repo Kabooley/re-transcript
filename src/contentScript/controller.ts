@@ -302,6 +302,7 @@ const handlerOfTurnOff = (): void => {
     transcriptListObserver.disconnect();
 
     // RESET ({ ...statusBase });
+    model.set({...statusBase});
     mSubtitles.set({ ...subtitleBase });
 };
 
@@ -370,15 +371,16 @@ const onWindowResizeHandler = (): void => {
 
     // ブラウザの幅がRESIZE_BOUNDARYを上回るとき
     // Transcriptをsidebarに設置する
-    if (w > RESIZE_BOUNDARY && position !== positionStatus.sidebar)({ position: positionStatus.sidebar });
+    if (w > RESIZE_BOUNDARY && position !== positionStatus.sidebar)
+        model.set({ position: positionStatus.sidebar });
 
     // ブラウザの幅がRESIZE＿BOUNDARYを下回るとき
     // Transcriptを動画下部に表示する
-    if (w <= RESIZE_BOUNDARY && position !== positionStatus.noSidebar) {({ position: positionStatus.noSidebar });
-    }
+    if (w <= RESIZE_BOUNDARY && position !== positionStatus.noSidebar)
+        model.set({ position: positionStatus.noSidebar });
+
 
     // 最新のpositionを取得してから
-
     if (model.get().position === 'sidebar') calcContentHeight();
 };
 
@@ -417,7 +419,6 @@ const calcContentHeight = (): void => {
     const height: number = parseInt(
         window.getComputedStyle(footer).height.replace('px', '')
     );
-    console.log(height);
     sidebarTranscriptView.updateContentHeight(height);
 };
 
@@ -435,7 +436,8 @@ const calcContentHeight = (): void => {
 const initializeIndexList = (): void => {
     console.log('[controller] initializeIndexList()');
     const { subtitles } = mSubtitles.get();
-    const ind({ indexList: indexes });
+    const indexes: number[] = subtitles.map((s) => s.index);
+    model.set({ indexList: indexes });
 };
 
 /**
@@ -493,7 +495,7 @@ const updateHighlightIndexes = (): void => {
     );
     const next: number = getElementIndexOfList(list, nextHighlight);
     if (next < 0) throw new RangeError('Returned value is out of range.');
-({ highlight: next });
+    model.set({ highlight: next });
 };
 
 /**
@@ -660,7 +662,8 @@ const resetDetectScroll = (): void => {
             transcriptList
         );
         transcriptListObserver.observe();
-({ isAutoscrollInitialized: true });
+
+        model.set({ isAutoscrollInitialized: true });
     } else {
         // リセット処理: targetを変更するだけ
         transcriptListObserver.disconnect();
@@ -696,7 +699,7 @@ const autoscrollCheckboxClickHandler = (): void => {
         const cb: HTMLInputElement = document.querySelector(
             selectors.transcript.autoscroll
         );
-        console.l({ isAutoscrollOn: cb.checked });
+        model.set({ isAutoscrollOn: cb.checked });
     }, 100);
 };
 
@@ -710,7 +713,8 @@ const resetAutoscrollCheckboxListener = (): void => {
     const cb: HTMLInputElement = document.querySelector(
         selectors.transcript.autoscroll
     );
-    if (!cb) ({ isAutoscrollOn: cb.checked });
+    if (!cb) return;
+    model.set({ isAutoscrollOn: cb.checked });
     cb.removeEventListener('click', autoscrollCheckboxClickHandler);
     cb.addEventListener('click', autoscrollCheckboxClickHandler);
 };
@@ -788,15 +792,18 @@ const updateHighlight: Callback<iController> = (prop): void => {
 
     console.log('[controller] updateHighlight running...');
 
+
     // ExTranscriptのハイライト要素の番号を保存する
     const next: number = prop.highlight;
-    if (indexList({ ExHighlight: next });
+    if (indexList.includes(next)) {
+        model.set({ ExHighlight: next });
     } else {
         // 一致するindexがない場合
         // currentHighlightの番号に最も近い、currentHighlightより小さいindexをsetする
         let prev: number = null;
         for (let i of indexList) {
-            if (i > next)({ ExHighlight: prev });
+            if (i > next) {
+                model.set({ ExHighlight: prev });
                 break;
             }
             prev = i;
