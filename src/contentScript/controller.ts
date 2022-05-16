@@ -47,12 +47,7 @@ import {
     positionStatus,
     keyof_positionStatus,
 } from '../utils/constants';
-import Observable, { iObserver } from '../utils/Observable';
-import State from '../utils/contentScript/State';
 import MutationObserver_ from '../utils/MutationObserver_';
-//
-// NOTE: new added.
-//
 import { ExTranscriptModel, SubtitleModel } from '../model/ExTranscriptModel';
 import { iProps, Callback } from '../utils/constants';
 
@@ -61,9 +56,6 @@ import { iProps, Callback } from '../utils/constants';
 //
 chrome.runtime.sendMessage;
 
-// Models
-let model: ExTranscriptModel;
-let mSubtitles: SubtitleModel;
 
 // ----- Annotations -------------------------------------
 
@@ -108,11 +100,12 @@ const subtitleBase: iSubtitles = {
     subtitles: [],
 };
 
+// Models
+let model: ExTranscriptModel;
+let mSubtitles: SubtitleModel;
 // ウィンドウが小さすぎてトランスクリプトが表示されなくなる境界値
 const MINIMUM_BOUNDARY = 600;
 let timerQueue: NodeJS.Timeout = null;
-let sStatus: State<iController>;
-let sSubtitles: State<iSubtitles>;
 let transcriptListObserver: MutationObserver_ = null;
 
 // Config of MutationObserver for auto high light.
@@ -251,7 +244,6 @@ const renderSidebarTranscript = (): void => {
     bottomTranscriptView.clear();
     sidebarTranscriptView.clear();
     sidebarTranscriptView.render(subtitles);
-    // NOTE: new added.
     resetCloseButtonListener();
     calcContentHeight();
     // sidebarの時だけに必要
@@ -269,7 +261,6 @@ const renderBottomTranscript = (): void => {
     sidebarTranscriptView.clear();
     bottomTranscriptView.clear();
     bottomTranscriptView.render(subtitles);
-    // NOTE: new added.
     resetCloseButtonListener();
     // noSidebarの時は不要
     window.removeEventListener('scroll', onWindowScrollHandler);
@@ -315,7 +306,7 @@ const handlerOfReset = (): void => {
 
     handlerOfTurnOff();
 
-    // NOTE: 以下はMAINの後半の処理と同じである
+    // NOTE: 以下はEntry Pointの後半の処理と同じである
     const w: number = document.documentElement.clientWidth;
     const s: keyof_positionStatus =
         w > RESIZE_BOUNDARY ? positionStatus.sidebar : positionStatus.noSidebar;
@@ -734,18 +725,6 @@ const resetAutoscrollCheckboxListener = (): void => {
  *
  * NOTE: prop.positionがnullであるならば即ちExTranscriptは非表示であるという前提にある
  * */
-// const updateSubtitle: iObserver<iSubtitles> = (prop, prev): void => {
-//     const { position } = model.get();
-//     if (!position || prop.subtitles === undefined) return;
-
-//     position === positionStatus.sidebar
-//         ? renderSidebarTranscript()
-//         : renderBottomTranscript();
-//     // TODO: 以下の初期化を外部化したい
-//     initializeIndexList();
-//     resetDetectScroll();
-// };
-
 const updateSubtitle: Callback<iSubtitles> = (prop): void => {
     const { position } = model.get();
     if (!position || prop.subtitles === undefined) return;
@@ -833,16 +812,6 @@ const updateExHighlight: Callback<iController> = (prop): void => {
  * */
 (function (): void {
     console.log('[controller] Initializing...');
-
-    // const oStatus: Observable<iController> = new Observable<iController>();
-    // const oSubtitle: Observable<iSubtitles> = new Observable<iSubtitles>();
-    // sStatus = new State(statusBase, oStatus);
-    // sSubtitles = new State(subtitleBase, oSubtitle);
-
-    // sSubtitles.observable.register(updateSubtitle);
-    // sStatus.observable.register(updatePosition);
-    // sStatus.observable.register(updateHighlight);
-    // sStatus.observable.register(updateExHighlight);
 
     model = ExTranscriptModel.build(statusBase);
     mSubtitles = SubtitleModel.build(subtitleBase);
