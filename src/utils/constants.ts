@@ -117,7 +117,7 @@ export interface subtitle_piece {
 
 // Key for chrome.storage.local in background.ts
 export const _key_of_model_state__ = '_key_of_model_state__@&%8=8';
-export const _key_of_localstorage__ = "__key__of_local_storage__@&%8=8";
+export const _key_of_localstorage__ = '__key__of_local_storage__@&%8=8';
 
 // TODO: まだlocalStorageにこの情報が残っているかも...
 // const _key_of_localstorage__ = "__key__of_local_storage__";
@@ -144,8 +144,17 @@ export const messageTemplate = {
     appCannotExecute:
         'Problem occured that the extension not being able to run. Please turn off the extension or reload the page.',
     letPagePrepare:
-        'Please turn on Transcript and choose English for subtitle language.'
+        'Please turn on Transcript and choose English for subtitle language.',
 };
+
+// NOTE: New added. 2022/5/16 to refactor controller.ts
+//
+// Used in Model, Events, Attributes, controller
+//
+// T型のオブジェクトのプロパティなら、その一部でも全部でも受け付ける
+export type iProps<T> = { [Property in keyof T]?: T[Property] };
+// iProps型のオブジェクトを受け付ける関数
+export type Callback<T> = (prop: iProps<T>) => void;
 
 // --- Usage -------------------------------------
 // type _order = orderTypes[];

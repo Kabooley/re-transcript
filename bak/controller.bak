@@ -1,7 +1,8 @@
 /********************************************************
  * controller
  * ____________________________________________
- *
+ * NOTE: backed up 2022/5/16. To refactor state to Model, each view to View.
+ *  
  * 本家Udemy講義ページのトランスクリプト機能と(ほぼ)同じものを生成する
  * 字幕データだけ、特別に生成された字幕データを取り扱う
  *
@@ -22,8 +23,6 @@
  *
  * TODO:
  *  - TypeScriptの型定義は別のファイルに移動したい...
- * 
- * - >>>model.setの書き換えがうまくいっていなくて、消えてしまっている部分多々ある 
  *
  *
  * 走り書き：
@@ -50,20 +49,11 @@ import {
 import Observable, { iObserver } from '../utils/Observable';
 import State from '../utils/contentScript/State';
 import MutationObserver_ from '../utils/MutationObserver_';
-//
-// NOTE: new added.
-//
-import { ExTranscriptModel, SubtitleModel } from '../model/ExTranscriptModel';
-import { iProps, Callback } from '../utils/constants';
 
 //
 // ----- GLOBALS -----------------------------------------
 //
 chrome.runtime.sendMessage;
-
-// Models
-let model: ExTranscriptModel;
-let mSubtitles: SubtitleModel;
 
 // ----- Annotations -------------------------------------
 
@@ -86,7 +76,7 @@ export interface iController {
 }
 
 // Annotation of sSubtitles.
-export interface iSubtitles {
+interface iSubtitles {
     subtitles: subtitle_piece[];
 }
 
@@ -222,7 +212,7 @@ chrome.runtime.onMessage.addListener(
         if (rest.subtitles) {
             console.log('[controller] Got subtitles');
             try {
-                mSubtitles.set({ subtitles: rest.subtitles });
+                sSubtitles.setState({ subtitles: rest.subtitles });
                 response.success = true;
                 response.complete = true;
             } catch (e) {
@@ -247,7 +237,7 @@ chrome.runtime.onMessage.addListener(
  * */
 const renderSidebarTranscript = (): void => {
     console.log('[controller] Rerender sidebar ExTranscript');
-    const { subtitles } = mSubtitles.get();
+    const { subtitles } = sSubtitles.getState();
     bottomTranscriptView.clear();
     sidebarTranscriptView.clear();
     sidebarTranscriptView.render(subtitles);
@@ -265,7 +255,7 @@ const renderSidebarTranscript = (): void => {
 const renderBottomTranscript = (): void => {
     console.log('[controller] Rerender bottom ExTranscript');
 
-    const { subtitles } = mSubtitles.get();
+    const { subtitles } = sSubtitles.getState();
     sidebarTranscriptView.clear();
     bottomTranscriptView.clear();
     bottomTranscriptView.render(subtitles);
@@ -291,7 +281,7 @@ const handlerOfTurnOff = (): void => {
     window.removeEventListener('scroll', onWindowScrollHandler);
 
     // CLEAR ExTranscript
-    const { position } = model.get();
+    const { position } = sStatus.getState();
     if (position === positionStatus.sidebar) {
         sidebarTranscriptView.clear();
     } else {
@@ -301,8 +291,9 @@ const handlerOfTurnOff = (): void => {
     // REMOVAL MutationObserver
     transcriptListObserver.disconnect();
 
-    // RESET ({ ...statusBase });
-    mSubtitles.set({ ...subtitleBase });
+    // RESET State
+    sStatus.setState({ ...statusBase });
+    sSubtitles.setState({ ...subtitleBase });
 };
 
 /**
@@ -318,7 +309,7 @@ const handlerOfReset = (): void => {
     const w: number = document.documentElement.clientWidth;
     const s: keyof_positionStatus =
         w > RESIZE_BOUNDARY ? positionStatus.sidebar : positionStatus.noSidebar;
-    model.set({ position: s });
+    sStatus.setState({ position: s });
 
     window.addEventListener('resize', reductionOfwindowResizeHandler);
     resetAutoscrollCheckboxListener();
@@ -357,29 +348,32 @@ const onWindowResizeHandler = (): void => {
     console.log('[controller] onWindowResizeHandler()');
 
     const w: number = document.documentElement.clientWidth;
-    const { position, isWindowTooSmall } = model.get();
+    const { position, isWindowTooSmall } = sStatus.getState();
 
     //  MINIMUM_BOUNDARYの境界値をまたいだ時は何もしない
     if (w < MINIMUM_BOUNDARY && !isWindowTooSmall) {
-        model.set({ isWindowTooSmall: true });
+        sStatus.setState({ isWindowTooSmall: true });
         return;
     }
     if (w > MINIMUM_BOUNDARY && isWindowTooSmall) {
-        model.set({ isWindowTooSmall: false });
+        sStatus.setState({ isWindowTooSmall: false });
+        // return;
     }
 
     // ブラウザの幅がRESIZE_BOUNDARYを上回るとき
     // Transcriptをsidebarに設置する
-    if (w > RESIZE_BOUNDARY && position !== positionStatus.sidebar)({ position: positionStatus.sidebar });
+    if (w > RESIZE_BOUNDARY && position !== positionStatus.sidebar)
+        sStatus.setState({ position: positionStatus.sidebar });
 
     // ブラウザの幅がRESIZE＿BOUNDARYを下回るとき
     // Transcriptを動画下部に表示する
-    if (w <= RESIZE_BOUNDARY && position !== positionStatus.noSidebar) {({ position: positionStatus.noSidebar });
+    if (w <= RESIZE_BOUNDARY && position !== positionStatus.noSidebar) {
+        sStatus.setState({ position: positionStatus.noSidebar });
     }
 
     // 最新のpositionを取得してから
 
-    if (model.get().position === 'sidebar') calcContentHeight();
+    if (sStatus.getState().position === 'sidebar') calcContentHeight();
 };
 
 /**
@@ -434,8 +428,9 @@ const calcContentHeight = (): void => {
  * */
 const initializeIndexList = (): void => {
     console.log('[controller] initializeIndexList()');
-    const { subtitles } = mSubtitles.get();
-    const ind({ indexList: indexes });
+    const { subtitles } = sSubtitles.getState();
+    const indexes: number[] = subtitles.map((s) => s.index);
+    sStatus.setState({ indexList: indexes });
 };
 
 /**
@@ -493,7 +488,8 @@ const updateHighlightIndexes = (): void => {
     );
     const next: number = getElementIndexOfList(list, nextHighlight);
     if (next < 0) throw new RangeError('Returned value is out of range.');
-({ highlight: next });
+
+    sStatus.setState({ highlight: next });
 };
 
 /**
@@ -506,7 +502,7 @@ const updateHighlightIndexes = (): void => {
 const highlightExTranscript = (): void => {
     console.log('[controller] highlightExTranscript()');
     // 次ハイライトする要素のdata-idの番号
-    const { ExHighlight, position } = model.get();
+    const { ExHighlight, position } = sStatus.getState();
     const next: HTMLElement =
         position === positionStatus.sidebar
             ? document.querySelector<HTMLElement>(
@@ -586,7 +582,7 @@ const scrollToHighlight = (): void => {
     console.log('[controller] scrollToHighlight()');
 
     // そのたびにいまハイライトしている要素を取得する
-    const { ExHighlight, position, isAutoscrollOn } = model.get();
+    const { ExHighlight, position, isAutoscrollOn } = sStatus.getState();
     if (!isAutoscrollOn) return;
 
     const current: HTMLElement =
@@ -642,7 +638,7 @@ const scrollToHighlight = (): void => {
 const resetDetectScroll = (): void => {
     console.log('[controller] reset Autro Scroll System');
 
-    const { isAutoscrollInitialized } = model.get();
+    const { isAutoscrollInitialized } = sStatus.getState();
     if (!isAutoscrollInitialized) {
         // 初期化処理
         // 一旦リセットしてから
@@ -660,7 +656,8 @@ const resetDetectScroll = (): void => {
             transcriptList
         );
         transcriptListObserver.observe();
-({ isAutoscrollInitialized: true });
+
+        sStatus.setState({ isAutoscrollInitialized: true });
     } else {
         // リセット処理: targetを変更するだけ
         transcriptListObserver.disconnect();
@@ -696,7 +693,8 @@ const autoscrollCheckboxClickHandler = (): void => {
         const cb: HTMLInputElement = document.querySelector(
             selectors.transcript.autoscroll
         );
-        console.l({ isAutoscrollOn: cb.checked });
+        console.log(cb.checked);
+        sStatus.setState({ isAutoscrollOn: cb.checked });
     }, 100);
 };
 
@@ -710,7 +708,8 @@ const resetAutoscrollCheckboxListener = (): void => {
     const cb: HTMLInputElement = document.querySelector(
         selectors.transcript.autoscroll
     );
-    if (!cb) ({ isAutoscrollOn: cb.checked });
+    if (!cb) return;
+    sStatus.setState({ isAutoscrollOn: cb.checked });
     cb.removeEventListener('click', autoscrollCheckboxClickHandler);
     cb.addEventListener('click', autoscrollCheckboxClickHandler);
 };
@@ -730,20 +729,8 @@ const resetAutoscrollCheckboxListener = (): void => {
  *
  * NOTE: prop.positionがnullであるならば即ちExTranscriptは非表示であるという前提にある
  * */
-// const updateSubtitle: iObserver<iSubtitles> = (prop, prev): void => {
-//     const { position } = model.get();
-//     if (!position || prop.subtitles === undefined) return;
-
-//     position === positionStatus.sidebar
-//         ? renderSidebarTranscript()
-//         : renderBottomTranscript();
-//     // TODO: 以下の初期化を外部化したい
-//     initializeIndexList();
-//     resetDetectScroll();
-// };
-
-const updateSubtitle: Callback<iSubtitles> = (prop): void => {
-    const { position } = model.get();
+const updateSubtitle: iObserver<iSubtitles> = (prop, prev): void => {
+    const { position } = sStatus.getState();
     if (!position || prop.subtitles === undefined) return;
 
     position === positionStatus.sidebar
@@ -763,7 +750,7 @@ const updateSubtitle: Callback<iSubtitles> = (prop): void => {
  *
  * NOTE: prop.positionがnullであるならば即ちExTranscriptは非表示であるという前提にある
  * */
-const updatePosition: Callback<iController> = (prop): void => {
+const updatePosition: iObserver<iController> = (prop, prev): void => {
     const { position } = prop;
     if (position === undefined || !position) return;
 
@@ -781,8 +768,8 @@ const updatePosition: Callback<iController> = (prop): void => {
  * Actually, update sStatus.ExHighlight based on updated sStatus.highlight.
  *
  * */
-const updateHighlight: Callback<iController> = (prop): void => {
-    const { isAutoscrollInitialized, indexList } = model.get();
+const updateHighlight: iObserver<iController> = (prop, prev): void => {
+    const { isAutoscrollInitialized, indexList } = sStatus.getState();
 
     if (prop.highlight === undefined || !isAutoscrollInitialized) return;
 
@@ -790,13 +777,15 @@ const updateHighlight: Callback<iController> = (prop): void => {
 
     // ExTranscriptのハイライト要素の番号を保存する
     const next: number = prop.highlight;
-    if (indexList({ ExHighlight: next });
+    if (indexList.includes(next)) {
+        sStatus.setState({ ExHighlight: next });
     } else {
         // 一致するindexがない場合
         // currentHighlightの番号に最も近い、currentHighlightより小さいindexをsetする
         let prev: number = null;
         for (let i of indexList) {
-            if (i > next)({ ExHighlight: prev });
+            if (i > next) {
+                sStatus.setState({ ExHighlight: prev });
                 break;
             }
             prev = i;
@@ -810,8 +799,8 @@ const updateHighlight: Callback<iController> = (prop): void => {
  * Triggers highlightExTranscript() everytime sStatus.ExHighlight changed.
  *
  * */
-const updateExHighlight: Callback<iController> = (prop): void => {
-    const { isAutoscrollInitialized } = model.get();
+const updateExHighlight: iObserver<iController> = (prop, prev): void => {
+    const { isAutoscrollInitialized } = sStatus.getState();
     if (prop.ExHighlight === undefined || !isAutoscrollInitialized) return;
 
     console.log('[controller] updateExHighlight running...');
@@ -827,35 +816,204 @@ const updateExHighlight: Callback<iController> = (prop): void => {
 (function (): void {
     console.log('[controller] Initializing...');
 
-    // const oStatus: Observable<iController> = new Observable<iController>();
-    // const oSubtitle: Observable<iSubtitles> = new Observable<iSubtitles>();
-    // sStatus = new State(statusBase, oStatus);
-    // sSubtitles = new State(subtitleBase, oSubtitle);
+    const oStatus: Observable<iController> = new Observable<iController>();
+    const oSubtitle: Observable<iSubtitles> = new Observable<iSubtitles>();
+    sStatus = new State(statusBase, oStatus);
+    sSubtitles = new State(subtitleBase, oSubtitle);
 
-    // sSubtitles.observable.register(updateSubtitle);
-    // sStatus.observable.register(updatePosition);
-    // sStatus.observable.register(updateHighlight);
-    // sStatus.observable.register(updateExHighlight);
-
-    model = ExTranscriptModel.build(statusBase);
-    mSubtitles = SubtitleModel.build(subtitleBase);
-
-    model.on('change', updatePosition);
-    model.on('change', updateHighlight);
-    model.on('change', updateExHighlight);
-    mSubtitles.on('change', updateSubtitle);
+    sSubtitles.observable.register(updateSubtitle);
+    sStatus.observable.register(updatePosition);
+    sStatus.observable.register(updateHighlight);
+    sStatus.observable.register(updateExHighlight);
+    //   TODO: (未定)下記update関数が機能するようにリファクタリングするかも...
+    //   sStatus.observable.register(updateHighlight);
+    //   sStatus.observable.register(updateExHighlight);
 
     // 初期のExTranscriptの展開場所に関するステータスを取得する
     const w: number = document.documentElement.clientWidth;
     const s: keyof_positionStatus =
         w > RESIZE_BOUNDARY ? positionStatus.sidebar : positionStatus.noSidebar;
-    model.set({ position: s });
+    sStatus.setState({ position: s });
 
-    model.set({ isWindowTooSmall: w < MINIMUM_BOUNDARY ? true : false });
-
+    sStatus.setState({ isWindowTooSmall: w < MINIMUM_BOUNDARY ? true : false });
 
     window.removeEventListener('resize', reductionOfwindowResizeHandler);
     window.addEventListener('resize', reductionOfwindowResizeHandler);
     // 自動スクロールチェック状態監視リスナ
     resetAutoscrollCheckboxListener();
 })();
+
+//
+// ---- LEGACY ----------------------------------------
+//
+
+// const init = async (): Promise<void> => {
+//   try {
+//     await sendMessagePromise({
+//       from: extensionNames.controller,
+//       to: extensionNames.background,
+//       activated: true,
+//     });
+//     const temporary = state.loadSubtitles();
+//     console.log(temporary);
+//     const w: number = document.documentElement.clientWidth;
+//     const s: keyof_positionStatus =
+//       w > RESIZE_BOUNDARY
+//         ? positionStatus.sidebar
+//         : positionStatus.noSidebar;
+//     state.setState({ position: s });
+//     if (s === positionStatus.sidebar) {
+//       renderSidebarTranscript();
+//       sidebarTranscriptView.updateContentHeight();
+//       if (w > SIDEBAR_WIDTH_BOUNDARY) {
+//         state.setState({ view: viewStatusNames.wideView });
+//         sidebarTranscriptView.updateWidth(SIGNAL.widthStatus.wideview);
+//       } else {
+//         state.setState({ view: viewStatusNames.middleView });
+//         sidebarTranscriptView.updateWidth(SIGNAL.widthStatus.middleview);
+//       }
+//     } else {
+//       renderBottomTranscript();
+//     }
+
+//     window.addEventListener("resize", function () {
+//       clearTimeout(timerQueue);
+//       timerQueue = setTimeout(onWindowResizeHandler, RESIZE_TIMER);
+//     });
+
+//     // --- ここまでで初期化完了 ---
+//     // ViewにLoading画面を表示させる
+
+//     // subtitlesをViewに表示準備できたら
+//     // ViewのLoading画面を終了させる
+//   } catch (err) {
+//     if (err === chrome.runtime.lastError) {
+//       console.error(err.message);
+//     } else {
+//       console.log(err);
+//     }
+//   }
+// };
+//
+// init();
+
+// /*
+//     movieContainerClickHandler
+//     _____________________________________
+//     Udemyの講義ページで動画が再生開始したかどうかを判断する
+//     これは一時停止かどうかではなく
+//     ページのリロード時などに動画の上にリプレイボタンが表示されているかどうかである
+
+//     リプレイボタン要素がなければ再生中という判断である
+
+//     再生が始まったら初めて自動スクロール機能をセットできる
+
+//     ...とおもったらclickイベントでbuttonがなくなったかチェックしようと思ったら
+//     clickイベントが終わってからじゃにとbuttonは消去されないので
+//     clickイベント中だと確認できない
+
+//     MutationObserverつかうしかない？
+
+// */
+// const movieReplayClickHandler = (ev: PointerEvent): void => {
+//   console.log("[controller] Movie clicked");
+//   const movieContainer: HTMLElement = document.querySelector<HTMLElement>(
+//     selectors.movieContainer
+//   );
+//   movieContainer.removeEventListener("click", movieReplayClickHandler);
+//   //   set up auto scroll handling
+//   //   initializeDetecting();
+//   resetDetectScroll();
+// };
+
+// /*
+//     resetDetectScroll()
+//     ______________________________________
+
+//     本家のハイライトされている字幕が、
+//     自動スクロール機能で移り変わるたびに反応するオブザーバを生成する
+
+//     12/7:
+//     欲しいタイミングで発火していないみたい
+//     _callbackの内容をMutationRecordを精査することで条件分岐させること
+
+//     まず、Udemyは同じ字幕を2，3回繰り返し生成してしまうみたいで
+//     つまりまったく同じ要素が同時に複数存在する状況が発生されてしまっている
+
+//     これに伴って
+//     MutationObserverのMutationRecordも複数ある要素のすべてを記録するので
+//     1度だけ行いたい処理を2回以上行わなくてはならない危険性がある
+
+//     これを避けるためにisItDoneで処理が既に完了しているのかどうかを確認するようにしている
+
+// */
+// const resetDetectScroll = (): void => {
+//   const _callback = (mr: MutationRecord[]): void => {
+//     console.log("observed");
+//     var isItDone: boolean = false;
+//     mr.forEach((record: MutationRecord) => {
+//       if (
+//         record.type === "attributes" &&
+//         record.attributeName === "class" &&
+//         record.oldValue === "" &&
+//         !isItDone
+//       ) {
+//         // oldValueには""の時と、"ranscript--highlight-cue--1bEgq"の両方の時がある
+//         // "ranscript--highlight-cue--1bEgq"をoldValueで受け取るときは
+//         // ハイライトのclassをその要素からremoveしたときと考えて
+//         // その時は何もしない
+//         // 処理は1度だけになるように
+//         console.log("-- observer executed --");
+//         isItDone = true;
+//         updateHighlightIndexes();
+//         updateExTranscriptHighlight();
+//         scrollToHighlight();
+//       }
+//     });
+//   };
+
+//   const observer: MutationObserver = new MutationObserver(_callback);
+
+//   const config: MutationObserverInit = {
+//     attributes: true,
+//     childList: false,
+//     subtree: false,
+//     attributeOldValue: true,
+//   };
+
+//   //   NodeListOf HTMLSpanElement
+//   const transcriptList: NodeListOf<Element> = document.querySelectorAll(
+//     selectors.transcript.transcripts
+//   );
+//   transcriptList.forEach((ts) => {
+//     observer.observe(ts, config);
+//   });
+// };
+
+//
+//     movieContainerClickHandler
+//     _____________________________________
+//     Udemyの講義ページで動画が再生開始したかどうかを判断する
+//     これは一時停止かどうかではなく
+//     ページのリロード時などに動画の上にリプレイボタンが表示されているかどうかである
+
+//     リプレイボタン要素がなければ再生中という判断である
+
+//     再生が始まったら初めて自動スクロール機能をセットできる
+
+//     ...とおもったらclickイベントでbuttonがなくなったかチェックしようと思ったら
+//     clickイベントが終わってからじゃにとbuttonは消去されないので
+//     clickイベント中だと確認できない
+
+//     MutationObserverつかうしかない？
+
+//
+// const movieReplayClickHandler = (ev: PointerEvent): void => {
+//   console.log("[controller] Movie clicked");
+//   const movieContainer: HTMLElement = document.querySelector<HTMLElement>(
+//     selectors.transcript.movieContainer
+//   );
+//   movieContainer.removeEventListener("click", movieReplayClickHandler);
+//   //   set up auto scroll handling
+//   //   initializeDetecting();
+//   resetDetectScroll();
