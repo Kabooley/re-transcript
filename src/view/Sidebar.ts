@@ -3,15 +3,6 @@ import { subtitle_piece, extensionNames, orderNames } from '../utils/constants';
 import * as allSelectors from '../utils/selectors';
 import '../contentScript/exTranscript.scss';
 
-/***
- *
- *
- * - TODO: 毎レンダー時に、sidebarTranscriptView.ts::updateContentHeightする
- * 今のところ、controller.ts::calContentHeightで呼び出すことになっているけれど、折角render時に発火させることができるようになったから
- * この再計算関数を登録したい
- * 検討：View.tsにafterRendering()という、render後に必ず実行する関数を追加してみる
- *
- * */
 export class Sidebar extends ExTranscriptView {
     templates(subtitle?: subtitle_piece[]): string {
         return this.generateMarkup(subtitle);

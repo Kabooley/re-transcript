@@ -22,14 +22,6 @@ interface iSelectors extends iEXSelectors {}
  * @method didRender() - Always fires when render() method ran.
  * @method didClear() - Always fires when clear() method ran.
  *
- * View導入Refactoringタスク:
- *
- * - TODO: thisの固定の為に、コンストラクタでbindすること
- *  abstract methodもbindしちゃって大丈夫なのか？
- *
- * - TODO: controller::closeButtonHandlerをメソッドにするため、constantsの変更
- * - TODO: controllerのimport更新
- * - TODO: contentScript/以下のviewファイルの削除
  * */
 export abstract class ExTranscriptView {
   constructor(
@@ -57,13 +49,7 @@ export abstract class ExTranscriptView {
   // renderする場所は動的に変化するので必ずその都度DOMを取得する
   // NOTE: 現状、subtitlesがない場合前提でコードを書いているので必須引数にはできない
   render(subtitles?: subtitle_piece[]): void {
-    // 毎回レンダリング前に消去する
     this.clear();
-
-    // TODO: Bottom ExTranscriptだけに必要な措置...
-    // 親要素のCSS positionプロパティを強制的に追加
-    // これは外部でやっても問題ないかも...
-    // parent.style.position = 'relative';
 
     const template = document.createElement("template");
     template.setAttribute("id", this._templateId);

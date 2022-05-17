@@ -22,16 +22,8 @@
  *
  * TODO:
  *  - TypeScriptの型定義は別のファイルに移動したい...
- * 
- * - >>>model.setの書き換えがうまくいっていなくて、消えてしまっている部分多々ある 
  *
  *
- * 走り書き：
- *
- * - controller.tsは２つのstateオブジェクトを扱う
- * 一つはsStatus, もう一つはsSubtitles
- * 前者は進行状況、windowの状態などを表す変数を管理する
- * 後者はbackground.tsから送信された字幕データを管理する
  * *******************************************************/
 import * as selectors from '../utils/selectors';
 import {
@@ -103,13 +95,9 @@ const subtitleBase: iSubtitles = {
 // Models
 let model: ExTranscriptModel;
 let mSubtitles: SubtitleModel;
-
-// 
-// NOTE: New Added. -------------------
-// 
+// Views
 let sidebar: Sidebar;
 let dashboard: Dashboard;
-// ------------------------------------------
 
 // ウィンドウが小さすぎてトランスクリプトが表示されなくなる境界値
 const MINIMUM_BOUNDARY = 600;
@@ -248,6 +236,7 @@ chrome.runtime.onMessage.addListener(
  * */
 const renderSidebar = (): void => {
     console.log('[controller] Rerender sidebar ExTranscript');
+
     const { subtitles } = mSubtitles.get();
     dashboard.clear();
     sidebar.render(subtitles);
@@ -388,36 +377,9 @@ const reductionOfwindowResizeHandler = (): void => {
     timerQueue = setTimeout(onWindowResizeHandler, RESIZE_TIMER);
 };
 
-/**
- * Order background to turn off ExTranscript
- *
- * */
-const closeButtonHandler = (): void => {
-    chrome.runtime.sendMessage({
-        from: extensionNames.controller,
-        to: extensionNames.background,
-        order: [orderNames.turnOff],
-    });
-};
-
-/**
- * Recalculate and update ExTranscript height.
- *
- * */
-// const calcContentHeight = (): void => {
-//     console.log('[controller] calcContentHeight');
-//     const footer: HTMLElement = document.querySelector(
-//         // '.transcript--autoscroll-wrapper--oS-dz'
-//         selectors.transcript.footerOfSidebar
-//     );
-//     const height: number = parseInt(
-//         window.getComputedStyle(footer).height.replace('px', '')
-//     );
-//     sidebar.updateContentHeight(height);
-// };
 
 //
-// ----- METHODS RELATED TO AUTO SCROLL --------------------
+// ----- METHODS RELATED TO AUTO SCROLL & HIGHLIGHT --------------------
 //
 
 /**
@@ -674,15 +636,6 @@ const resetDetectScroll = (): void => {
 // --- OTHER LISTENERS -----------------------------------
 //
 
-/**
- *
- * */
-const resetCloseButtonListener = (): void => {
-    const btn: HTMLElement = document.querySelector<HTMLElement>(
-        selectors.EX.closeButton
-    );
-    btn.addEventListener('click', closeButtonHandler);
-};
 
 /**
  * Handler of click event on auto scroll check box.

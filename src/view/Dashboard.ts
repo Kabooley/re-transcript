@@ -3,7 +3,6 @@ import { subtitle_piece, extensionNames, orderNames } from "../utils/constants";
 // import * as allSelectors from '../utils/selectors';
 import "../contentScript/exTranscript.scss";
 
-// TODO: 名前をDashboardに変更すること
 export class Dashboard extends ExTranscriptView {
   templates(subtitle?: subtitle_piece[]): string {
     return this.generateMarkup(subtitle);
