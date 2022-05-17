@@ -50,6 +50,8 @@ import {
 import MutationObserver_ from '../utils/MutationObserver_';
 import { ExTranscriptModel, SubtitleModel } from '../model/ExTranscriptModel';
 import { iProps, Callback } from '../utils/constants';
+import { Dashboard } from "../view/Dashboard";
+import { Sidebar } from "../view/Sidebar";
 
 //
 // ----- GLOBALS -----------------------------------------
@@ -103,6 +105,14 @@ const subtitleBase: iSubtitles = {
 // Models
 let model: ExTranscriptModel;
 let mSubtitles: SubtitleModel;
+
+// 
+// NOTE: New Added. -------------------
+// 
+let sidebar: Sidebar;
+let dashboard: Dashboard;
+// ------------------------------------------
+
 // ウィンドウが小さすぎてトランスクリプトが表示されなくなる境界値
 const MINIMUM_BOUNDARY = 600;
 let timerQueue: NodeJS.Timeout = null;
