@@ -33,8 +33,6 @@
  * 前者は進行状況、windowの状態などを表す変数を管理する
  * 後者はbackground.tsから送信された字幕データを管理する
  * *******************************************************/
-import sidebarTranscriptView from './sidebarTranscriptView';
-import bottomTranscriptView from './bottomTranscriptView';
 import * as selectors from '../utils/selectors';
 import {
     extensionNames,
@@ -248,14 +246,11 @@ chrome.runtime.onMessage.addListener(
  * Insert sidebar ExTranscript
  * And clear previous ExTranscript.
  * */
-const renderSidebarTranscript = (): void => {
+const renderSidebar = (): void => {
     console.log('[controller] Rerender sidebar ExTranscript');
     const { subtitles } = mSubtitles.get();
-    bottomTranscriptView.clear();
-    sidebarTranscriptView.clear();
-    sidebarTranscriptView.render(subtitles);
-    resetCloseButtonListener();
-    calcContentHeight();
+    dashboard.clear();
+    sidebar.render(subtitles);
     // sidebarの時だけに必要
     window.addEventListener('scroll', onWindowScrollHandler);
 };
@@ -268,10 +263,8 @@ const renderBottomTranscript = (): void => {
     console.log('[controller] Rerender bottom ExTranscript');
 
     const { subtitles } = mSubtitles.get();
-    sidebarTranscriptView.clear();
-    bottomTranscriptView.clear();
-    bottomTranscriptView.render(subtitles);
-    resetCloseButtonListener();
+    sidebar.clear();
+    dashboard.render(subtitles);
     // noSidebarの時は不要
     window.removeEventListener('scroll', onWindowScrollHandler);
 };
@@ -294,9 +287,9 @@ const handlerOfTurnOff = (): void => {
     // CLEAR ExTranscript
     const { position } = model.get();
     if (position === positionStatus.sidebar) {
-        sidebarTranscriptView.clear();
+        sidebar.clear();
     } else {
-        bottomTranscriptView.clear();
+        dashboard.clear();
     }
 
     // REMOVAL MutationObserver
@@ -343,9 +336,9 @@ const onWindowScrollHandler = (): void => {
     );
     const y: number = window.scrollY;
     y < headerHeight
-        ? sidebarTranscriptView.updateContentTop(headerHeight - y)
-        : sidebarTranscriptView.updateContentTop(0);
-    calcContentHeight();
+        ? sidebar.updateContentTop(headerHeight - y)
+        : sidebar.updateContentTop(0);
+    sidebar.updateContentHeight();
 };
 
 /**
@@ -382,7 +375,7 @@ const onWindowResizeHandler = (): void => {
 
 
     // 最新のpositionを取得してから
-    if (model.get().position === 'sidebar') calcContentHeight();
+    if (model.get().position === 'sidebar') sidebar.updateContentHeight();
 };
 
 /**
@@ -411,17 +404,17 @@ const closeButtonHandler = (): void => {
  * Recalculate and update ExTranscript height.
  *
  * */
-const calcContentHeight = (): void => {
-    console.log('[controller] calcContentHeight');
-    const footer: HTMLElement = document.querySelector(
-        // '.transcript--autoscroll-wrapper--oS-dz'
-        selectors.transcript.footerOfSidebar
-    );
-    const height: number = parseInt(
-        window.getComputedStyle(footer).height.replace('px', '')
-    );
-    sidebarTranscriptView.updateContentHeight(height);
-};
+// const calcContentHeight = (): void => {
+//     console.log('[controller] calcContentHeight');
+//     const footer: HTMLElement = document.querySelector(
+//         // '.transcript--autoscroll-wrapper--oS-dz'
+//         selectors.transcript.footerOfSidebar
+//     );
+//     const height: number = parseInt(
+//         window.getComputedStyle(footer).height.replace('px', '')
+//     );
+//     sidebar.updateContentHeight(height);
+// };
 
 //
 // ----- METHODS RELATED TO AUTO SCROLL --------------------
@@ -740,7 +733,7 @@ const updateSubtitle: Callback<iSubtitles> = (prop): void => {
     if (!position || prop.subtitles === undefined) return;
 
     position === positionStatus.sidebar
-        ? renderSidebarTranscript()
+        ? renderSidebar()
         : renderBottomTranscript();
     // TODO: 以下の初期化を外部化したい
     initializeIndexList();
@@ -760,9 +753,8 @@ const updatePosition: Callback<iController> = (prop): void => {
     const { position } = prop;
     if (position === undefined || !position) return;
 
-    position === positionStatus.sidebar
-        ? renderSidebarTranscript()
-        : renderBottomTranscript();
+    position === positionStatus.sidebar ? renderSidebar() : renderBottomTranscript();
+    
     // TODO: 以下の初期化を外部化したい
     resetDetectScroll();
     resetAutoscrollCheckboxListener();
@@ -823,9 +815,19 @@ const updateExHighlight: Callback<iController> = (prop): void => {
 (function (): void {
     console.log('[controller] Initializing...');
 
+    // Models
     model = ExTranscriptModel.build(statusBase);
     mSubtitles = SubtitleModel.build(subtitleBase);
 
+    // Views
+    sidebar = new Sidebar(
+        selectors.EX, selectors.EX.sidebarParent, selectors.EX.sidebarWrapper, "sidebar-template-@9999"
+    );
+    dashboard = new Dashboard(
+        selectors.EX, selectors.EX.noSidebarParent, selectors.EX.dashboardTranscriptWrapper, "dashboard-template-@9999"
+    );
+
+    // Registration event handler 
     model.on('change', updatePosition);
     model.on('change', updateHighlight);
     model.on('change', updateExHighlight);

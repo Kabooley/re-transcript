@@ -24,7 +24,26 @@ export class Dashboard extends ExTranscriptView {
         });
     }
 
-    didRender(): void {}
+    didRender(): void {
+        this.setPosition(true);
+
+    }
+
+    didClear(): void {
+        this.setPosition(false);
+    }
+
+    setPosition(signal: boolean): void {
+        // TODO: View.ts::_parentSelectorをpublicにする...
+
+        //   親要素につけていた`position: relative`を解除する
+        const parent: HTMLElement = document.querySelector<HTMLElement>(
+            this.selectors.noSidebarParent
+        );
+        if(parent) {
+            parent.style.position = signal ? 'relative' : '';
+        }
+    }
 
     generateSubtitleMarkup(subtitles: subtitle_piece[]): string {
         let mu: string = '';

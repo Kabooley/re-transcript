@@ -26,6 +26,8 @@ export class Sidebar extends ExTranscriptView {
         this.updateContentHeight();
     }
 
+    didClear(): void {}
+
     handlerOfCloseButton(): void {
         console.log('handlerOfCloseButton');
         // 厳密には`controller`からじゃないけどまぁ

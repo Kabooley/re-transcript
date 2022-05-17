@@ -19,7 +19,8 @@ interface iSelectors extends iEXSelectors {}
  * @method eventsMap() - Returns set of Object consisting of a combination of
  *  event name and callback function.
  * @method templates() - Returns markup that will be passed to render()
- * @method didRender() - Always fires every render() method ran. 
+ * @method didRender() - Always fires when render() method ran. 
+ * @method didClear() - Always fires when clear() method ran.
  *
  * View導入Refactoringタスク:
  *
@@ -59,6 +60,7 @@ export abstract class ExTranscriptView {
     abstract eventsMap(): { [key: string]: () => void };
     abstract templates(subtitles?: subtitle_piece[]): string;
     abstract didRender(): void;
+    abstract didClear(): void;
 
     // renderする場所は動的に変化するので必ずその都度DOMを取得する
     // NOTE: 現状、subtitlesがない場合前提でコードを書いているので必須引数にはできない
@@ -92,7 +94,7 @@ export abstract class ExTranscriptView {
     clear(): void {
         const e = document.querySelector(this._wrapperSelector);
         if (e) e.remove();
-        // TODO: Bottom ExTranscriptは親要素のposition: relativeを解除しないといけない
+        this.didClear();
     }
 
     bindEvents(fragment: DocumentFragment): void {
