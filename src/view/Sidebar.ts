@@ -1,6 +1,7 @@
 import { ExTranscriptView } from './View';
 import { subtitle_piece, extensionNames, orderNames } from '../utils/constants';
 import * as allSelectors from '../utils/selectors';
+import '../contentScript/exTranscript.scss';
 
 /***
  *
