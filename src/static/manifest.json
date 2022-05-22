@@ -1,18 +1,18 @@
 {
     "manifest_version": 3,
-    "name": "re-transcript",
-    "version": "0.0.1",
+    "name": "Re Transcript",
+    "version": "0.0.0.1",
 
     "action": {
-        "default_title": "udemy-re-transcript",
+        "default_title": "re-transcript",
         "default_popup": "popup.html",
-        "default_icon": "udemy-re-transcript-128.png"
+        "default_icon": "re-transcript-128.png"
     },
-    "description": "chrome extension for Udemy user who need correct translation of sentences",
+    "description": "Chrome extension for Udemy user who need correct translation of sentences",
     "icons": {
-        "16": "udemy-re-transcript-16.png",
-        "48": "udemy-re-transcript-48.png",
-        "128": "udemy-re-transcript-48.png"
+        "16": "re-transcript-16.png",
+        "48": "re-transcript-48.png",
+        "128": "re-transcript-48.png"
     },
     "background": {
         "service_worker": "background.js",
