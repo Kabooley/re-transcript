@@ -13,7 +13,9 @@ NOTE: まずはアカウント登録!!
 [CWS登録](#CWS登録)
 [manifest.json](#manifest.json)
 [Internationalization](#Internationalization)
-[文章のメモ](#文章のメモ)
+[コピー](#コピー)
+[参考](#参考)
+[スクリーンショット作成](#スクリーンショット作成)
 
 ## Policies
 
@@ -177,17 +179,30 @@ https://tech.manafukurou.com/article/chrome-develop-2/
 
 上記のサイトに依れば以下を用意する必要がある
 
+TODO: いまんところすること
+
+- 説明文章の推敲：参考ページを参考にまとめなおす
+- スクリーンショットの準備：Udemyの講義ページを勝手に使うのはご法度なので自作するほかない
+
+
+
 -   Google 開発者登録の初回登録料 5$
+    済
 
 -   パッケージのタイトル
+    `Re Transcript`でおｋ
     ストアに表示されるパッケージのタイトル manifest.json の[name]データがそのまま反映されます
 
 -   パッケージの概要
+    済
+    [Description_文章](#Description_文章)の内容をmanifest.jsonに書き込んだ
     ストアに表示されるパッケージのタイトル manifest.json の[description]データがそのまま反映されます
 
 -   説明
     [拡張機能説明文章](#拡張機能説明文章)の文章をそのまま
     アイテムの紹介。ストア画面では上の概要の下に表示されます。
+
+    [参考](#参考)のGoogle拡張機能のページを参考に説明文章を推敲のこと
 
 -   カテゴリ
     chrome ウェブストアのどのカテゴリに並ぶかを指定出来ます。
@@ -197,13 +212,15 @@ https://tech.manafukurou.com/article/chrome-develop-2/
     言語です。複数の言語に対応している場合は、アイテムを国際化する必要があります
 
 -   ショップ アイコン
-    TODO: 要準備
+    済：
     128×128 ピクセル
 
 -   全言語向けアセット
+    ない
     プロモーション用の動画を設定出来ます。 Youtube の url を設定出来ます。
 
 -   スクリーンショット
+    NOTE: 要準備
     指定できるのは 5 枚までです  1280×800  または  640×400 JPEG または 24 ビット PNG（アルファなし） 少なくとも 1 枚指定してください
 
 -   プロモーション タイル（小)
@@ -219,15 +236,20 @@ https://tech.manafukurou.com/article/chrome-develop-2/
     Google Search Console  から関連している url を選択できる形です。
 
 -   ホームページ URL
+    無い
+    NOTE: Githubページでも公開するかい？
     アイテムに関する Web サイトのリンク
 
 -   サポート URL
+    無い
     サポート用の URL です
 
 -   成人向けコンテンツ
+    NO
     成人向けかどうか設定します
 
 -   Google Analytics ID
+    NO
     Google Analytics の管理ツールを利用している場合は、 アカウントの ID を設定する事で連携が出来ます
 
 プライバシー
@@ -489,16 +511,23 @@ Google 翻訳などの翻訳アプリと連動してご利用になる場合の�
 あくまで、文章の始まりからピリオドまでの文章を一塊として再構成する機能を提供するのみです。
 翻訳機能は Google 翻訳など他の拡張機能サービスをご利用ください。
 
-#### Description 用文章
+#### Description_文章
 
-132文字以内
+NOTE: 132文字以内
 
-Udemyのトランスクリプト上の英語字幕を再構成して、字幕文章を文章の始まりからピリオドまでの一塊に作り直します。
+`Udemyのトランスクリプト上の英語字幕を再構成して、字幕文章を文章の始まりからピリオドまでの一塊に作り直します。お好みの翻訳拡張機能とともに使用して、快適にUdemyの英語動画を学習しましょう！`
 
-お好みの翻訳拡張機能とともに使用して、快適にUdemyの英語動画を学習しましょう！
+長い！
 
+`Udemyのトランスクリプト上の英語字幕を再構成して、正確な翻訳出力を助けます。好みの翻訳拡張機能とともに使用してください`
 
-(今のところ111文字)
+念のため、変更前の情報をここに残す
+
+```JSON
+{
+    "description": "Chrome extension for Udemy user who need correct translation of sentences",
+}
+```
 
 #### 例抽出
 
@@ -523,3 +552,114 @@ pilot and that's why we saw it inside of our output's.
 例えば Google 翻訳は、分割された文章を一塊として翻訳します。
 
 しかし文章の分割場所によっては翻訳内容がまったくことなります。
+
+
+## 参考
+
+CWSの参考
+
+1. Google翻訳拡張機能：
+
+https://chrome.google.com/webstore/detail/google-translate/aapbdbdomjkkjkaonfhkkikfgjllcleb?hl=ja
+
+
+2. Momentum
+
+https://chrome.google.com/webstore/detail/momentum/laookkfknpbbblfpciffpaejjkokdgca?hl=ja
+
+説明文章が参考になるかも
+
+概要説明
+機能（チェックマーク）
+売り込みポイント（☆マーク）
+プライバシーとセキュリティに関しての説明
+SNSへの案内
+
+```
+Replace new tab page with a personal dashboard featuring to-do, weather, and inspiration.
+What if every new tab could calm your mind and increase your focus?
+
+Achieve your goals faster and more consistently with your own personal dashboard. Featuring to-do lists, weather, daily photos, and encouraging quotes. 
+
+Join over 3 million energized users who have levelled-up their workspace and day-to-day productivity with Momentum.
+
+☆☆☆ Featured in Tim Ferriss’ Tools of Titans, WWDC21, The Wall Street Journal, Product Hunt, Lifehacker, BuzzFeed, and TheDailyMuse! ☆☆☆
+
+☆☆  Key Features ☆☆ 
+
+✓ New inspiring photo, quote, and mantra each day
+✓ Friendly reminders of your most important task
+✓ Easy to use to-do list manager
+✓ Shortcuts to your favorite websites and apps
+✓ Local weather info 
+✓ Google/Bing/DuckDuckGo search options
+✓ Customizable — show/hide features as you like
+✓ Private and secure — we don’t share or sell your data
+
+Transform your screen to the gorgeous dashboard that keeps you on track.
+
+Note: For the best experience, after installing Momentum click the ‘Keep it’ button on the ‘Change back to Google’ notification. This will show Momentum on each new tab as intended. 🙂 
+
+☆☆ Do More With Plus: 11 Fresh Features to Maximize Your Workspace ☆☆
+Momentum Plus offers additional productivity tools to support positive workflows and increase focus.
+
+★ NEW: Soundscapes
+Get in the flow with our focus-driving audio, including: a crackling campfire, peaceful rain, café ambience, and seven other scenes!
+
+★ Pomodoro Timer
+Organize your day into timed intervals of focused work sessions and short breaks. 
+
+★ Todo integrations
+Connect your favorite task provider to quickly update your tasks on each new tab. Asana, Trello, Todoist, Microsoft To Do, Google Tasks, GitHub, Bitbucket, & Basecamp 3.
+
+★ Autofocus mode
+Always see your top task front and center. Completing your focus replaces it with the next task on your to-do list.
+
+★ Metrics
+Track the progress your making towards personal and professional milestones.
+
+★ Countdowns
+Count down the days left until upcoming events and due dates.
+
+★ World Clocks
+Leave the time zone conversion to us! Add other time zones right on your dashboard. 
+
+★ Custom Photos, Quotes, & Mantras
+Personalize your dashboard with the content that inspires you most. Skip and change the content whenever you want.
+
+★ Notes
+Jot down important reminders or start that novel with our fullscreen note editor.
+
+★ Multi-Todo list
+Create more lists to organize your tasks however you like.
+
+★ Extra weather info
+Get more detailed weather info with an hourly forecast, air quality, chance of rain, and more.
+
+
+☆☆ Privacy & Security ☆☆ 
+We at Momentum are committed to protecting your privacy. The information we gather or process is used solely for core functionality of Momentum and to improve the quality and security of our service. Your information isn’t and has never been sold to third parties. 
+
+For more information on privacy and the security of your data visit https://momentumdash.com/privacy. 
+
+☆☆ Help & Contact ☆☆
+Help Center: https://momentumdash.help 
+Suggestions: https://momentum.nolt.io/
+Contact us: https://momentumdash.com/contact
+
+☆☆ Social Pages ☆☆  
+Blog: https://momentumdash.com/blog 
+Instagram: https://instagram.com/momentumdash
+Twitter: https://twitter.com/momentumdash
+Facebook: https://facebook.com/momentumdash
+```
+
+## スクリーンショット作成
+
+TODO: 
+- 何を載せれば伝わるのか検討
+- Udemyのページを模した画像の作成
+- 権利・価格フリーの画像を手に入れる方法
+
+Figmaで作ることにした...
+
