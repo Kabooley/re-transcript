@@ -8,23 +8,29 @@
  * - alertはpros.built && previousBuildingの時にtrueになる
  *
  * ********************************************************/
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import LoadingButton from '@mui/lab/LoadingButton';
-import Box from '@mui/material/Box';
-import SaveIcon from '@mui/icons-material/Save';
-import Alert from '@mui/material/Alert';
-import Grow from '@mui/material/Grow';
-import AlertMessage from './AlertMessage';
+import * as React from "react";
+import Button from "@mui/material/Button";
+import LoadingButton from "@mui/lab/LoadingButton";
+import Box from "@mui/material/Box";
+import SaveIcon from "@mui/icons-material/Save";
+import Alert from "@mui/material/Alert";
+import Grow from "@mui/material/Grow";
+import AlertMessage from "./AlertMessage";
 
 /**
  * Slide timer for complete message.
  *
  * NOTE: alertTimer MUST BE OVER slideTimer + Slide timeout time
  * */
+// const TIMERS = {
+//   alertLifeTimer: 2800,
+//   slideTimer: 1600,
+// } as const;
+
+// DEBUG:
 const TIMERS = {
-    alertLifeTimer: 2800,
-    slideTimer: 1600,
+  alertLifeTimer: 28000,
+  slideTimer: 16000,
 } as const;
 
 /**
@@ -32,14 +38,14 @@ const TIMERS = {
  *
  * */
 const copies = {
-    complete: 'COMPLETE!',
-    rebuilding: 'REBUILDING...',
-    turnOff: 'TURN OFF',
-    rebuild: 'REBUILD',
-    invalidPage: '拡張機能はUdemyの講義ページでのみ有効になります',
+  complete: "COMPLETE!",
+  rebuilding: "REBUILDING...",
+  turnOff: "TURN OFF",
+  rebuild: "REBUILD",
+  invalidPage: "拡張機能はUdemyの講義ページでのみ有効です",
 } as const;
 
-/*********************************************************************
+/**
  * @param props
  * @param { boolean} built - 拡張機能が実行中ならばtrue
  * @param { boolean} building - 拡張機能がRUNされて構築の最中ならばtrue
@@ -48,175 +54,174 @@ const copies = {
  *
  * */
 export default function Content(props): JSX.Element {
-    // True as displaying Alert
-    const [alert, setAlert] = React.useState<boolean>(false);
-    // Ref is required by Slide component in AlertMessage.
-    const _ref = React.useRef(null);
-    // Save previous props.building value
-    const previousBuilding: boolean = usePrevious(props.building);
+  // True as displaying Alert
+  const [alert, setAlert] = React.useState<boolean>(false);
+  // Ref is required by Slide component in AlertMessage.
+  const _ref = React.useRef(null);
+  // Save previous props.building value
+  const previousBuilding: boolean = usePrevious(props.building);
 
-    // もしもREBUILDINGが終わった瞬間ならばアラートをかける
-    React.useEffect(function () {
-        if (props.built && previousBuilding) {
-            setAlert(true);
-        }
-    });
-
-    // alertがtrueなら指定時間後にfalseに戻す
-    React.useEffect(
-        function () {
-            let timer = null;
-            if (alert) {
-                timer = setTimeout(function () {
-                    setAlert(false);
-                }, TIMERS.alertLifeTimer);
-                return () => {
-                    clearTimeout(timer);
-                };
-            }
-        },
-        [alert]
-    );
-
-    /***
-     * 以前のpropsの状態を保持して返す関数
-     *
-     * 参考:
-     * https://stackoverflow.com/questions/53446020/how-to-compare-oldvalues-and-newvalues-on-react-hooks-useeffect
-     * https://blog.logrocket.com/accessing-previous-props-state-react-hooks/
-     * */
-    function usePrevious(value) {
-        const ref = React.useRef();
-        React.useEffect(() => {
-            ref.current = value;
-        });
-        return ref.current;
+  // もしもREBUILDINGが終わった瞬間ならばアラートをかける
+  React.useEffect(function () {
+    if (props.built && previousBuilding) {
+      setAlert(true);
     }
+  });
 
-    /***
-     * Generate Rebuild button JSX
-     *
-     * */
-    const generateRunButton = (): JSX.Element => {
-        return (
-            <Button
-                sx={{
-                    width: '80%',
-                }}
-                variant="contained"
-                onClick={props.handlerOfToggle}
-                color="primary"
-            >
-                {copies.rebuild}
-            </Button>
-        );
-    };
+  // alertがtrueなら指定時間後にfalseに戻す
+  React.useEffect(
+    function () {
+      let timer = null;
+      if (alert) {
+        timer = setTimeout(function () {
+          setAlert(false);
+        }, TIMERS.alertLifeTimer);
+        return () => {
+          clearTimeout(timer);
+        };
+      }
+    },
+    [alert]
+  );
 
-    /**
-     * Generate loading button JSX
-     *
-     * */
-    const generateLoadingButton = (): JSX.Element => {
-        return (
-            <LoadingButton
-                sx={{
-                    width: '80%',
-                }}
-                color="secondary"
-                loading={props.building}
-                loadingPosition="start"
-                startIcon={<SaveIcon />}
-                variant="text"
-                disabled={true}
-            >
-                {copies.rebuilding}
-            </LoadingButton>
-        );
-    };
+  /***
+   * 以前のpropsの状態を保持して返す関数
+   *
+   * 参考:
+   * https://stackoverflow.com/questions/53446020/how-to-compare-oldvalues-and-newvalues-on-react-hooks-useeffect
+   * https://blog.logrocket.com/accessing-previous-props-state-react-hooks/
+   * */
+  function usePrevious(value) {
+    const ref = React.useRef();
+    React.useEffect(() => {
+      ref.current = value;
+    });
+    return ref.current;
+  }
 
-    /**
-     * Generate Success message JSX
-     *
-     * */
-    const generateSuccess = (): JSX.Element => {
-        return (
-            <AlertMessage
-                timer={TIMERS.slideTimer}
-                _ref={_ref}
-                show={props.built}
-            >
-                <Alert
-                    sx={{
-                        width: '80%',
-                        '& 	.MuiAlert-message': {
-                            padding: 0,
-                        },
-                        '& .MuiAlert-icon': {
-                            padding: 0,
-                        },
-                    }}
-                    variant="filled"
-                    severity="success"
-                >
-                    {copies.complete}
-                </Alert>
-            </AlertMessage>
-        );
-    };
-
-    /**
-     * Generate turn off button JSX
-     *
-     * */
-    const generateTurnOffButton = (): JSX.Element => {
-        return (
-            <Grow in={true}>
-                <Button
-                    sx={{
-                        // backgroundColor: 'blueviolet',
-                        width: '80%',
-                    }}
-                    variant="contained"
-                    onClick={props.handlerOfToggle}
-                    color="secondary"
-                >
-                    {copies.turnOff}
-                </Button>
-            </Grow>
-        );
-    };
-
-    const content = (): JSX.Element => {
-        let generated: JSX.Element = null;
-        if (alert && props.built) {
-            generated = null;
-        } else if (props.built) {
-            generated = generateTurnOffButton();
-        } else if (props.building) {
-            generated = generateLoadingButton();
-        } else if (!props.building && !props.built) {
-            generated = generateRunButton();
-        }
-        return generated;
-    };
-
-    const generateNotice = (): JSX.Element => {
-        return (
-            <Alert variant="outlined" severity="info" sx={{ width: '300px' }}>
-                {copies.invalidPage}
-            </Alert>
-        );
-    };
-
+  /***
+   * Generate Rebuild button JSX
+   *
+   * */
+  const generateRunButton = (): JSX.Element => {
     return (
-        <Box
-            sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}
-            ref={_ref}
-        >
-            {alert ? generateSuccess() : null}
-            {props.correctUrl ? content() : generateNotice()}
-        </Box>
+      <Button
+        sx={{
+          width: "80%",
+        }}
+        variant="contained"
+        onClick={props.handlerOfToggle}
+        color="primary"
+      >
+        {copies.rebuild}
+      </Button>
     );
+  };
+
+  /**
+   * Generate loading button JSX
+   *
+   * */
+  const generateLoadingButton = (): JSX.Element => {
+    return (
+      <LoadingButton
+        sx={{
+          width: "80%",
+        }}
+        color="secondary"
+        loading={props.building}
+        loadingPosition="start"
+        startIcon={<SaveIcon />}
+        variant="text"
+        disabled={true}
+      >
+        {copies.rebuilding}
+      </LoadingButton>
+    );
+  };
+
+  /**
+   * Generate Success message JSX
+   *
+   * NOTE: line-height must be 1.75 to unify popup height.
+   * */
+  const generateSuccess = (): JSX.Element => {
+    return (
+      <AlertMessage timer={TIMERS.slideTimer} _ref={_ref} show={props.built}>
+        <Alert
+          sx={{
+            width: "80%",
+            lineHeight: 1.75,
+            "& 	.MuiAlert-message": {
+              padding: 0,
+            },
+            "& .MuiAlert-icon": {
+              padding: 0,
+            },
+          }}
+          variant="filled"
+          severity="success"
+        >
+          {copies.complete}
+        </Alert>
+      </AlertMessage>
+    );
+  };
+
+  /**
+   * Generate turn off button JSX
+   *
+   * */
+  const generateTurnOffButton = (): JSX.Element => {
+    return (
+      <Grow in={true}>
+        <Button
+          sx={{ width: "80%" }}
+          variant="contained"
+          onClick={props.handlerOfToggle}
+          color="secondary"
+        >
+          {copies.turnOff}
+        </Button>
+      </Grow>
+    );
+  };
+
+  const content = (): JSX.Element => {
+    let generated: JSX.Element = null;
+    if (alert && props.built) {
+      generated = null;
+    } else if (props.built) {
+      generated = generateTurnOffButton();
+    } else if (props.building) {
+      generated = generateLoadingButton();
+    } else if (!props.building && !props.built) {
+      generated = generateRunButton();
+    }
+    return generated;
+  };
+
+  const generateNotice = (): JSX.Element => {
+    return (
+      <Alert
+        variant="outlined"
+        severity="info"
+        sx={{ width: "300px", fontSize: "0.75rem" }}
+      >
+        {copies.invalidPage}
+      </Alert>
+    );
+  };
+
+  return (
+    <Box
+      sx={{ display: "flex", alignItems: "center", pl: 1, pb: 1 }}
+      ref={_ref}
+    >
+      {alert ? generateSuccess() : null}
+      {props.correctUrl ? content() : generateNotice()}
+    </Box>
+  );
 }
 
 // const generateRunning = (): JSX.Element => {
