@@ -23,10 +23,13 @@ const TIMERS = {
   slideTimer: 1600,
 } as const;
 
-const templates = {
+const copies = {
+  title: "Re Transcript",
   complete: "COMPLETE!",
   rebuilding: "REBUILDING...",
-  turnOff: "TURN OFF"
+  turnOff: "TURN OFF",
+  rebuild: "REBUILD",
+  invalidPage: "Extension is available on the Udemy lecture page"
 } as const;
 
 /*********************************************************************
@@ -68,7 +71,7 @@ export default function Content(props): JSX.Element {
     [alert]
   );
 
-  /*****************************
+  /***
    * 以前のpropsの状態を保持して返す関数
    *
    * 参考:
@@ -83,6 +86,9 @@ export default function Content(props): JSX.Element {
     return ref.current;
   }
 
+  /***
+   * 
+   * */ 
   const generateRunButton = (): JSX.Element => {
     return (
       <Button
