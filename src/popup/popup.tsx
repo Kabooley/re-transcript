@@ -1,14 +1,9 @@
 /*******************************************************
  *  POPUP
  *
- * NOTE: POPUP is using Material UI which is third party style library.
+ * NOTE: Using Material UI.
  *******************************************************/
-/*
-TODO: 
-    - コンポーネントの分割
-    - verifyValidPage()はじめ各メソッドで例外が派生する場合の対処
-    - 後回しでいい LoadingButtonのLoadingの色を薄くしない
-*/
+
 // NOTE: 'React'の宣言はMaterial UIに必須なので消さないこと
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
