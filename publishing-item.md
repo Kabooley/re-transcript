@@ -10,7 +10,7 @@ NOTE: まずはアカウント登録!!
 
 [ポリシー](#Policies)
 [準備するもの](#準備するもの)
-[CWS登録](#CWS登録)
+[CWS 登録](#CWS登録)
 [manifest.json](#manifest.json)
 [Internationalization](#Internationalization)
 [コピー](#コピー)
@@ -181,10 +181,8 @@ https://tech.manafukurou.com/article/chrome-develop-2/
 
 TODO: いまんところすること
 
-- 説明文章の推敲：参考ページを参考にまとめなおす
-- スクリーンショットの準備：Udemyの講義ページを勝手に使うのはご法度なので自作するほかない
-
-
+-   説明文章の推敲：参考ページを参考にまとめなおす
+-   スクリーンショットの準備：Udemy の講義ページを勝手に使うのはご法度なので自作するほかない
 
 -   Google 開発者登録の初回登録料 5$
     済
@@ -195,14 +193,14 @@ TODO: いまんところすること
 
 -   パッケージの概要
     済
-    [Description_文章](#Description_文章)の内容をmanifest.jsonに書き込んだ
+    [Description\_文章](#Description_文章)の内容を manifest.json に書き込んだ
     ストアに表示されるパッケージのタイトル manifest.json の[description]データがそのまま反映されます
 
 -   説明
     [拡張機能説明文章](#拡張機能説明文章)の文章をそのまま
     アイテムの紹介。ストア画面では上の概要の下に表示されます。
 
-    [参考](#参考)のGoogle拡張機能のページを参考に説明文章を推敲のこと
+    [参考](#参考)の Google 拡張機能のページを参考に説明文章を推敲のこと
 
 -   カテゴリ
     chrome ウェブストアのどのカテゴリに並ぶかを指定出来ます。
@@ -237,7 +235,7 @@ TODO: いまんところすること
 
 -   ホームページ URL
     無い
-    NOTE: Githubページでも公開するかい？
+    NOTE: Github ページでも公開するかい？
     アイテムに関する Web サイトのリンク
 
 -   サポート URL
@@ -264,24 +262,24 @@ TODO: いまんところすること
 -   公開設定： 公開・限定公開・非公開を設定出来ます
 -   販売地域： どの国でアイテムを販売するかを指定出来ます。
 
-## CWS登録
+## CWS 登録
 
 https://developer.chrome.com/docs/webstore/register/
 
-拡張機能を登録する前に、CWS開発者アカウントを登録する必要があるよ。
+拡張機能を登録する前に、CWS 開発者アカウントを登録する必要があるよ。
 
 必要なもの：
-- $5の初回登録料
-- 専用のEmailアドレス
 
+-   $5 の初回登録料
+-   専用の Email アドレス
 
-Emailの性格：
+Email の性格：
 
-- 重要な案内を送信する場合があるし、専用のメールアドレスにしないと都合によってはそのメールアドレスを削除したい場合もあるだろうし、新しいメールアドレスを登録するのをおすすめするよ
+-   重要な案内を送信する場合があるし、専用のメールアドレスにしないと都合によってはそのメールアドレスを削除したい場合もあるだろうし、新しいメールアドレスを登録するのをおすすめするよ
 
-- 定期的にこのメールボックスを確認してください。重要な案内を受信している可能性があります
+-   定期的にこのメールボックスを確認してください。重要な案内を受信している可能性があります
 
-- 
+-
 
 ## manifest.json
 
@@ -511,9 +509,9 @@ Google 翻訳などの翻訳アプリと連動してご利用になる場合の�
 あくまで、文章の始まりからピリオドまでの文章を一塊として再構成する機能を提供するのみです。
 翻訳機能は Google 翻訳など他の拡張機能サービスをご利用ください。
 
-#### Description_文章
+#### Description\_文章
 
-NOTE: 132文字以内
+NOTE: 132 文字以内
 
 `Udemyのトランスクリプト上の英語字幕を再構成して、字幕文章を文章の始まりからピリオドまでの一塊に作り直します。お好みの翻訳拡張機能とともに使用して、快適にUdemyの英語動画を学習しましょう！`
 
@@ -553,15 +551,13 @@ pilot and that's why we saw it inside of our output's.
 
 しかし文章の分割場所によっては翻訳内容がまったくことなります。
 
-
 ## 参考
 
-CWSの参考
+CWS の参考
 
-1. Google翻訳拡張機能：
+1. Google 翻訳拡張機能：
 
 https://chrome.google.com/webstore/detail/google-translate/aapbdbdomjkkjkaonfhkkikfgjllcleb?hl=ja
-
 
 2. Momentum
 
@@ -571,34 +567,34 @@ https://chrome.google.com/webstore/detail/momentum/laookkfknpbbblfpciffpaejjkokd
 
 概要説明
 機能（チェックマーク）
-売り込みポイント（☆マーク）
+売り込みポイント（☆ マーク）
 プライバシーとセキュリティに関しての説明
-SNSへの案内
+SNS への案内
 
 ```
 Replace new tab page with a personal dashboard featuring to-do, weather, and inspiration.
 What if every new tab could calm your mind and increase your focus?
 
-Achieve your goals faster and more consistently with your own personal dashboard. Featuring to-do lists, weather, daily photos, and encouraging quotes. 
+Achieve your goals faster and more consistently with your own personal dashboard. Featuring to-do lists, weather, daily photos, and encouraging quotes.
 
 Join over 3 million energized users who have levelled-up their workspace and day-to-day productivity with Momentum.
 
 ☆☆☆ Featured in Tim Ferriss’ Tools of Titans, WWDC21, The Wall Street Journal, Product Hunt, Lifehacker, BuzzFeed, and TheDailyMuse! ☆☆☆
 
-☆☆  Key Features ☆☆ 
+☆☆  Key Features ☆☆
 
 ✓ New inspiring photo, quote, and mantra each day
 ✓ Friendly reminders of your most important task
 ✓ Easy to use to-do list manager
 ✓ Shortcuts to your favorite websites and apps
-✓ Local weather info 
+✓ Local weather info
 ✓ Google/Bing/DuckDuckGo search options
 ✓ Customizable — show/hide features as you like
 ✓ Private and secure — we don’t share or sell your data
 
 Transform your screen to the gorgeous dashboard that keeps you on track.
 
-Note: For the best experience, after installing Momentum click the ‘Keep it’ button on the ‘Change back to Google’ notification. This will show Momentum on each new tab as intended. 🙂 
+Note: For the best experience, after installing Momentum click the ‘Keep it’ button on the ‘Change back to Google’ notification. This will show Momentum on each new tab as intended. 🙂
 
 ☆☆ Do More With Plus: 11 Fresh Features to Maximize Your Workspace ☆☆
 Momentum Plus offers additional productivity tools to support positive workflows and increase focus.
@@ -607,7 +603,7 @@ Momentum Plus offers additional productivity tools to support positive workflows
 Get in the flow with our focus-driving audio, including: a crackling campfire, peaceful rain, café ambience, and seven other scenes!
 
 ★ Pomodoro Timer
-Organize your day into timed intervals of focused work sessions and short breaks. 
+Organize your day into timed intervals of focused work sessions and short breaks.
 
 ★ Todo integrations
 Connect your favorite task provider to quickly update your tasks on each new tab. Asana, Trello, Todoist, Microsoft To Do, Google Tasks, GitHub, Bitbucket, & Basecamp 3.
@@ -622,7 +618,7 @@ Track the progress your making towards personal and professional milestones.
 Count down the days left until upcoming events and due dates.
 
 ★ World Clocks
-Leave the time zone conversion to us! Add other time zones right on your dashboard. 
+Leave the time zone conversion to us! Add other time zones right on your dashboard.
 
 ★ Custom Photos, Quotes, & Mantras
 Personalize your dashboard with the content that inspires you most. Skip and change the content whenever you want.
@@ -637,18 +633,18 @@ Create more lists to organize your tasks however you like.
 Get more detailed weather info with an hourly forecast, air quality, chance of rain, and more.
 
 
-☆☆ Privacy & Security ☆☆ 
-We at Momentum are committed to protecting your privacy. The information we gather or process is used solely for core functionality of Momentum and to improve the quality and security of our service. Your information isn’t and has never been sold to third parties. 
+☆☆ Privacy & Security ☆☆
+We at Momentum are committed to protecting your privacy. The information we gather or process is used solely for core functionality of Momentum and to improve the quality and security of our service. Your information isn’t and has never been sold to third parties.
 
-For more information on privacy and the security of your data visit https://momentumdash.com/privacy. 
+For more information on privacy and the security of your data visit https://momentumdash.com/privacy.
 
 ☆☆ Help & Contact ☆☆
-Help Center: https://momentumdash.help 
+Help Center: https://momentumdash.help
 Suggestions: https://momentum.nolt.io/
 Contact us: https://momentumdash.com/contact
 
-☆☆ Social Pages ☆☆  
-Blog: https://momentumdash.com/blog 
+☆☆ Social Pages ☆☆
+Blog: https://momentumdash.com/blog
 Instagram: https://instagram.com/momentumdash
 Twitter: https://twitter.com/momentumdash
 Facebook: https://facebook.com/momentumdash
@@ -656,25 +652,24 @@ Facebook: https://facebook.com/momentumdash
 
 ## スクリーンショット作成
 
-TODO: 
-- 何を載せれば伝わるのか検討
-- Udemyのページを模した画像の作成
-- 権利・価格フリーの画像を手に入れる方法
+TODO:
 
-Figmaで作ることにした...
+-   何を載せれば伝わるのか検討
+-   Udemy のページを模した画像の作成
+-   権利・価格フリーの画像を手に入れる方法
 
+Figma で作ることにした...
 
+## POPUP 改善
 
-## POPUP改善
-
-- 文章を日本語に: 済
-- アイコン表示：解決
+-   文章を日本語に: 済
+-   アイコン表示：解決
 
 微調整：
 
-- 実行中のときと実行前だとPOPUPの高さが異なるのでこれを統一させる
+-   実行中のときと実行前だと POPUP の高さが異なるのでこれを統一させる
 
-    body height: 200pxになるようにする
+    body height: 200px になるようにする
 
     42
     34
@@ -683,9 +678,213 @@ Figmaで作ることにした...
     36.5
     fs 0.875rem
     lh 1.75
-    つまり2.5px差あるはず
+    つまり 2.5px 差あるはず
 
-- ICONに影をつけたいけど、アイコンの枠が丸見えになってしまう
+-   ICON に影をつけたいけど、アイコンの枠が丸見えになってしまう
 
     これは断念して影をつけないことにした
 
+## 字幕文章生成
+
+Stephan コースのトランスクリプトを少し拝借...
+
+以下、画面サイズから見える範囲のトランスクリプト文章
+
+(リビルド前)
+
+```
+We could then in theory, somehow provide that source code off to us build and it could use it during
+
+the bundling process.
+
+But as I mentioned twice now, unfortunately, we're not going to build a reach out directly to NPM
+
+to download those archives, all for a very simple reason.
+
+I'm back inside my browser at localhost three thousand.
+
+I'm going to open up my console while on the network tab.
+
+Remember, you can press escape to open up that console and I'm going to try to directly download that
+
+same archive that we downloaded in the last video by using some JavaScript code inside of here.
+
+So to do so, I'm going to put in fetch paste in that link like so and run it.
+
+So in theory, that should download that archive.
+
+We are going to have an archive.
+
+```
+
+```
+その後、理論的には、そのソースコードをビルドに提供し、その間に使用することができます。
+
+バンドルプロセス。
+
+しかし、今2回述べたように、残念ながら、NPMに直接連絡することはありません。
+
+これらのアーカイブをダウンロードするには、すべて非常に単純な理由があります。
+
+私はローカルホスト3000で私のブラウザの中に戻ってきました。
+
+[ネットワーク]タブでコンソールを開きます。
+
+覚えておいてください、あなたはそのコンソールを開くためにエスケープを押すことができます、そして私はそれを直接ダウンロードしようとします
+
+ここでJavaScriptコードを使用して前回のビデオでダウンロードしたものと同じアーカイブ。
+
+そのために、そのリンクにフェッチペーストを挿入して実行します。
+
+したがって、理論的には、そのアーカイブをダウンロードする必要があります。
+
+アーカイブを作成します。
+
+```
+
+リビルド後
+
+```
+We've now seen that if we could somehow download that source code or that raw archive into the browser when we were doing this bundling, we could then get all the source code required for react.
+
+We could then in theory, somehow provide that source code off to us build and it could use it during the bundling process.
+
+But as I mentioned twice now, unfortunately, we're not going to build a reach out directly to NPM to download those archives, all for a very simple reason.
+
+I'm back inside my browser at localhost three thousand.
+
+I'm going to open up my console while on the network tab.
+
+Remember, you can press escape to open up that console and I'm going to try to directly download that same archive that we downloaded in the last video by using some JavaScript code inside of here.
+
+So to do so, I'm going to put in fetch paste in that link like so and run it.
+
+So in theory, that should download that archive.
+```
+
+```
+バンドルする際にソースコードや生のアーカイブをブラウザにダウンロードできれば、reactに必要なすべてのソースコードを入手できることがわかりました。
+
+そして理論的には、そのソースコードをビルドに提供し、バンドルプロセスでそれを使用することができるのです。
+
+しかしこれまで2回お話ししたように、残念ながら、私たちはアーカイブをダウンロードするためにNPMに直接アクセスするようなビルドをするつもりはないんです。
+
+私はlocalhost 3000のブラウザの中に戻っています。
+
+ネットワークタブでコンソールを開いてみます。
+
+前回のビデオでダウンロードしたのと同じアーカイブを、この中のJavaScriptのコードを使って直接ダウンロードしようと思います。
+
+そうするために、このリンクに fetch paste を入れて実行します。
+
+理論的には、これでアーカイブがダウンロードされるはずです。
+```
+
+翻訳文章を翻訳させてみた
+
+```
+NOTE: この文章をリビルドされた文章として扱う
+
+We have found that if we could download that source code or that raw archive into the browser when we were bundling, we could then get all the source code we need for react.
+
+We could then, in theory, provide that source code to us build and it could use it during the bundling process.
+
+But as I've told you twice before, unfortunately we're not going to build where we have to go directly to NPM to download the archive.
+
+I am back inside the browser on localhost 3000.
+
+I am going to open the console in the network tab.
+
+I'm going to download the same archive that I directly downloaded in the last video by using these JavaScript code inside of here.
+
+To do so, we will type fetch and paste this link into it like this and run it.
+
+In theory, this should download that archive.
+
+```
+
+これをさらに翻訳させてみる
+
+```
+NOTE: この文章はリビルド後の翻訳済の文章として使用する
+
+バンドルする際に、ソースコードや生のアーカイブをブラウザにダウンロードすれば、reactに必要なすべてのソースコードを入手できることがわかりました。
+
+理論的には、そのソースコードを私たちビルドに提供すれば、バンドルプロセスでそれを使用することができます。
+
+しかし、これまで2回お話ししたように、残念ながら、アーカイブをダウンロードするために直接NPMに行かなければならないようなビルドをするつもりはないんです。
+
+localhost 3000のブラウザの中に戻ってきました。
+
+ネットワークタブのコンソールを開いてみます。
+
+前回のビデオで直接ダウンロードしたのと同じアーカイブを、この中のJavaScriptコードを使ってダウンロードしようと思います。
+
+そのためには、fetchとタイプして、このリンクをこのように貼り付けて、実行します。
+
+理論的には、これでそのアーカイブをダウンロードできるはずです。
+
+```
+
+うんうん意味は通っている
+
+なおかつ丸パクリの字幕にはならないね
+
+```
+NOTE: この文章をリビルドする前の文章として扱う
+
+
+We have found that if we could download that source code or that raw archive into the browser when we were bundling, we could then get all the source code we need for react.
+
+We could then, in theory, provide that source code to us build and it could use it during
+
+the bundling process.
+
+But as I've told you twice before, unfortunately we're not going to build where we have to go directly to NPM
+
+to download the archive.
+
+I am back inside the browser on localhost 3000.
+
+I am going to open the console in the network tab.
+
+I'm going to download the same archive that I directly downloaded in the last video
+
+by using these JavaScript code inside of here.
+
+To do so, we will type fetch and paste this link into it
+
+like this and run it.
+
+In theory, this should download that archive.
+```
+
+```
+NOTE: この文章は、リビルドする前の文章を翻訳したときのものとして使用する
+
+バンドルする際に、ソースコードや生のアーカイブをブラウザにダウンロードすれば、reactに必要なすべてのソースコードを入手できることがわかりました。
+
+次に、理論的には、そのソースコードをビルドに提供し、
+
+バンドルプロセス。
+
+しかし、前に2回お話ししたように、残念ながら、NPMに直接アクセスする必要がある場所を構築することはありません。
+
+アーカイブをダウンロードするために。
+
+ローカルホスト3000のブラウザに戻ってきました。
+
+ネットワークタブでコンソールを開きます。
+
+前回のビデオで直接ダウンロードしたものと同じアーカイブをダウンロードします
+
+ここでこれらのJavaScriptコードを使用します。
+
+そのためには、fetchと入力し、このリンクを貼り付けます
+
+このようにそして実行します。
+
+理論的には、これでそのアーカイブがダウンロードされます。
+```
+
+    color: #1c1d1f;
