@@ -351,7 +351,9 @@ https://developer.chrome.com/docs/webstore/i18n/#choosing-locales-to-support
 
 ## コピー
 
-TODO: Description 用に拡張機能説明文章を 132 文字以内に要約すること
+- TODO: 済）Description 用に拡張機能説明文章を 132 文字以内に要約すること
+- TODO: CWSページ用文章を、参考資料を基に推敲する [推敲](#推敲)
+
 
 #### 拡張機能説明文章
 
@@ -527,6 +529,32 @@ NOTE: 132 文字以内
 }
 ```
 
+
+#### 推敲
+
+[参考](#参考)
+
+
+概要説明
+機能（チェックマーク）
+売り込みポイント（☆ マーク）
+プライバシーとセキュリティに関しての説明
+SNS への案内
+
+という構成
+
+```
+gaiyo
+
+feature
+
+sale point
+
+privacy policy and security
+
+guide to SNS
+```
+
 #### 例抽出
 
 元の文章：
@@ -565,11 +593,6 @@ https://chrome.google.com/webstore/detail/momentum/laookkfknpbbblfpciffpaejjkokd
 
 説明文章が参考になるかも
 
-概要説明
-機能（チェックマーク）
-売り込みポイント（☆ マーク）
-プライバシーとセキュリティに関しての説明
-SNS への案内
 
 ```
 Replace new tab page with a personal dashboard featuring to-do, weather, and inspiration.
