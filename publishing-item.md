@@ -675,13 +675,27 @@ Facebook: https://facebook.com/momentumdash
 
 ## スクリーンショット作成
 
-TODO:
+著作権違反回避のために
+FigmaでUdemyを模した画像を作成して、これをスクリーンショットとする
 
--   何を載せれば伝わるのか検討
--   Udemy のページを模した画像の作成
--   権利・価格フリーの画像を手に入れる方法
+載せられる画像は最大5枚までなので
 
-Figma で作ることにした...
+1. トランスクリプトの英語字幕の変化比較画像
+2. トランスクリプトのGoogle翻訳後の字幕変化比較画像
+3. 使い方（REBUILDをクリックするだけ！)
+4. 使い方（COMPLETE!と出れば完了）
+
+全体的に説明文章を上部に、スクリーンショットを下部に置いた画像を作成する
+
+参考：
+
+https://chrome.google.com/webstore/detail/honey-automatic-coupons-c/bmnlcjabgnpnenekpadlanbbkooimhnj?hl=ja
+
+https://chrome.google.com/webstore/detail/momentum/laookkfknpbbblfpciffpaejjkokdgca?hl=ja
+
+
+TODO: figmaの仕上げを...
+
 
 ## POPUP 改善
 
