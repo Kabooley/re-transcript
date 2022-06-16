@@ -5,7 +5,6 @@
  * Background script as service worker in accordance with Manifest V3.
  *
  *
- * TODO: 関数の命名をもっと直感的にしたいなぁ
  * */
 
 import {

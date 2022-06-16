@@ -31,7 +31,6 @@ import {
 } from "../utils/constants";
 import {
   sendMessagePromise,
-  delay,
   repeatActionPromise,
 } from "../utils/helpers";
 import { DomManipulationError, uError } from "../Error/Error";

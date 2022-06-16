@@ -1,10 +1,17 @@
 import { iMessage, iResponse } from '../utils/constants';
-import { DomManipulationError } from '../Error/Error';
 
+// Returns deep copied data.
 export const deepCopier = <T>(data: T): T => {
     return JSON.parse(JSON.stringify(data));
 };
 
+/**
+ * Promise will be solved when receiver returns response with { complete: true } object.
+ *
+ * If there is not { complete: true } object, then it throws exception.
+ *
+ * This is different from sendMessagePromise().
+ * */
 export const sendMessageToTabsPromise = async (
     tabId: number,
     message: iMessage
@@ -19,6 +26,13 @@ export const sendMessageToTabsPromise = async (
     });
 };
 
+/**
+ * Promise will be solved when receiver returns response with { complete: true } object.
+ *
+ * If there is not { complete: true } object, then it throws exception.
+ *
+ * This is different from sendMessageToTabsPromise().
+ * */
 export const sendMessagePromise = async (
     message: iMessage
 ): Promise<iResponse> => {
@@ -32,9 +46,9 @@ export const sendMessagePromise = async (
 };
 
 /**
- * 最後にフォーカスしたウィンドウのアクティブなタブのタブ情報を返す
+ * Returns Tab info of tab that active and last time focused
  *
- * @return {chrome.tabs.Tab[0]} - 複数タブを取得できるとしても一番初めのタブ情報だけを返す
+ * @return {chrome.tabs.Tab[0]} - Returns first Tab info unless it gets multiple tabs info.
  * */
 export const tabQuery = async (): Promise<chrome.tabs.Tab> => {
     try {
@@ -51,8 +65,7 @@ export const tabQuery = async (): Promise<chrome.tabs.Tab> => {
     }
 };
 
-// # mark以下を切除した文字列を返す
-// なければそのまま引数のurlを返す
+// Returns strings without after "#" charactor.
 export const exciseBelowHash = (url: string): string => {
     return url.indexOf('#') < 0 ? url : url.slice(0, url.indexOf('#'));
 };
@@ -71,9 +84,9 @@ export const exciseBelowHash = (url: string): string => {
  * @return {Promise} Promise objects represents boolean. True as matched, false as no-matched.
  * @throws
  *
- * 参考：https://stackoverflow.com/questions/61908676/convert-setinterval-to-promise
+ * Ref：https://stackoverflow.com/questions/61908676/convert-setinterval-to-promise
  *
- * 参考：https://levelup.gitconnected.com/how-to-turn-settimeout-and-setinterval-into-promises-6a4977f0ace3
+ * Ref：https://levelup.gitconnected.com/how-to-turn-settimeout-and-setinterval-into-promises-6a4977f0ace3
  * */
 export const repeatActionPromise = async (
     action: () => boolean,
@@ -105,6 +118,20 @@ export const repeatActionPromise = async (
     });
 };
 
+/****************
+ * Wrapper of setTimeout with given function.
+ *
+ *
+ * */
+export const delay = (action: () => any, timer: number): Promise<any> => {
+    return new Promise((resolve, reject) => {
+        setTimeout(function () {
+            const r = action();
+            resolve(r);
+        }, timer);
+    });
+};
+
 // --- USAGE EXAMPLE --------------------------------------
 // const randomMath = (): boolean => {
 //   return Math.random() * 0.8 > 400 ? true : false;
@@ -133,17 +160,3 @@ export const repeatActionPromise = async (
 //   console.log("RESULT:");
 //   console.log(res);
 // })();
-
-/****************
- * Wrapper of setTimeout with given function.
- *
- *
- * */
-export const delay = (action: () => any, timer: number): Promise<any> => {
-    return new Promise((resolve, reject) => {
-        setTimeout(function () {
-            const r = action();
-            resolve(r);
-        }, timer);
-    });
-};

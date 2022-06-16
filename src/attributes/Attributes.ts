@@ -2,7 +2,7 @@
  * Attirbutes.ts
  *
  * Part of Model class and
- * controls the writing and reading of objects.
+ * controls writing and reading of objects.
  *
  *
  * */

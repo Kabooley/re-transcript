@@ -1,15 +1,11 @@
 /******************************************************
- * ANNOTATION OF background.ts
- * _____________________________________________________
+ * Annotations for background.ts
+ *
  * Definition of annotation for background.ts.
- * This is like header file of C.
+ * Like header files for C.
+ *
  * *****************************************************/
 import { subtitle_piece } from '../utils/constants';
-import State from '../utils/background/State';
-
-// NOTE: 1/28 NEW CONSTANTS
-//
-// interfaces and constants for State annotation
 
 // interface for state saves progress
 export interface iProgress {
@@ -41,7 +37,6 @@ export interface iTabId {
     tabId: number;
 }
 
-// NOTE: new added
 export interface iTabInfo {
     tabInfo: chrome.tabs.Tab;
 }
@@ -56,6 +51,7 @@ export interface iSubtitle {
     subtitles: subtitle_piece[];
 }
 
+// Model for background.ts.
 export interface iModel
     extends iProgress,
         iPageStatus,
@@ -64,6 +60,7 @@ export interface iModel
         iTabInfo,
         iSubtitle {}
 
+// state interface for state module used in background.ts.
 export interface iStateModule<TYPE extends object> {
     set: (prop: {
         [Property in keyof TYPE]?: TYPE[Property];
@@ -72,24 +69,32 @@ export interface iStateModule<TYPE extends object> {
     clearAll: () => Promise<void>;
 }
 
-// modelBaseは新規プロパティの追加も削除もない
+// Base object that satisfies iModel.
 export const modelBase: iModel = {
+    // contentScript.js has been injected or not.
     isContentScriptInjected: false,
+    // captureSubtitles.js has been injected or not.
     isCaptureSubtitleInjected: false,
+    // controller.js has been injected or not.
     isControllerInjected: false,
+    // Subtitles data is capturing now or not.
     isSubtitleCapturing: false,
+    // It is done capturing subtitles data or not.
     isSubtitleCaptured: false,
-    // ExTranscriptがONかどうか
-    // RUNした後かどうか、でもある
-    // 表示、非表示は関係ない
+    // ExTranscript is structured or not.
     isExTranscriptStructured: false,
-    // 本家トランスクリプトが表示されているかどうか
-    // ONかどうかではなく、表示されているかどうか
-    // これが非表示なら、ExTranscriptも非表示にする
+    // There is Udemy Transcript shown or not.
+    // Not means turining on or not.
+    // If not shown, ExTranscript also not to be either.
     isTranscriptDisplaying: false,
+    // Udemy subtitle language is English or not.
     isEnglish: false,
+    // Tab id that this extension is now running.
     tabId: null,
+    // URL that this extension is now running.
     url: null,
+    // Captured subtitles data.
     subtitles: null,
-    tabInfo: null
+    // Tab info that this extension is now running.
+    tabInfo: null,
 } as const;

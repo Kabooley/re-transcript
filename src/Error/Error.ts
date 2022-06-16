@@ -5,7 +5,7 @@ class Err {
     public name: string;
     constructor(message) {
         this.message = message;
-        this.name = 'Error'; // (組み込みのエラークラスごとに異なる名前)
+        this.name = 'Error';
     }
 }
 

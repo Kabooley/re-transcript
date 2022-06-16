@@ -39,15 +39,14 @@ import {
 } from '../utils/constants';
 import MutationObserver_ from '../utils/MutationObserver_';
 import { ExTranscriptModel, SubtitleModel } from '../model/ExTranscriptModel';
-import { iProps, Callback } from '../utils/constants';
-import { Dashboard } from "../view/Dashboard";
-import { Sidebar } from "../view/Sidebar";
+import { Callback } from '../utils/constants';
+import { Dashboard } from '../view/Dashboard';
+import { Sidebar } from '../view/Sidebar';
 
 //
 // ----- GLOBALS -----------------------------------------
 //
 chrome.runtime.sendMessage;
-
 
 // ----- Annotations -------------------------------------
 
@@ -285,7 +284,7 @@ const handlerOfTurnOff = (): void => {
     transcriptListObserver.disconnect();
 
     // RESET ({ ...statusBase });
-    model.set({...statusBase});
+    model.set({ ...statusBase });
     mSubtitles.set({ ...subtitleBase });
 };
 
@@ -362,7 +361,6 @@ const onWindowResizeHandler = (): void => {
     if (w <= RESIZE_BOUNDARY && position !== positionStatus.noSidebar)
         model.set({ position: positionStatus.noSidebar });
 
-
     // 最新のpositionを取得してから
     if (model.get().position === 'sidebar') sidebar.updateContentHeight();
 };
@@ -376,7 +374,6 @@ const reductionOfwindowResizeHandler = (): void => {
     clearTimeout(timerQueue);
     timerQueue = setTimeout(onWindowResizeHandler, RESIZE_TIMER);
 };
-
 
 //
 // ----- METHODS RELATED TO AUTO SCROLL & HIGHLIGHT --------------------
@@ -636,7 +633,6 @@ const resetDetectScroll = (): void => {
 // --- OTHER LISTENERS -----------------------------------
 //
 
-
 /**
  * Handler of click event on auto scroll check box.
  * Update sStatus.isAutoscrollOn value by checking `checked` value.
@@ -706,8 +702,10 @@ const updatePosition: Callback<iController> = (prop): void => {
     const { position } = prop;
     if (position === undefined || !position) return;
 
-    position === positionStatus.sidebar ? renderSidebar() : renderBottomTranscript();
-    
+    position === positionStatus.sidebar
+        ? renderSidebar()
+        : renderBottomTranscript();
+
     // TODO: 以下の初期化を外部化したい
     resetDetectScroll();
     resetAutoscrollCheckboxListener();
@@ -725,7 +723,6 @@ const updateHighlight: Callback<iController> = (prop): void => {
     if (prop.highlight === undefined || !isAutoscrollInitialized) return;
 
     console.log('[controller] updateHighlight running...');
-
 
     // ExTranscriptのハイライト要素の番号を保存する
     const next: number = prop.highlight;
@@ -774,13 +771,19 @@ const updateExHighlight: Callback<iController> = (prop): void => {
 
     // Views
     sidebar = new Sidebar(
-        selectors.EX, selectors.EX.sidebarParent, selectors.EX.sidebarWrapper, "sidebar-template-@9999"
+        selectors.EX,
+        selectors.EX.sidebarParent,
+        selectors.EX.sidebarWrapper,
+        'sidebar-template-@9999'
     );
     dashboard = new Dashboard(
-        selectors.EX, selectors.EX.noSidebarParent, selectors.EX.dashboardTranscriptWrapper, "dashboard-template-@9999"
+        selectors.EX,
+        selectors.EX.noSidebarParent,
+        selectors.EX.dashboardTranscriptWrapper,
+        'dashboard-template-@9999'
     );
 
-    // Registration event handler 
+    // Registration event handler
     model.on('change', updatePosition);
     model.on('change', updateHighlight);
     model.on('change', updateExHighlight);
@@ -793,7 +796,6 @@ const updateExHighlight: Callback<iController> = (prop): void => {
     model.set({ position: s });
 
     model.set({ isWindowTooSmall: w < MINIMUM_BOUNDARY ? true : false });
-
 
     window.removeEventListener('resize', reductionOfwindowResizeHandler);
     window.addEventListener('resize', reductionOfwindowResizeHandler);
