@@ -76,7 +76,7 @@ chrome.runtime.onMessage.addListener(
     sender,
     sendResponse: (response: iResponse) => void
   ): boolean => {
-    console.log("CONTENT SCRIPT GOT MESSAGE");
+    // console.log("CONTENT SCRIPT GOT MESSAGE");
     const { from, order, to } = message;
     const response: iResponse = {
       from: extensionNames.contentScript,
@@ -88,7 +88,7 @@ chrome.runtime.onMessage.addListener(
     if (order && order.length) {
       // SEND STATUS
       if (order.includes(orderNames.sendStatus)) {
-        console.log("Order: SEND STATUS");
+        // console.log("Order: SEND STATUS");
         try {
           const isEnglish: boolean = isSubtitleEnglish();
           let isOpen: boolean = false;
@@ -151,17 +151,10 @@ chrome.runtime.onMessage.addListener(
         console.log("Order: Turn off");
         moControlbar.disconnect();
         controlbar.removeEventListener("click", handlerOfControlbar);
-        // TODO: moControlbar, controlbarはnullにする必要があるか？
+        // moControlbar, controlbarはnullにする必要があるか？
         response.complete = true;
         sendResponse(response);
       }
-
-      // //   ALERT
-      //  if(order.includes(orderNames.alert)){
-      //      displayAlert(message.alertMessage);
-      //      response.complete = true;
-      //      sendResponse(response);
-      //  }
     }
     return true;
   }
@@ -202,11 +195,7 @@ const sendToBackground = async (order: {
 /**
  * Handler of RESET order.
  *
- * controlbar DOMを取得しなおす
- * 伴って、
- * controlbarについているリスナの解除、再設定
- * controlbarを監視するMutationObserverの再設定
- *
+ * Invoke initialize().
  * */
 const handlerOfReset = async (): Promise<void> => {
   try {
@@ -226,9 +215,8 @@ const handlerOfReset = async (): Promise<void> => {
  *
  * */
 const handlerOfControlbar = function (ev: PointerEvent): void {
-  console.log("[contentScript] click event on controlbar");
-  // Clickイベント中にDOMを取得しておく...
-  // イベントバブリングpath
+  // console.log("[contentScript] click event on controlbar");
+  // Get DOMs among click event.
   const path: EventTarget[] = ev.composedPath();
   // トランスクリプト・トグルボタン
   const transcriptToggle: HTMLElement = document.querySelector<HTMLElement>(

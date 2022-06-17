@@ -23,7 +23,7 @@ export class Attributes<T> {
         };
     }
 
-    // get always returns all.
+    // Always returns all.
     get(): T {
         return { ...this.data };
     }
