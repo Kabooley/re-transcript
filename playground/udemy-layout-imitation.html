@@ -406,7 +406,7 @@
             };
 
             const onScrollHandler = (ev) => {
-                console.log('scroll');
+
                 const p = window.scrollY;
                 p < 56
                     ? setSidebarTopPosition(
@@ -416,10 +416,10 @@
             };
 
             const onWindowResizeHandler = (ev) => {
-                console.log('resized!!');
+
 
                 const w = window.innerWidth;
-                w < 975 ? console.log('No sidebar') : console.log('Sidebar');
+                w < 975 ?
             };
 
             document.addEventListener('DOMContentLoaded', () => {

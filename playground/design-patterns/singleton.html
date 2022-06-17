@@ -1,202 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body>
-    <script>
-      "use strict";
-      /********************************************************************
-       * シングルトン・デザインパターン
-       *
-       * 作成されるクラスのインスタンスがただ一つのオブジェクトに制限される
-       * 
-       * 条件：
-       *    インスタンスはシングルトンから見てグローバル・スコープにあること
-       *    シングルトンは作成済のインスタンスの参照を返すこと
-       *    新しいインスタンスを作らないこと
-       * 
-       *　メリット：
-            ただ一つのインスタンスだけしたい場合に都合がいい
-        デメリット：
-            密結合になるのでこのデザインパターンを用いらなくてはならないようなときは
-            設計の見直しをしたほうがいいそうです
-       * ******************************************************************/
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <script>
+            "use strict";
+            /********************************************************************
+             * シングルトン・デザインパターン
+             *
+             * 作成されるクラスのインスタンスがただ一つのオブジェクトに制限される
+             *
+             * 条件：
+             *    インスタンスはシングルトンから見てグローバル・スコープにあること
+             *    シングルトンは作成済のインスタンスの参照を返すこと
+             *    新しいインスタンスを作らないこと
+             *
+             *　メリット：
+                  ただ一つのインスタンスだけしたい場合に都合がいい
+              デメリット：
+                  密結合になるのでこのデザインパターンを用いらなくてはならないようなときは
+                  設計の見直しをしたほうがいいそうです
+             * ******************************************************************/
 
-      // ---- case: インスタンスへのアクセスがグローバルな場合 --------
+            // ---- case: インスタンスへのアクセスがグローバルな場合 --------
 
-      // Instance stores a reference to the Singleton
-      let instance;
+            // Instance stores a reference to the Singleton
+            let instance;
 
-      // Private methods and variables
-      const privateMethod = () => {
-        console.log("I am private");
-      };
-      const privateVariable = "Im also private";
-      const randomNumber = Math.random();
+            // Private methods and variables
+            const privateMethod = () => {
 
-      // Singleton
-      class MySingleton {
-        // Get the Singleton instance if one exists
-        // or create one if it doesn't
-        constructor() {
-          if (!instance) {
-            // Public property
-            this.publicProperty = "I am also public";
-            instance = this;
-          }
+            };
+            const privateVariable = "Im also private";
+            const randomNumber = Math.random();
 
-          return instance;
-        }
-        // Public methods
-        publicMethod() {
-          console.log("The public can see me!");
-        }
+            // Singleton
+            class MySingleton {
+              // Get the Singleton instance if one exists
+              // or create one if it doesn't
+              constructor() {
+                if (!instance) {
+                  // Public property
+                  this.publicProperty = "I am also public";
+                  instance = this;
+                }
 
-        getRandomNumber() {
-          return randomNumber;
-        }
-      }
-      const singleB = new MySingleton();
-      console.log(singleA.getRandomNumber() === singleB.getRandomNumber()); // true
+                return instance;
+              }
+              // Public methods
+              publicMethod() {
 
-      //   // Instance stores a reference to the Singleton
-      //   let instance;
+              }
 
-      //   // Singleton
-      //   class MyBadSingleton {
-      //       // Always create a new Singleton instance
-      //       constructor() {
-      //           this.randomNumber = Math.random();
-      //           instance = this;
-
-      //           return instance;
-      //       }
-
-      //       getRandomNumber() {
-      //           return this.randomNumber;
-      //       }
-      //   }
-
-      //   const badSingleA = new MyBadSingleton();
-      //   const badSingleB = new MyBadSingleton();
-      //   console.log(badSingleA.getRandomNumber() !== badSingleB.getRandomNumber()); // true
-
-      // Note: as we are working with random numbers, there is a
-      // mathematical possibility both numbers will be the same,
-      // however unlikely. The above example should otherwise still
-      // be valid.
-
-      // case: 好きなclassのインスタンスをシングルトンする場合
-
-      //   シングルトンって書いてあるけど普通のclass
-      class Singleton {
-        constructor(options = {}) {
-          // set some properties for our singleton
-          this.name = "SingletonTester";
-          this.pointX = options.pointX || 6;
-          this.pointY = options.pointY || 10;
-        }
-      }
-
-      let instance;
-      //   こっちがシングルトンの機能を実装しているもの
-      const SingletonTester = {
-        name: "SingletonTester",
-        // Method for getting an instance. It returns
-        // a singleton instance of a singleton object
-        getInstance(options) {
-          if (instance === undefined) {
-            instance = new Singleton(options);
-          }
-          return instance;
-        },
-      };
-
-      const singletonTest = SingletonTester.getInstance({
-        pointX: 5,
-      });
-
-      //   ---- 実装 -------------------
-      //
-      // インスタンスがモジュール内に収められるが、
-      // mySingletonが返すものはすべて「同じ」である
-      //
-      // 同じというのは同じ参照を持つオブジェクトを返すといういみなので
-      // 下のほうの比較結果通り
-      // 生成されたオブジェクトはすべて同じものになっている
-      var mySingleton = (function () {
-        // Instance stores a reference to the Singleton
-        var instance;
-        function init() {
-          // Singleton
-
-          // Private methods and variables
-          function privateMethod() {
-            console.log("I am private");
-          }
-
-          var privateVariable = "Im also private";
-          var privateRandomNumber = Math.random();
-
-          return {
-            // Public methods and variables
-            publicMethod: function () {
-              console.log("The public can see me!");
-            },
-
-            publicProperty: "I am also public",
-            getRandomNumber: function () {
-              return privateRandomNumber;
-            },
-          };
-        }
-        return {
-          // Get the Singleton instance if one exists
-          // or create one if it doesn't
-          getInstance: function () {
-            if (!instance) {
-              instance = init();
+              getRandomNumber() {
+                return randomNumber;
+              }
             }
-            return instance;
-          },
-        };
-      })();
+            const singleB = new MySingleton();
 
-      var myBadSingleton = (function () {
-        // Instance stores a reference to the Singleton
-        var instance;
-        function init() {
-          // Singleton
-          var privateRandomNumber = Math.random();
 
-          return {
-            getRandomNumber: function () {
-              return privateRandomNumber;
-            },
-          };
-        }
-        return {
-          // Always create a new Singleton instance
-          getInstance: function () {
-            instance = init();
-            return instance;
-          },
-        };
-      })();
-      // Usage:
-      var singleA = mySingleton.getInstance();
-      var singleB = mySingleton.getInstance();
-      console.log(singleA.getRandomNumber() === singleB.getRandomNumber()); // true
-      var badSingleA = myBadSingleton.getInstance();
-      var badSingleB = myBadSingleton.getInstance();
-      console.log(
-        badSingleA.getRandomNumber() !== badSingleB.getRandomNumber()
-      ); // true
-      // Note: as we are working with random numbers, there is a // mathematical
-    </script>
-  </body>
+            //   // Instance stores a reference to the Singleton
+            //   let instance;
+
+            //   // Singleton
+            //   class MyBadSingleton {
+            //       // Always create a new Singleton instance
+            //       constructor() {
+            //           this.randomNumber = Math.random();
+            //           instance = this;
+
+            //           return instance;
+            //       }
+
+            //       getRandomNumber() {
+            //           return this.randomNumber;
+            //       }
+            //   }
+
+            //   const badSingleA = new MyBadSingleton();
+            //   const badSingleB = new MyBadSingleton();
+            //
+
+            // Note: as we are working with random numbers, there is a
+            // mathematical possibility both numbers will be the same,
+            // however unlikely. The above example should otherwise still
+            // be valid.
+
+            // case: 好きなclassのインスタンスをシングルトンする場合
+
+            //   シングルトンって書いてあるけど普通のclass
+            class Singleton {
+              constructor(options = {}) {
+                // set some properties for our singleton
+                this.name = "SingletonTester";
+                this.pointX = options.pointX || 6;
+                this.pointY = options.pointY || 10;
+              }
+            }
+
+            let instance;
+            //   こっちがシングルトンの機能を実装しているもの
+            const SingletonTester = {
+              name: "SingletonTester",
+              // Method for getting an instance. It returns
+              // a singleton instance of a singleton object
+              getInstance(options) {
+                if (instance === undefined) {
+                  instance = new Singleton(options);
+                }
+                return instance;
+              },
+            };
+
+            const singletonTest = SingletonTester.getInstance({
+              pointX: 5,
+            });
+
+            //   ---- 実装 -------------------
+            //
+            // インスタンスがモジュール内に収められるが、
+            // mySingletonが返すものはすべて「同じ」である
+            //
+            // 同じというのは同じ参照を持つオブジェクトを返すといういみなので
+            // 下のほうの比較結果通り
+            // 生成されたオブジェクトはすべて同じものになっている
+            var mySingleton = (function () {
+              // Instance stores a reference to the Singleton
+              var instance;
+              function init() {
+                // Singleton
+
+                // Private methods and variables
+                function privateMethod() {
+
+                }
+
+                var privateVariable = "Im also private";
+                var privateRandomNumber = Math.random();
+
+                return {
+                  // Public methods and variables
+                  publicMethod: function () {
+
+                  },
+
+                  publicProperty: "I am also public",
+                  getRandomNumber: function () {
+                    return privateRandomNumber;
+                  },
+                };
+              }
+              return {
+                // Get the Singleton instance if one exists
+                // or create one if it doesn't
+                getInstance: function () {
+                  if (!instance) {
+                    instance = init();
+                  }
+                  return instance;
+                },
+              };
+            })();
+
+            var myBadSingleton = (function () {
+              // Instance stores a reference to the Singleton
+              var instance;
+              function init() {
+                // Singleton
+                var privateRandomNumber = Math.random();
+
+                return {
+                  getRandomNumber: function () {
+                    return privateRandomNumber;
+                  },
+                };
+              }
+              return {
+                // Always create a new Singleton instance
+                getInstance: function () {
+                  instance = init();
+                  return instance;
+                },
+              };
+            })();
+            // Usage:
+            var singleA = mySingleton.getInstance();
+            var singleB = mySingleton.getInstance();
+
+            var badSingleA = myBadSingleton.getInstance();
+            var badSingleB = myBadSingleton.getInstance();
+
+              badSingleA.getRandomNumber() !== badSingleB.getRandomNumber()
+            ); // true
+            // Note: as we are working with random numbers, there is a // mathematical
+        </script>
+    </body>
 </html>

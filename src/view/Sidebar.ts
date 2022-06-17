@@ -21,13 +21,12 @@ export class Sidebar extends ExTranscriptView {
     didClear(): void {}
 
     handlerOfCloseButton(): void {
-        console.log('handlerOfCloseButton');
         // 厳密には`controller`からじゃないけどまぁ
         chrome.runtime.sendMessage({
-          from: extensionNames.controller,
-          to: extensionNames.background,
-          order: [orderNames.turnOff],
-      });
+            from: extensionNames.controller,
+            to: extensionNames.background,
+            order: [orderNames.turnOff],
+        });
     }
 
     updateContentTop(top: number): void {
@@ -45,7 +44,7 @@ export class Sidebar extends ExTranscriptView {
      *  Until nav header is shown.
      * - ExTranscript header height.
      * - Transcript footer height.
-     * 
+     *
      * */
     updateContentHeight(): void {
         const footer: HTMLElement = document.querySelector(

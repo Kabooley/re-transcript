@@ -89,7 +89,7 @@ const updateDraggableStatus = (state) => {
     footer.classList.add(state);
   } else {
     // THIS MUST THROW ERROR でもあとでね
-    console.log("invalid state has been passed to updateDraggableStatus()");
+    
   }
 };
 
@@ -97,7 +97,7 @@ const updateDraggableStatus = (state) => {
 // これはtranscriptサイドバーにおいてスクロールを実現するために必要な措置である
 // この値はwindowの表示領域の高さ - footerである
 const calcHeight = () => {
-  console.log("window resized!");
+  
 
   const resultHeight =
     document.documentElement.clientHeight -
@@ -134,7 +134,7 @@ const resetCoordinates = (target, { x, y }) => {
 // Draggable
 
 const onDragStartHandler = (ev) => {
-  console.log("drag start");
+  
   // マウスと.draggable左上座標差分を取得
   const rect = draggable.getBoundingClientRect();
   const data = {
@@ -164,7 +164,7 @@ const onDragEndHandler = (ev) => {
     { event: "dragover", callback: onDragOverHandler },
     { event: "dragend", callback: onDragEndHandler },
   ]);
-  console.log("drag end");
+  
 };
 
 // Droppable
@@ -176,7 +176,7 @@ const onDragOverHandler = (ev) => {
 
 // ev.targetはdropゾーンの要素です注意
 const onDropHandler = (ev) => {
-  console.log("dropped");
+  
   ev.preventDefault();
   // transfer data and move it
   const { className, x, y } = JSON.parse(ev.dataTransfer.getData("text/plain"));
@@ -218,7 +218,7 @@ const initDraggableContainer = (state) => {
     }
   } else {
     // THIS MUST TRHOW ERROR
-    console.log(
+    
       "Invalid parameter has been received at initDraggableContainer"
     );
   }

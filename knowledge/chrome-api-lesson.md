@@ -177,7 +177,7 @@ await state.set({hoge: 'hoge'});
 setTimeout(function() {
     state.get().then((t: T) => {
         // 変数が保存出来ているのを確認できます
-        console.log(t);     // {hoge: 'hoge'}
+
     })
 }, 10000);
 ```
@@ -470,18 +470,18 @@ const windowIdSurvey = funciton() {
       chrome.tabs.query(
         { active: true, currentWindow: true, lastFocusedWindow: true },
         function (tabs) {
-          console.log("windowId by tabs.query() with the option: ");
-          console.log(tabs[0].windowId);
+
+
         }
       );
 
       chrome.windows.getLastFocused({}, (w) => {
-        console.log('windowId by getLastFocused():');
-        console.log(w.id);
+
+
       });
       chrome.windows.getCurrent({}, (w) => {
-        console.log('windowId by getCurrent():');
-        console.log(w.id);
+
+
       });
 }
 

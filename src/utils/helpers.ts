@@ -99,7 +99,6 @@ export const repeatActionPromise = async (
         let triesLeft: number = times;
 
         intervalId = setInterval(async function () {
-            console.log(`loop tries left...${triesLeft}`);
             if (await action()) {
                 clearInterval(intervalId);
                 // 正常な終了としてtrueを返す
@@ -148,7 +147,7 @@ export const delay = (action: () => any, timer: number): Promise<any> => {
 //       return r;
 //   }
 //   catch(err) {
-//     console.log("caught error");
+//
 //       // console.error(`Error: Could not query dom. ${err.message}`)
 //       throw err;
 //   }
@@ -157,6 +156,6 @@ export const delay = (action: () => any, timer: number): Promise<any> => {
 // (async function() {
 
 //   const res = await repeatQuerySelector();
-//   console.log("RESULT:");
-//   console.log(res);
+//
+//
 // })();

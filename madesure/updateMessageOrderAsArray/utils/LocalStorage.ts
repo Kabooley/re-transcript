@@ -37,7 +37,6 @@ export class LocalStorage<T> {
             if (err === chrome.runtime.lastError) {
                 console.error(err.message);
             } else {
-                console.log(err);
             }
         }
     }
@@ -52,7 +51,6 @@ export class LocalStorage<T> {
             if (err === chrome.runtime.lastError) {
                 console.error(err.message);
             } else {
-                console.log(err);
             }
         }
     }

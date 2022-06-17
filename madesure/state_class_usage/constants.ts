@@ -135,28 +135,26 @@ export const port_names = {
 //   orderNames.sendStatus, orderNames.disconnect
 // ];
 
-// console.log(oo);
-
+//
 
 // const messageHandler = (m: iMessage): void => {
 //   const { from, to, order } = m;
 //   // もしもorderプロパティが含まれていて、中身があれば
 //   if (order && order.length) {
-//     console.log("there is order");
-//     // 
+//
+//     //
 //     // この時点だとorderが何者かわからないみたいだからincludes()メソッドなんて使えないよ
 //     // というエラーが出る
 //     // でも使えた
 //     // codesandboxでは
 //     if (order.includes(orderNames.sendStatus)) {
-//       console.log("SEND STATUS");
+//
 //     }
 //     if (order.includes(orderNames.disconnect)) {
-//       console.log("DISCONNECT");
+//
 //     }
 //   }
 // };
-
 
 // messageHandler({
 //   from: "background",
@@ -176,7 +174,6 @@ export const port_names = {
 //   from: "background",
 //   to: "content script"
 // });
-
 
 /*
 ## 変数がいくつかの特定の値を持つように強制する方法
@@ -209,4 +206,3 @@ https://typescript-jp.gitbook.io/deep-dive/type-system/literal-types
 
 
 */
-

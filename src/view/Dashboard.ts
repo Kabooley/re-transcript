@@ -14,7 +14,6 @@ export class Dashboard extends ExTranscriptView {
     }
 
     handlerOfCloseButton(): void {
-        console.log('handlerOfCloseButton');
         // Actually that's strictly not a "controller".
         chrome.runtime.sendMessage({
             from: extensionNames.controller,

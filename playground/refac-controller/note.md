@@ -120,12 +120,12 @@ export class Model<T> {
         // DEBUG:
         //
         // Make sure how this.attributes.data changed
-        console.log('--------------------------');
-        console.log('prop:');
-        console.log(prop);
-        console.log('Updated data:');
-        console.log(this.attributes.get());
-        console.log('--------------------------');
+
+
+
+
+
+
     }
 }
 
@@ -164,17 +164,17 @@ export class ControllerModel extends Model<iController> {
 
 const updatePosition = (prop: iProps<iController>): void => {
     if(prop.position === undefined) return;
-    console.log('update psotion');
+
 };
 
 const updateHighlight = (prop: iProps<iController>): void => {
     if(prop.highlight === undefined) return;
-    console.log('update highlight');
+
 };
 
 const updateExHighlight = (prop: iProps<iController>): void => {
     if(prop.ExHighlight === undefined) return;
-    console.log('update ExHighlight');
+
 };
 
 const _model = ControllerModel.build(statusBase);
@@ -214,7 +214,7 @@ _model.trigger('turnOff');
 _model.on('turnOff', handlerOfTurnOff);
 
 const handlerOfTurnOff = (): void => {
-    console.log('[controller] handlerOfTurnOff()');
+
     // ...
 }
 ```
@@ -342,7 +342,7 @@ export class ExTranscriptView {
         };
     }
 
-    
+
 }
 
 
@@ -412,8 +412,6 @@ const sidebar: ExTranscriptView = new ExTranscriptView(
 
 DOM の挿入方法の模索
 
-
-
 ```TypeScript
 document.getElementById("app").innerHTML = `
 <h1>Hello Vanilla!</h1>
@@ -446,11 +444,11 @@ template.innerHTML = templateGenerator();
 const input = template.content.querySelector<HTMLInputElement>('input');
 if(input) {
   input.addEventListener("change", () => {
-    console.log(input.value);
+
   })
 }
 else {
-  console.log("input cannot acquired");
+
 }
 
 // const parent = document.querySelector(".rroot");
@@ -464,13 +462,13 @@ if(parent){
   parent.prepend(template.content)
 }
 else {
-  console.log("rroot cannot acquired");
+
 }
 ```
 
 `template`と`DocumentFragment`の合わせだしと
 
-`ParentNode.prepend`でDOM挿入可能になった
+`ParentNode.prepend`で DOM 挿入可能になった
 
 ```TypeScript
 // sidebarTranscriptView.ts
@@ -533,8 +531,7 @@ BottomTranscriptView.prototype.render = function (
 };
 ```
 
-再度、DOM挿入方法をアップデートして...
-
+再度、DOM 挿入方法をアップデートして...
 
 ```TypeScript
 
@@ -561,7 +558,7 @@ export class ExTranscriptView {
     }
 
     // renderする場所は動的に変化するので必ずその都度DOMを取得する
-    // 
+    //
     render(subtitles?: subtitle_piece[]): void {
         // 毎回レンダリング前に消去する
         this.clear();
@@ -574,7 +571,7 @@ export class ExTranscriptView {
         const template = document.createElement('template');
         template.setAttribute("id", this.templateId);
 
-        // The determination of whether or not an argument exists 
+        // The determination of whether or not an argument exists
         // is delegated to the calling function.
         template.innerHTML = generateMarkup(subtitles);
 
@@ -613,9 +610,9 @@ export class ExTranscriptView {
 
 
 // TODO: どうやってselectorを渡すか...
-// 
+//
 const generateMarkup = (subtitles?: subtitle_piece[]): string => {
-    const s: string = (subtitles.length > 0 && subtitles !== undefined) 
+    const s: string = (subtitles.length > 0 && subtitles !== undefined)
     ? generateSubtitleMarkup(subtitles) : "";
 
     const closeButton: string = generateCloseButton();
@@ -660,7 +657,6 @@ const generateSubtitleMarkup = (subtitles: subtitle_piece[]): string => {
 }
 ```
 
-
 ## TypeScript Tips: 諸略可能な引数の後に必須引数を追加することはできない
 
 ```TypeScript
@@ -674,6 +670,7 @@ const generateMarkup = (
       // ...
   }
 ```
+
 correct way.
 
 ```TypeScript
@@ -692,8 +689,7 @@ const generateMarkup = (
 
 理由は省略されると`selectors`が`subtitles`として認識されてしまうから
 
-
-## TypeScript Tips: type `[key: string]: () => void` に template literalは通用しない
+## TypeScript Tips: type `[key: string]: () => void` に template literal は通用しない
 
 参考：
 
@@ -717,12 +713,11 @@ https://www.typescriptlang.org/docs/handbook/2/template-literal-types.html
 
 っちゅうわけでテンプレート・リテラルはそれはそれで別物ってわけだそうです
 
-公式の前半の方ではunionを使うのは小規模なプロジェクトならばいいんじゃない
+公式の前半の方では union を使うのは小規模なプロジェクトならばいいんじゃない
 
 ってことだそうで
 
 やっぱりちゃんとやるにはめんどい方法になります
-
 
 ## TypeScript Tips: 必須プロパティと任意プロパティ
 
@@ -730,8 +725,8 @@ https://www.typescriptlang.org/docs/handbook/2/template-literal-types.html
 
 同様に任意とする型を生成する標準の型がある
 
-- 必須： `Required<T>`
-- 任意：`Partial<T>`
+-   必須： `Required<T>`
+-   任意：`Partial<T>`
 
 ```TypeScript
 type Person = {
@@ -762,19 +757,18 @@ type PartialPerson = {
     middleName?: string | undefined;
     givenName?: string | undefined;
 }
-*/ 
+*/
 ```
 
-## TypeScript Tips: Intersection 
+## TypeScript Tips: Intersection
 
-Union型が「いずれか」を表すならば、
+Union 型が「いずれか」を表すならば、
 
-Intersection型は「いずれも」を表す
+Intersection 型は「いずれも」を表す
 
 まぁ直感的に、`|`と`&`ならわかると思う
 
-ここに先のRequired<>とPartial<>を組み合わせると強そう
-
+ここに先の Required<>と Partial<>を組み合わせると強そう
 
 #### Intersection Types で Template Literal を受け付ける型を作る
 

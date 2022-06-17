@@ -65,7 +65,7 @@ export const circulater = function <T>(
 //     let timerId: number;
 //     let num: number = 0;
 //     timerId = setInterval(function () {
-//       console.log(`counter: ${num}`);
+//
 //       if (num >= times) {
 //         clearInterval(timerId);
 //         const random_boolean = Math.random() < 0.7;
@@ -83,7 +83,7 @@ export const circulater = function <T>(
 // // 戻り値は任意であるが、condition関数のgenerics型と同じにすること
 // const cb: iCallbackOfCirculater<boolean> = async (): Promise<boolean> => {
 //   const n: boolean = await counter(7);
-//   console.log(`cb: ${n}`);
+//
 //   return n;
 // };
 
@@ -95,7 +95,7 @@ export const circulater = function <T>(
 // const counterCondition: iConditionOfCirculater<iOp> = (
 //   operand: iOp
 // ): boolean => {
-//   console.log(`condition: ${operand ? true : false}`);
+//
 //   return operand ? true : false;
 // };
 
@@ -103,5 +103,5 @@ export const circulater = function <T>(
 
 // (async function () {
 //   const r = await counterLoop();
-//   console.log(`RESULT: ${r}`);
+//
 // })();

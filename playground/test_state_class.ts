@@ -145,7 +145,6 @@ const dummyData: iDummyData = {
 };
 
 const stateList: iStateList = (function () {
-    console.log('stateList module invoked');
     // _list will store these properties.
     // この場合の_listのAnnotationの仕方がわからない
     // _list = {
@@ -179,7 +178,6 @@ const stateList: iStateList = (function () {
         // nameで指定するんじゃなくて、
         // 型引数で指定できるようにしたいなぁ
         caller: <TYPE>(name: string): State<TYPE> => {
-            console.log(_list[name]);
             return _list[name];
         },
     };
@@ -232,15 +230,6 @@ const initializeStates = async (): Promise<void> => {
     //
     // Instances are stored into stateList._list[] correctly?
 
-    console.log('refStatus');
-    console.log(refStatus);
-    console.log('refSubtitles');
-    console.log(refSubtitles);
-    console.log('refSectionTitle');
-    console.log(refSectionTitle);
-    console.log('refTabId');
-    console.log(refTabId);
-
     try {
         await refStatus.setState(dummyData.status);
         await refSubtitles.setState(dummyData.subtitles);
@@ -250,15 +239,6 @@ const initializeStates = async (): Promise<void> => {
         // MAKE SURE:
         //
         // Initialized variables are saved correctly?
-
-        console.log('refStatus');
-        console.log(await refStatus.getState());
-        console.log('refSubtitles');
-        console.log(await refSubtitles.getState());
-        console.log('refSectionTitle');
-        console.log(await refSectionTitle.getState());
-        console.log('refTabId');
-        console.log(await refTabId.getState());
     } catch (err) {
         console.error(err.message);
     }

@@ -3,10 +3,8 @@ import { State } from '../utils/State';
 // --- LISTENERS -----------------------------------
 
 chrome.runtime.onInstalled.addListener(() => {
-    console.log('BACKGROUND RUNNING...');
     initializeBackgroundScript();
 });
-
 
 chrome.runtime.onMessage.addListener(
     async (
@@ -14,35 +12,38 @@ chrome.runtime.onMessage.addListener(
         sender: chrome.runtime.MessageSender,
         sendResponse: (response: iMessage) => void
     ): Promise<void> => {
-        console.log("ONMESSAGE");
         const { from, to, order, data } = message;
-        if(to !== extensionNames.background) return;
+        if (to !== extensionNames.background) return;
 
         // 確認
         // senderで発信者を特定できるのか？
-        // 
-        console.log(sender);
-        if(from === extensionNames.contentScript) {
-            if(data === dataTemplates.activated){
-                const tabId: number = await checkTabIsCorrect(/https:\/\/developer.mozilla.org\/ja\//);
-                console.log(`tabId: ${tabId}`);
+        //
+
+        if (from === extensionNames.contentScript) {
+            if (data === dataTemplates.activated) {
+                const tabId: number = await checkTabIsCorrect(
+                    /https:\/\/developer.mozilla.org\/ja\//
+                );
+
                 chrome.tabs.sendMessage(
                     tabId,
                     {
                         from: extensionNames.background,
                         to: extensionNames.contentScript,
-                        order: orderNames.sendStatus
-                    }, sendResponse )
+                        order: orderNames.sendStatus,
+                    },
+                    sendResponse
+                );
             }
         }
-})
+    }
+);
 
 const sendResponse = (message: iMessage) => {
     // 確認
-    // 
+    //
     // この出力がbackground側かcontent script側かで話が変わる
-    console.log(message);
-}
+};
 
 // --- ANNOTATIONS --------------------------------
 
@@ -210,7 +211,6 @@ const dummyData2: iDummyData = {
 };
 
 const stateList: iStateList = (function () {
-    console.log('stateList module invoked');
     // _list will store these properties.
     // この場合の_listのAnnotationの仕方がわからない
     // _list = {
@@ -244,7 +244,6 @@ const stateList: iStateList = (function () {
         // nameで指定するんじゃなくて、
         // 型引数で指定できるようにしたいなぁ
         caller: <TYPE>(name: string): State<TYPE> => {
-            console.log(_list[name]);
             return _list[name];
         },
     };
@@ -260,7 +259,6 @@ const initializeBackgroundScript = async (): Promise<void> => {
 
 // set up
 const setupStates = (): void => {
-    console.log('SETUP STATES');
     // state of iState
     const key__extensionState: string = 'key__local_storage_state';
     const stateExtension: State<iStatus> = new State<iStatus>(
@@ -292,7 +290,6 @@ const setupStates = (): void => {
 };
 
 const initializeStates = async (): Promise<void> => {
-    console.log('INITIALIZE STATES');
     const refStatus: State<iStatus> = stateList.caller<iStatus>(
         nameOfState.status
     );
@@ -309,17 +306,6 @@ const initializeStates = async (): Promise<void> => {
     //
     // CORRECT!
 
-    console.log('---- Instances stored stateList ---------------');
-    console.log('refStatus');
-    console.log(refStatus);
-    console.log('refSubtitles');
-    console.log(refSubtitles);
-    console.log('refSectionTitle');
-    console.log(refSectionTitle);
-    console.log('refTabId');
-    console.log(refTabId);
-    console.log('---------------------------------------------------');
-
     try {
         await refStatus.setState(dummyData.status);
         await refSubtitles.setState(dummyData.subtitles);
@@ -331,17 +317,6 @@ const initializeStates = async (): Promise<void> => {
         // Initialized variables are saved correctly?
         //
         // CORRECT!
-
-        console.log("--- modified state --------------------")
-        console.log('refStatus');
-        console.log(await refStatus.getState());
-        console.log('refSubtitles');
-        console.log(await refSubtitles.getState());
-        console.log('refSectionTitle');
-        console.log(await refSectionTitle.getState());
-        console.log('refTabId');
-        console.log(await refTabId.getState());
-        console.log('---------------------------------------------------');
     } catch (err) {
         console.error(err.message);
     }
@@ -379,20 +354,7 @@ const modifyStates = async (): Promise<void> => {
     const dataFromSectionTitle = await stateList
         .caller<iSectionTitle>(nameOfState.sectionTitle)
         .getState();
-
-    console.log('---Data from each getState() ---');
-    console.log('Status');
-    console.log(dataFromStatus);
-    console.log('Subtitles');
-    console.log(dataFromSubtitles);
-    console.log('SectionTitle');
-    console.log(dataFromSectionTitle);
-    console.log('TabId');
-    console.log(dataFromTabId);
-    console.log('-------------------------------------');
 };
-
-
 
 const checkTabIsCorrect = async (pattern: RegExp): Promise<number> => {
     // https://www.udemy.com/course/*
@@ -413,7 +375,6 @@ const checkTabIsCorrect = async (pattern: RegExp): Promise<number> => {
         if (err === chrome.runtime.lastError) {
             console.error(err.message);
         } else {
-            console.log(err);
         }
     }
 };

@@ -56,7 +56,7 @@
             // Draggable要素の初期化 --------------------------------------
 
             function dragstart_handler(ev) {
-                console.log('[dragging data] drag start');
+
                 //   ev: DragEvent
                 // 異なる種類のドラッグデータを追加する
                 ev.dataTransfer.setData('text/plain', ev.target.id);
@@ -75,14 +75,14 @@
 
             // onDragend: dragオペレーションが終了したら発生する
             function dragend_handler(ev) {
-                console.log('[dragging data] drag end');
+
             }
 
             // onDragover: dragしているかぎり発生するイベント
             function dragover_handler(ev) {
                 ev.preventDefault();
-                console.log('[dragging data] drag over');
-                console.log(
+
+
                     'dragOver: dropEffect = ' +
                         ev.dataTransfer.dropEffect +
                         ' ; effectAllowed = ' +
@@ -92,14 +92,14 @@
 
             // onDragleave: 有効なdropターゲットから離れたときに発火する
             function dragleave_handler(ev) {
-                console.log('[dragging data] drag leave');
+
             }
 
             // onDragenter: 有効なdropターゲットに侵入したときに発火する
             function dragenter_handler(ev) {
                 ev.preventDefault();
-                console.log('[dragging data] drag enter');
-                console.log(
+
+
                     'dragenter: dropEffect = ' +
                         ev.dataTransfer.dropEffect +
                         ' ; effectAllowed = ' +
@@ -110,9 +110,9 @@
             // drag要素側に設定するのは意味がない模様(当然drag要素がdropゾーンも兼ねるならば話は別)
             // function drop_handler(ev) {
             //     ev.preventDefault();
-            //     console.log('[dragging data] dropped');
+            //
             //     ev.dataTransfer.dropEffect = 'move';
-            //     console.log(ev);
+            //
             // }
 
             // dragされる要素の初期化
@@ -130,30 +130,30 @@
             // onDragover: dragしているかぎり発生するイベント
             function _dragover_handler(ev) {
                 ev.preventDefault();
-                console.log('[droppable zone] drag over');
+
             }
 
             // onDragleave: 有効なdropターゲットから離れたときに発火する
             function _dragleave_handler(ev) {
-                console.log('[droppable zone] drag leave');
+
             }
 
             // onDragenter: 有効なdropターゲットに侵入したときに発火する
             function _dragenter_handler(ev) {
                 ev.preventDefault();
-                console.log('[droppable zone] drag enter');
+
             }
 
             // onDrop: 有効なdropターゲットにdropされたときに発火する
             function _drop_handler(ev) {
                 ev.preventDefault();
-                console.log('[droppable zone] dropped');
-                // console.logだとdataTransferは何も持っていないように出力されるけれど
-                console.log(ev.dataTransfer);
+
+                //
+
                 // ev.dataTransfer.dropEffect = 'move';
                 // dataTransfer.getData()でアクセスするとちゃんとアクセスできる
                 var data = ev.dataTransfer.getData('text/plain');
-                console.log(data); // DRAGGABLE
+
                 ev.target.appendChild(document.getElementById(data));
             }
 

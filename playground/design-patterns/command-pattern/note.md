@@ -4,7 +4,6 @@ https://www.patterns.dev/posts/command-pattern/
 
 > コマンドパターンを使用すると、特定のタスクを実行するオブジェクトを、メソッドを呼び出すオブジェクトから切り離すことができます
 
-
 もととなるプログラム
 
     使うことになるメソッドがハードコーディングされている
@@ -42,11 +41,10 @@ manager.cancelOrder("1234");
 
 代わりに`manager`から`placeOrder`を疎結合するようにできれば楽ちん
 
-
 登場人物：
-- OrderManager
-- Command
 
+-   OrderManager
+-   Command
 
 ```JavaScript
 class OrderManager {
@@ -100,25 +98,25 @@ manager.execute(new CancelOrderCommand("1234"));
 
 ```
 
-- OrderManagerのインスタンスは常にexecute()を呼び出すだけで
-実際に何を実行するのかに関心がない
-- execute()は外部化されたインスタンスを取得する
-- 外部化されたインスタンスはCommandインスタンスを生成する
-- Commandは渡された関数を保持する
+-   OrderManager のインスタンスは常に execute()を呼び出すだけで
+    実際に何を実行するのかに関心がない
+-   execute()は外部化されたインスタンスを取得する
+-   外部化されたインスタンスは Command インスタンスを生成する
+-   Command は渡された関数を保持する
 
 つまり
-Commandには実際に処理する関数を渡す
-executeにはCommandのインスタンスを渡す
+Command には実際に処理する関数を渡す
+execute には Command のインスタンスを渡す
 実際に処理する関数は外部化する
 
+## src/background/background/ts::onMessage に適用してみる
 
-## src/background/background/ts::onMessageに適用してみる
+onMessage ハンドラが iMessage を受け取る
 
-onMessageハンドラがiMessageを受け取る
->>ここの間を実装する<<
-iMessageのプロパティ全てのプロミスを配列に収める
-配列をPromise.all()に渡す
-Promise.all()が解決したらsendResponse({compelte: true})を送信する
+> > ここの間を実装する<<
+> > iMessage のプロパティ全てのプロミスを配列に収める
+> > 配列を Promise.all()に渡す
+> > Promise.all()が解決したら sendResponse({compelte: true})を送信する
 
 ```TypeScript
 // Commandのインスタンスをthis.ordersに格納する
@@ -152,7 +150,7 @@ const _contentScriptMessageHandler = async (
         // これもsendResponse()に含めないといけない...
         // そこも考えていない...
         sendResponse({complete: true})
-    } 
+    }
     catch (e) {
         console.error(e.message);
     }
@@ -162,7 +160,7 @@ const _contentScriptMessageHandler = async (
 // @param rest: iMessageのfrom, to抜きのインターフェイスが型になる
 // なのでiResponseとおなじ...
 // ひとまずでiResponseを型としておく
-// 
+//
 // 何も考えずに実装すればこんな感じ
 const synchronizer = (order: orderTypes, rest: iResponse): Promise<any>[] => {
     const result: Promise<any>[] = [];
@@ -183,14 +181,14 @@ const synchronizer = (order: orderTypes, rest: iResponse): Promise<any>[] => {
 }
 
 
-// 
+//
 // 外部化された処理
 // 一例
-// 
+//
 // If language: true
 const setLanguageEnglish = async(): Promise<void> => {
     return new Promise(async (resolve, reject) => {
-        console.log("It's English");
+
         try {
             const refStatus: State<iStatus> = stateList.caller<iStatus>(nameOfStte.status);
             const { pageStatus} =

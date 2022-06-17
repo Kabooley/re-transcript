@@ -6,10 +6,12 @@
 import { iModel } from '../background/annotations';
 import { uError } from '../Error/Error';
 
-// Extension only valid in this URL pattern.
+// Valid URL pattern.
 export const urlPattern: RegExp = /https:\/\/www.udemy.com\/course\/*/gm;
 
+// 
 // --- RELATED TO MESSAGE PASSING -------------
+// 
 
 // message passingで利用する拡張機能名称
 export const extensionNames = {
@@ -39,13 +41,6 @@ export const orderNames = {
     isPageIncludingMovie: 'isPageIncludingMovie',
     // Alert
     alert: 'alert',
-
-    // -- DUPLICATED ------------
-    //
-    // order to disconnect port
-    // disconnect: 'disconnect',
-    // from popup inquire the url is correct
-    // inquireUrl: 'inquireUrl',
 } as const;
 
 type et = typeof extensionNames;
@@ -89,13 +84,6 @@ export interface iResponse {
     error?: uError;
     // alert message
     alertMessage?: string;
-
-    // --- DUPLICATED ----
-    // disconnect?: boolean;
-    // completed?: boolean;
-    // RUN orderに対して、展開がすべて完了したらtrue
-    // successDeployment?: boolean;
-    // message?: any;
 }
 
 // interface of message parameter
@@ -105,7 +93,9 @@ export interface iMessage extends iResponse {
     to: extensionsTypes;
 }
 
+// 
 // --- OTHERS -----------------------------------
+// 
 
 // Subtitle object interface
 export interface subtitle_piece {
@@ -119,6 +109,10 @@ export interface subtitle_piece {
 export const _key_of_model_state__ = '_key_of_model_state__@&%8=8';
 export const _key_of_localstorage__ = '__key__of_local_storage__@&%8=8';
 
+export const copies = {
+    
+}
+
 // TODO: まだlocalStorageにこの情報が残っているかも...
 // const _key_of_localstorage__ = "__key__of_local_storage__";
 
@@ -127,7 +121,6 @@ export const _key_of_localstorage__ = '__key__of_local_storage__@&%8=8';
 // transcript要素はwinodwサイズが975px以下の時にdashboardへ以上でsidebarへ移動する
 // export const RESIZE_BOUNDARY: number = 975;
 export const RESIZE_BOUNDARY: number = 963;
-
 // window onResize時の反応遅延速度
 export const RESIZE_TIMER: number = 100;
 
@@ -147,8 +140,7 @@ export const messageTemplate = {
         'Please turn on Transcript and choose English for subtitle language.',
 };
 
-// NOTE: New added. 2022/5/16 to refactor controller.ts
-//
+
 // Used in Model, Events, Attributes, controller
 //
 // T型のオブジェクトのプロパティなら、その一部でも全部でも受け付ける
@@ -163,23 +155,23 @@ export type Callback<T> = (prop: iProps<T>) => void;
 //   orderNames.sendStatus, orderNames.disconnect
 // ];
 
-// console.log(oo);
+//
 
 // const messageHandler = (m: iMessage): void => {
 //   const { from, to, order } = m;
 //   // もしもorderプロパティが含まれていて、中身があれば
 //   if (order && order.length) {
-//     console.log("there is order");
+//
 //     //
 //     // この時点だとorderが何者かわからないみたいだからincludes()メソッドなんて使えないよ
 //     // というエラーが出る
 //     // でも使えた
 //     // codesandboxでは
 //     if (order.includes(orderNames.sendStatus)) {
-//       console.log("SEND STATUS");
+//
 //     }
 //     if (order.includes(orderNames.disconnect)) {
-//       console.log("DISCONNECT");
+//
 //     }
 //   }
 // };
@@ -234,16 +226,3 @@ https://typescript-jp.gitbook.io/deep-dive/type-system/literal-types
 
 
 */
-
-// --- LEGACY CODE -----------------------------
-
-// export const extensionStatus = {
-//     working: 'working',
-//     notWorking: 'notWorking',
-//     idle: 'idle',
-// } as const;
-
-// export const port_names = {
-//     _requiring_subtitles: '_port_name_require_subtitles',
-//     _injected_contentScript: '_port_name_injected_contentScript',
-// };

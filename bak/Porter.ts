@@ -7,13 +7,10 @@ export class Porter {
     }
 
     postMessage(m: iMessage): void {
-        console.log("posted message: ");
-        console.log(m);
         this.port.postMessage(m);
     }
 
     diconnect(): void {
-        console.log('Disconnect port.');
         this.port.disconnect();
     }
 
@@ -22,7 +19,6 @@ export class Porter {
     }
 
     onDisconnect(callback: (p: chrome.runtime.Port) => void): void {
-        console.log('Port disconnected');
         this.port.onDisconnect.addListener(callback);
     }
 }

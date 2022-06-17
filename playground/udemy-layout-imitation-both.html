@@ -269,7 +269,6 @@
             };
 
             const deleteSidebar = () => {
-                console.log('delete sidebar');
                 const e = document.querySelector(
                     CONSTANTS.selector.sidebarColumn
                 );
@@ -323,7 +322,7 @@
             const onWindowResizeHandler = (ev) => {
                 const w = window.innerWidth;
                 // no-sidebr から sidebarへ更新する
-                console.log(state.getState(CONSTANTS.status.key));
+
                 if (
                     w > 975 &&
                     state.getState(CONSTANTS.status.key) !==

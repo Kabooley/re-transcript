@@ -46,11 +46,6 @@ chrome.runtime.onMessage.addListener(
         )
             return;
 
-        console.log('ON MESSAGE...');
-
-        console.log(sender);
-        console.log(sendResponse);
-
         if (order === orderNames.sendStatus) {
             sendResponse({
                 from: extensionNames.contentScript,
@@ -65,7 +60,6 @@ chrome.runtime.onMessage.addListener(
 
 (function () {
     setTimeout(function () {
-        console.log('content script running...');
         chrome.runtime.sendMessage({
             from: extensionNames.contentScript,
             to: extensionNames.background,

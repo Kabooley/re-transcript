@@ -30,11 +30,5 @@ export class Model<T> {
         // DEBUG:
         //
         // Make sure how this.attributes.data changed
-        console.log('--------------------------');
-        console.log('prop:');
-        console.log(prop);
-        console.log('Updated data:');
-        console.log(this.attributes.get());
-        console.log('--------------------------');
     }
 }

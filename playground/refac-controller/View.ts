@@ -8,28 +8,26 @@
  *
  * */
 
-import * as selectors from "../../src/utils/selectors";
-import { subtitle_piece } from "../../src/utils/constants";
+import * as selectors from '../../src/utils/selectors';
+import { subtitle_piece } from '../../src/utils/constants';
 
 type iEXSelectors = {
-  [Property in keyof typeof selectors.EX]: typeof selectors.EX[Property];
+    [Property in keyof typeof selectors.EX]: typeof selectors.EX[Property];
 };
 
 interface iSelectors extends iEXSelectors {}
 
 const subtitles: subtitle_piece[] = [
-  { index: 0, subtitle: "this is awesome subtitle 0" },
-  { index: 1, subtitle: "this is awesome subtitle 1" },
-  { index: 2, subtitle: "this is awesome subtitle 2" },
-  { index: 3, subtitle: "this is awesome subtitle 3" },
-  { index: 4, subtitle: "this is awesome subtitle 4" },
-  { index: 5, subtitle: "this is awesome subtitle 5" },
-  { index: 6, subtitle: "this is awesome subtitle 6" },
+    { index: 0, subtitle: 'this is awesome subtitle 0' },
+    { index: 1, subtitle: 'this is awesome subtitle 1' },
+    { index: 2, subtitle: 'this is awesome subtitle 2' },
+    { index: 3, subtitle: 'this is awesome subtitle 3' },
+    { index: 4, subtitle: 'this is awesome subtitle 4' },
+    { index: 5, subtitle: 'this is awesome subtitle 5' },
+    { index: 6, subtitle: 'this is awesome subtitle 6' },
 ];
 
-const closeButtonHandler = (): void => {
-  console.log("close button clicked");
-};
+const closeButtonHandler = (): void => {};
 
 //
 // Let's abstract-ify above class
@@ -37,104 +35,103 @@ const closeButtonHandler = (): void => {
 // とはいえ、eventsMapしか抽象関数ないけど...
 
 export abstract class ExTranscriptView_ {
-  constructor(
-    public selectors: iSelectors,
-    // parentSelectorはselectorsに含まれるけど、汎用性のために区別する
-    private _parentSelector: string,
-    // 同様に。
-    // ExTranscript要素のなかで一番外側の要素
-    private _wrapperSelector: string,
-    // Udemyに埋め込むので、念のためtemplateに識別子をつける
-    private _templateId: string
-  ) {}
+    constructor(
+        public selectors: iSelectors,
+        // parentSelectorはselectorsに含まれるけど、汎用性のために区別する
+        private _parentSelector: string,
+        // 同様に。
+        // ExTranscript要素のなかで一番外側の要素
+        private _wrapperSelector: string,
+        // Udemyに埋め込むので、念のためtemplateに識別子をつける
+        private _templateId: string
+    ) {}
 
-  abstract eventsMap(): { [key: string]: () => void };
-  abstract templates(subtitles?: subtitle_piece[]): string;
+    abstract eventsMap(): { [key: string]: () => void };
+    abstract templates(subtitles?: subtitle_piece[]): string;
 
-  // renderする場所は動的に変化するので必ずその都度DOMを取得する
-  // NOTE: 現状、subtitlesがない場合前提でコードを書いているので必須引数にはできない
-  render(subtitles?: subtitle_piece[]): void {
-    // 毎回レンダリング前に消去する
-    this.clear();
+    // renderする場所は動的に変化するので必ずその都度DOMを取得する
+    // NOTE: 現状、subtitlesがない場合前提でコードを書いているので必須引数にはできない
+    render(subtitles?: subtitle_piece[]): void {
+        // 毎回レンダリング前に消去する
+        this.clear();
 
-    // TODO: Bottom ExTranscriptだけに必要な措置...
-    // 親要素のCSS positionプロパティを強制的に追加
-    // これは外部でやっても問題ないかも...
-    // parent.style.position = 'relative';
+        // TODO: Bottom ExTranscriptだけに必要な措置...
+        // 親要素のCSS positionプロパティを強制的に追加
+        // これは外部でやっても問題ないかも...
+        // parent.style.position = 'relative';
 
-    const template = document.createElement("template");
-    template.setAttribute("id", this._templateId);
+        const template = document.createElement('template');
+        template.setAttribute('id', this._templateId);
 
-    // The determination of whether or not an argument exists
-    // is delegated to the calling function.
-    template.innerHTML = this.templates(subtitles);
+        // The determination of whether or not an argument exists
+        // is delegated to the calling function.
+        template.innerHTML = this.templates(subtitles);
 
-    this.bindEvents(template.content);
+        this.bindEvents(template.content);
 
-    // 挿入先の親要素DOM取得
-    const parent = document.querySelector<Element>(this._parentSelector);
-    if (parent) {
-      parent.prepend(template.content);
+        // 挿入先の親要素DOM取得
+        const parent = document.querySelector<Element>(this._parentSelector);
+        if (parent) {
+            parent.prepend(template.content);
+        }
     }
-  }
 
-  clear(): void {
-    const e = document.querySelector(this._wrapperSelector);
-    if (e) e.remove();
-    // TODO: Bottom ExTranscriptは親要素のposition: relativeを解除しないといけない
-  }
-
-  bindEvents(fragment: DocumentFragment): void {
-    const eventsMap = this.eventsMap();
-
-    for (let eventKey in eventsMap) {
-      const [eventName, selector] = eventKey.split(":");
-      fragment.querySelectorAll(selector).forEach((element) => {
-        element.addEventListener(eventName, eventsMap[eventKey]);
-      });
+    clear(): void {
+        const e = document.querySelector(this._wrapperSelector);
+        if (e) e.remove();
+        // TODO: Bottom ExTranscriptは親要素のposition: relativeを解除しないといけない
     }
-  }
+
+    bindEvents(fragment: DocumentFragment): void {
+        const eventsMap = this.eventsMap();
+
+        for (let eventKey in eventsMap) {
+            const [eventName, selector] = eventKey.split(':');
+            fragment.querySelectorAll(selector).forEach((element) => {
+                element.addEventListener(eventName, eventsMap[eventKey]);
+            });
+        }
+    }
 }
 
 // Sidebar.ts -------------------------
 class Sidebar extends ExTranscriptView_ {
-  templates(subtitle?: subtitle_piece[]): string {
-    return this.generateMarkup(subtitle);
-  }
+    templates(subtitle?: subtitle_piece[]): string {
+        return this.generateMarkup(subtitle);
+    }
 
-  eventsMap(): { [key: string]: () => void } {
-    const m = {};
-    m[`click:${this.selectors.closeButton}`] = this.handlerOfCloseButton;
-    return m;
-  }
+    eventsMap(): { [key: string]: () => void } {
+        const m = {};
+        m[`click:${this.selectors.closeButton}`] = this.handlerOfCloseButton;
+        return m;
+    }
 
-  handlerOfCloseButton(): void {
-    console.log("handlerOfCloseButton");
-    closeButtonHandler();
-  }
+    handlerOfCloseButton(): void {
+        closeButtonHandler();
+    }
 
-  generateSubtitleMarkup(subtitles: subtitle_piece[]): string {
-    let mu: string = "";
-    for (const s of subtitles) {
-      const _mu: string = `
+    generateSubtitleMarkup(subtitles: subtitle_piece[]): string {
+        let mu: string = '';
+        for (const s of subtitles) {
+            const _mu: string = `
             <div class="${this.selectors.sidebarCueContainer.slice(
-              1
+                1
             )}" data-id="${s.index}">
                 <p class="${this.selectors.sidebarCue.slice(1)}">
                 <span data-purpose="${this.selectors.sidebarCueSpan}">${
-        s.subtitle
-      }</span>
+                s.subtitle
+            }</span>
                 </p>
             </div>
             `;
-      // concatでいいのかな...
-      mu = mu.concat(_mu);
+            // concatでいいのかな...
+            mu = mu.concat(_mu);
+        }
+        return mu;
     }
-    return mu;
-  }
 
-  generateCloseButton(): string {
-    return `
+    generateCloseButton(): string {
+        return `
             <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g clip-path="url(#clip0_2_8)">
             <line x1="-0.707107" y1="38.2929" x2="35.2929" y2="2.29289" stroke="black" stroke-width="2"/>
@@ -147,23 +144,23 @@ class Sidebar extends ExTranscriptView_ {
             </defs>
             </svg>
         `;
-  }
+    }
 
-  generateMarkup(subtitles?: subtitle_piece[]): string {
-    const s: string =
-      subtitles.length > 0 && subtitles !== undefined
-        ? this.generateSubtitleMarkup(subtitles)
-        : "";
+    generateMarkup(subtitles?: subtitle_piece[]): string {
+        const s: string =
+            subtitles.length > 0 && subtitles !== undefined
+                ? this.generateSubtitleMarkup(subtitles)
+                : '';
 
-    const closeButton: string = this.generateCloseButton();
+        const closeButton: string = this.generateCloseButton();
 
-    return `
+        return `
             <div class="${this.selectors.sidebarWrapper.slice(1)}">
                 <section class="${this.selectors.sidebarSection.slice(1)}">
                     <div class="${this.selectors.sidebarHeader.slice(1)}">
                         <h2 class="heading-secondary">ExTranscript</h2>
                         <button type="button" class="${this.selectors.closeButton.slice(
-                          1
+                            1
                         )}">${closeButton}</button>
                     </div>
                     <div class="${this.selectors.sidebarContent.slice(1)}">
@@ -174,15 +171,15 @@ class Sidebar extends ExTranscriptView_ {
                 </section>
             </div>
         `;
-  }
+    }
 }
 
 // --- USAGE ---------
 const sidebar: Sidebar = new Sidebar(
-  selectors.EX,
-  selectors.EX.sidebarParent,
-  selectors.EX.sidebarWrapper,
-  "awesome_templateId"
+    selectors.EX,
+    selectors.EX.sidebarParent,
+    selectors.EX.sidebarWrapper,
+    'awesome_templateId'
 );
 
 sidebar.render(subtitles);
@@ -190,45 +187,45 @@ sidebar.clear();
 
 // Bottom.ts ----------------------------
 class Bottom extends ExTranscriptView_ {
-  templates(subtitle?: subtitle_piece[]): string {
-    return this.generateMarkup(subtitle);
-  }
+    templates(subtitle?: subtitle_piece[]): string {
+        return this.generateMarkup(subtitle);
+    }
 
-  eventsMap(): { [key: string]: () => void } {
-    const m = {};
-    m[`click:${this.selectors.closeButton}`] = this.handlerOfCloseButton;
-    return m;
-  }
+    eventsMap(): { [key: string]: () => void } {
+        const m = {};
+        m[`click:${this.selectors.closeButton}`] = this.handlerOfCloseButton;
+        return m;
+    }
 
-  handlerOfCloseButton(): void {
-    closeButtonHandler();
-  }
+    handlerOfCloseButton(): void {
+        closeButtonHandler();
+    }
 
-  generateSubtitleMarkup(subtitles: subtitle_piece[]): string {
-    let mu: string = "";
-    for (const s of subtitles) {
-      const _mu: string = `
+    generateSubtitleMarkup(subtitles: subtitle_piece[]): string {
+        let mu: string = '';
+        for (const s of subtitles) {
+            const _mu: string = `
                 <div class="${selectors.EX.dashboardTranscriptCueContainer.slice(
-                  1
+                    1
                 )}" data-id="${s.index}">
                     <p data-purpose="ex-transcript-cue" class="${selectors.EX.dashboardTranscriptCue.slice(
-                      1
+                        1
                     )}">
                         <span data-purpose="${
-                          selectors.EX.dashboardTranscriptCueText
+                            selectors.EX.dashboardTranscriptCueText
                         }">
                             ${s.subtitle}
                         </span>
                     </p>
                 </div>
             `;
-      mu = mu.concat(_mu);
+            mu = mu.concat(_mu);
+        }
+        return mu;
     }
-    return mu;
-  }
 
-  generateCloseButton(): string {
-    return `
+    generateCloseButton(): string {
+        return `
               <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
               <g clip-path="url(#clip0_2_8)">
               <line x1="-0.707107" y1="38.2929" x2="35.2929" y2="2.29289" stroke="black" stroke-width="2"/>
@@ -241,22 +238,22 @@ class Bottom extends ExTranscriptView_ {
               </defs>
               </svg>
           `;
-  }
+    }
 
-  generateMarkup(subtitles?: subtitle_piece[]): string {
-    const s: string =
-      subtitles.length > 0 && subtitles !== undefined
-        ? this.generateSubtitleMarkup(subtitles)
-        : "";
+    generateMarkup(subtitles?: subtitle_piece[]): string {
+        const s: string =
+            subtitles.length > 0 && subtitles !== undefined
+                ? this.generateSubtitleMarkup(subtitles)
+                : '';
 
-    const closeButton: string = this.generateCloseButton();
+        const closeButton: string = this.generateCloseButton();
 
-    return `
+        return `
         <div class="${this.selectors.dashboardTranscriptWrapper.slice(1)}">
             <div class="${this.selectors.dashboardTranscriptHeader.slice(1)}">
                 <h2 class="heading-secondary">ExTranscript</h2>
                 <button type="button" class="${this.selectors.closeButton.slice(
-                  1
+                    1
                 )}">${closeButton}</button>
             </div>
             <div class="${this.selectors.dashboardTranscriptPanel.slice(1)}">
@@ -264,15 +261,15 @@ class Bottom extends ExTranscriptView_ {
             </div>
         </div>
       `;
-  }
+    }
 }
 
 // --- USAGE ---------
 const bottom: Bottom = new Bottom(
-  selectors.EX,
-  selectors.EX.noSidebarParent,
-  selectors.EX.dashboardTranscriptWrapper,
-  "bottom-ex-template"
+    selectors.EX,
+    selectors.EX.noSidebarParent,
+    selectors.EX.dashboardTranscriptWrapper,
+    'bottom-ex-template'
 );
 
 bottom.render(subtitles);

@@ -138,7 +138,6 @@ const moCallback = function (
             record.oldValue === '' &&
             !guard
         ) {
-            console.log('OBSERVED');
             guard = true;
             try {
                 updateHighlightIndexes();
@@ -176,11 +175,8 @@ chrome.runtime.onMessage.addListener(
         if (to !== extensionNames.controller) return;
         const response: iResponse = { from: to, to: from };
 
-        console.log('[controller] CONTROLLER GOT MESSAGE');
-
         if (order && order.length) {
             if (order.includes(orderNames.reset)) {
-                console.log('[controller] order: RESET');
                 try {
                     handlerOfReset();
                     response.complete = true;
@@ -192,7 +188,6 @@ chrome.runtime.onMessage.addListener(
                 }
             }
             if (order.includes(orderNames.turnOff)) {
-                console.log('[controller] order: TURN OFF ExTranscript');
                 try {
                     handlerOfTurnOff();
                     response.success = true;
@@ -208,7 +203,6 @@ chrome.runtime.onMessage.addListener(
         }
         // 字幕データが送られてきたら
         if (rest.subtitles) {
-            console.log('[controller] Got subtitles');
             try {
                 mSubtitles.set({ subtitles: rest.subtitles });
                 response.success = true;
@@ -234,8 +228,6 @@ chrome.runtime.onMessage.addListener(
  * And clear previous ExTranscript.
  * */
 const renderSidebar = (): void => {
-    console.log('[controller] Rerender sidebar ExTranscript');
-
     const { subtitles } = mSubtitles.get();
     dashboard.clear();
     sidebar.render(subtitles);
@@ -248,8 +240,6 @@ const renderSidebar = (): void => {
  * And clear previoud ExTranscript.
  * */
 const renderBottomTranscript = (): void => {
-    console.log('[controller] Rerender bottom ExTranscript');
-
     const { subtitles } = mSubtitles.get();
     sidebar.clear();
     dashboard.render(subtitles);
@@ -266,8 +256,6 @@ const renderBottomTranscript = (): void => {
  *
  * */
 const handlerOfTurnOff = (): void => {
-    console.log('[controller] handlerOfTurnOff()');
-
     // REMOVAL Listeners
     window.removeEventListener('resize', reductionOfwindowResizeHandler);
     window.removeEventListener('scroll', onWindowScrollHandler);
@@ -293,8 +281,6 @@ const handlerOfTurnOff = (): void => {
  *
  * */
 const handlerOfReset = (): void => {
-    console.log('[controller] handlerOfReset()');
-
     handlerOfTurnOff();
 
     // NOTE: 以下はEntry Pointの後半の処理と同じである
@@ -315,7 +301,6 @@ const handlerOfReset = (): void => {
  * update ExTranscript content height.
  * */
 const onWindowScrollHandler = (): void => {
-    console.log('[controller] onWindowScrollHandler()');
     const header: HTMLElement = document.querySelector<HTMLElement>(
         selectors.header
     );
@@ -337,8 +322,6 @@ const onWindowScrollHandler = (): void => {
  *
  * */
 const onWindowResizeHandler = (): void => {
-    console.log('[controller] onWindowResizeHandler()');
-
     const w: number = document.documentElement.clientWidth;
     const { position, isWindowTooSmall } = model.get();
 
@@ -387,7 +370,6 @@ const reductionOfwindowResizeHandler = (): void => {
  *
  * */
 const initializeIndexList = (): void => {
-    console.log('[controller] initializeIndexList()');
     const { subtitles } = mSubtitles.get();
     const indexes: number[] = subtitles.map((s) => s.index);
     model.set({ indexList: indexes });
@@ -417,7 +399,6 @@ const getElementIndexOfList = (
     from: NodeListOf<Element>,
     lookFor: Element
 ): number => {
-    console.log('[controller] getElementIndexOfList()');
     var num: number = 0;
     for (const el of Array.from(from)) {
         if (el === lookFor) return num;
@@ -438,7 +419,6 @@ const getElementIndexOfList = (
  *
  * */
 const updateHighlightIndexes = (): void => {
-    console.log('[controller] updateHighlightIndexes()');
     // １．本家のハイライト要素を取得して、その要素群の中での「順番」を保存する
     const nextHighlight: Element = document.querySelector<Element>(
         selectors.transcript.highlight
@@ -459,7 +439,6 @@ const updateHighlightIndexes = (): void => {
  * TODO: (対応)currentもnextもnullであってはならない場面でnullだとsyntaxerrorになる
  * */
 const highlightExTranscript = (): void => {
-    console.log('[controller] highlightExTranscript()');
     // 次ハイライトする要素のdata-idの番号
     const { ExHighlight, position } = model.get();
     const next: HTMLElement =
@@ -481,7 +460,7 @@ const highlightExTranscript = (): void => {
               );
     if (!current) {
         //   初期化時
-        console.log('initializing...');
+
         next.classList.add(selectors.EX.highlight.slice(1));
     } else {
         //   更新時
@@ -489,12 +468,10 @@ const highlightExTranscript = (): void => {
 
         // もしも変わらないなら何もしない
         if (currentIndex === ExHighlight) {
-            console.log('no update...');
             return;
         }
         // 更新ならば、前回のハイライト要素を解除して次の要素をハイライトさせる
         else {
-            console.log('update...');
             current.classList.remove(selectors.EX.highlight.slice(1));
             next.classList.add(selectors.EX.highlight.slice(1));
         }
@@ -538,8 +515,6 @@ const highlightExTranscript = (): void => {
  * TODO: marginTopを加味した計算方法が正しいのか確認
  * */
 const scrollToHighlight = (): void => {
-    console.log('[controller] scrollToHighlight()');
-
     // そのたびにいまハイライトしている要素を取得する
     const { ExHighlight, position, isAutoscrollOn } = model.get();
     if (!isAutoscrollOn) return;
@@ -568,11 +543,9 @@ const scrollToHighlight = (): void => {
         if (currentRect.y > 0) {
             const distance: number = panelRect.y - currentRect.y;
             panel.scrollTop = panel.scrollTop - distance - marginTop;
-            console.log(panel.scrollTop);
         } else {
             const distance = panelRect.y + Math.abs(currentRect.y);
             panel.scrollTop = panel.scrollTop - distance - marginTop;
-            console.log(panel.scrollTop);
         }
     }
 };
@@ -595,8 +568,6 @@ const scrollToHighlight = (): void => {
  *
  * */
 const resetDetectScroll = (): void => {
-    console.log('[controller] reset Autro Scroll System');
-
     const { isAutoscrollInitialized } = model.get();
     if (!isAutoscrollInitialized) {
         // 初期化処理
@@ -722,8 +693,6 @@ const updateHighlight: Callback<iController> = (prop): void => {
 
     if (prop.highlight === undefined || !isAutoscrollInitialized) return;
 
-    console.log('[controller] updateHighlight running...');
-
     // ExTranscriptのハイライト要素の番号を保存する
     const next: number = prop.highlight;
     if (indexList.includes(next)) {
@@ -752,8 +721,6 @@ const updateExHighlight: Callback<iController> = (prop): void => {
     const { isAutoscrollInitialized } = model.get();
     if (prop.ExHighlight === undefined || !isAutoscrollInitialized) return;
 
-    console.log('[controller] updateExHighlight running...');
-
     highlightExTranscript();
     scrollToHighlight();
 };
@@ -763,8 +730,6 @@ const updateExHighlight: Callback<iController> = (prop): void => {
  *
  * */
 (function (): void {
-    console.log('[controller] Initializing...');
-
     // Models
     model = ExTranscriptModel.build(statusBase);
     mSubtitles = SubtitleModel.build(subtitleBase);

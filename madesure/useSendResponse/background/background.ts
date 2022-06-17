@@ -94,9 +94,7 @@ interface iMessage {
 
 // --- LISTENERS -----------------------------------
 
-chrome.runtime.onInstalled.addListener(() => {
-    console.log('BACKGROUND RUNNING...');
-});
+chrome.runtime.onInstalled.addListener(() => {});
 
 chrome.runtime.onMessage.addListener(
     async (
@@ -104,20 +102,19 @@ chrome.runtime.onMessage.addListener(
         sender: chrome.runtime.MessageSender,
         sendResponse: (response: iMessage) => void
     ): Promise<void> => {
-        console.log('ONMESSAGE');
         const { from, to, order, data } = message;
         if (to !== extensionNames.background) return;
 
         // 確認
         // senderで発信者を特定できるのか？
         //
-        console.log(sender);
+
         if (from === extensionNames.contentScript) {
             if (data === dataTemplates.activated) {
                 const tabId: number = await checkTabIsCorrect(
                     /https:\/\/developer.mozilla.org\/ja\//
                 );
-                console.log(`tabId: ${tabId}`);
+
                 chrome.tabs.sendMessage(
                     tabId,
                     {
@@ -125,9 +122,7 @@ chrome.runtime.onMessage.addListener(
                         to: extensionNames.contentScript,
                         order: orderNames.sendStatus,
                     },
-                    (response: iMessage) => {
-                        console.log(response);
-                    }
+                    (response: iMessage) => {}
                 );
             }
         }
@@ -138,7 +133,6 @@ const sendResponse = (message: iMessage) => {
     // 確認
     //
     // この出力がbackground側かcontent script側かで話が変わる
-    console.log(message);
 };
 
 const checkTabIsCorrect = async (pattern: RegExp): Promise<number> => {
@@ -160,7 +154,6 @@ const checkTabIsCorrect = async (pattern: RegExp): Promise<number> => {
         if (err === chrome.runtime.lastError) {
             console.error(err.message);
         } else {
-            console.log(err);
         }
     }
 };

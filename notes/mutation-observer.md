@@ -7,7 +7,7 @@ var target = document.querySelector('#some-id');
 // create an observer instance
 var observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
-        console.log(mutation.type);
+
     });
 });
 
@@ -23,12 +23,11 @@ observer.disconnect();
 
 この例でできることを分析するならば
 
-targetという監視対象を決めて、
-configという監視対象で検知したい変更を決めて
+target という監視対象を決めて、
+config という監視対象で検知したい変更を決めて
 実行する処理を`new MutationObserver`のコールバックで定義して
 `observer.observer()`でこれらを結びつけて監視開始
 `observer.disconnect()`で監視終了
-
 
 #### 検知できる対象とは？
 
@@ -36,45 +35,41 @@ configという監視対象で検知したい変更を決めて
 
 https://dom.spec.whatwg.org/#interface-mutationobserver
 
-- childList
-Set to true if mutations to target’s children are to be observed.
+-   childList
+    Set to true if mutations to target’s children are to be observed.
 
-- attributes
-Set to true if mutations to target’s attributes are to be observed. Can be omitted if attributeOldValue or attributeFilter is specified.
+-   attributes
+    Set to true if mutations to target’s attributes are to be observed. Can be omitted if attributeOldValue or attributeFilter is specified.
 
-- characterData
-Set to true if mutations to target’s data are to be observed. Can be omitted if characterDataOldValue is specified.
+-   characterData
+    Set to true if mutations to target’s data are to be observed. Can be omitted if characterDataOldValue is specified.
 
-- subtree
-Set to true if mutations to not just target, but also target’s descendants are to be observed.
-> ターゲットだけでなく、ターゲットの子孫への突然変異も観察される場合は、trueに設定します。
+-   subtree
+    Set to true if mutations to not just target, but also target’s descendants are to be observed.
 
-- attributeOldValue
-Set to true if attributes is true or omitted and target’s attribute value before the mutation needs to be recorded.
+    > ターゲットだけでなく、ターゲットの子孫への突然変異も観察される場合は、true に設定します。
 
-- characterDataOldValue
-Set to true if characterData is set to true or omitted and target’s data before the mutation needs to be recorded.
+-   attributeOldValue
+    Set to true if attributes is true or omitted and target’s attribute value before the mutation needs to be recorded.
 
-- attributeFilter
-Set to a list of attribute local names (without namespace) if not all attribute mutations need to be observed and attributes is true or omitted.
+-   characterDataOldValue
+    Set to true if characterData is set to true or omitted and target’s data before the mutation needs to be recorded.
 
+-   attributeFilter
+    Set to a list of attribute local names (without namespace) if not all attribute mutations need to be observed and attributes is true or omitted.
 
 ということで大きく３つで
 
-- childList
-- attribute
-- characterData
+-   childList
+-   attribute
+-   characterData
 
-
-#### 検知対象のDOMは一つだけなのか？
-
-
+#### 検知対象の DOM は一つだけなのか？
 
 ## MutationObserver()
 
-> MutationObserver() コンストラクタ (MutationObserver インターフェースの一部) は、指定されたコールバックをDOMイベントが発生したときに実行するオブザーバを作成して返します。DOMの監視はすぐに開始されるわけではありません。
-> 最初に observe() メソッドを呼び出し、DOMのどの部分を監視し、どのような変更を監視するかを決めなければなりません。
-
+> MutationObserver() コンストラクタ (MutationObserver インターフェースの一部) は、指定されたコールバックを DOM イベントが発生したときに実行するオブザーバを作成して返します。DOM の監視はすぐに開始されるわけではありません。
+> 最初に observe() メソッドを呼び出し、DOM のどの部分を監視し、どのような変更を監視するかを決めなければなりません。
 
 ```JavaScript
 function callback(mutationList, observer) {

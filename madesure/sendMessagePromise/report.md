@@ -79,38 +79,38 @@ chrome.runtime.onMessage.addListener(
         sender: chrome.runtime.MessageSender,
         sendResponse: (response: iResponse) => void
     ): Promise<boolean> => {
-        console.log('[background] ONMESSAGE');
-        console.log(message);
+
+
         const { from, to, order, ...rest } = message;
-        console.log(rest);
+
         if (to !== extensionNames.background) return;
 
         if (order && order.length) {
-            console.log('[background] GOT ORDER');
+
             if (order.includes(orderNames.sendStatus)) {
-                console.log('SEND STATUS');
+
                 sendResponse({ complete: true });
             }
             if (order.includes(orderNames.disconnect)) {
-                console.log('DISCONNECT');
+
                 sendResponse({ complete: true });
             }
             if (order.includes(orderNames.injectCaptureSubtitleScript)) {
-                console.log('injectCaptureSubtitleScript');
+
                 sendResponse({ complete: true });
             }
             if (order.includes(orderNames.injectExTranscriptScript)) {
-                console.log('injectExTranscriptScript');
+
                 sendResponse({ complete: true });
             }
         }
 
         if (rest.activated) {
-            console.log('[background] content script has been activated');
+
             sendResponse({ complete: true });
         }
         if (rest.language) {
-            console.log('[background] correct language');
+
             sendResponse({ complete: true });
         }
 
@@ -130,10 +130,9 @@ chrome.runtime.onMessage.addListener(
 
 つまり解決策は受信側のすべての条件分岐で sendResponse()することではない
 
+##### message 処理機能の実装
 
-##### message処理機能の実装
-
-要はすべてのメッセージに対する処理が完了したらPromiseを解決すればいいわけである
+要はすべてのメッセージに対する処理が完了したら Promise を解決すればいいわけである
 
 Promise.all()
 
@@ -151,7 +150,7 @@ const p3 = new Promise((res, rej) => {
 const promises = [p1, p2, p3];
 ```
 
-inputは
+input は
 
 ```TypeScript
 
@@ -161,22 +160,22 @@ chrome.runtime.onMessage.addListener(
         sender: chrome.runtime.MessageSender,
         sendResponse: (response: iResponse) => void
     ): Promise<boolean> => {
-        console.log('[background] ONMESSAGE');
-        console.log(message);
+
+
         const { from, to, order, ...rest } = message;
-        console.log(rest);
+
         if (to !== extensionNames.background) return;
 
-        // 
+        //
         // NOTE:
-        // 
+        //
         // promiseの配列を返す
         // Promise.all()に渡すため
         const promises:Promise<any>[] = synchronizer(order, rest);
 
-        // 
+        //
         // NOTE:
-        // 
+        //
         // 全てmessage処理が完了したら
         await Promise.all(promises);
         sendResponse({complete: true});
@@ -196,17 +195,17 @@ const synchronizer = async(order: orderTypes[], restMessages: iResponse): Promis
 
 
 // NOTE:
-// 
+//
 // Ideal usage of command is like this
 const result: Promise<any> = command[order](args)
 results.push(result);
 
 
-// 
+//
 // If language: true
 const setLanguageEnglish = async(): Promise<void> => {
     return new Promise(async (resolve, reject) => {
-        console.log("It's English");
+
         try {
             const refStatus: State<iStatus> = stateList.caller<iStatus>(nameOfStte.status);
             const { pageStatus} =

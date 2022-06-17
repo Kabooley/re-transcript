@@ -37,7 +37,7 @@ const Popup = (): JSX.Element => {
 
     useEffect(() => {
         // NOTE: DON'T USE AWAIT inside of useEffect().
-        console.log('[popup] OPENED');
+        
         verifyValidPage();
     }, []);
 
@@ -72,9 +72,9 @@ const Popup = (): JSX.Element => {
                 lastFocusedWindow: true,
             })
             .then((tabs: chrome.tabs.Tab[]) => {
-                console.log(tabs);
+                
                 const r: RegExpMatchArray = tabs[0].url.match(urlPattern);
-                console.log(
+                
                     `Is this page valid?: ${r && r.length ? true : false}`
                 );
                 if (r && r.length) {
@@ -94,7 +94,7 @@ const Popup = (): JSX.Element => {
     const handlerOfRun = (): void => {
         if (!tabInfo) throw new Error('Error: tabInfo is null');
         setBuilding(true);
-        console.log('[popup] Rebuilding...');
+        
 
         sendMessagePromise({
             from: extensionNames.popup,
@@ -105,7 +105,7 @@ const Popup = (): JSX.Element => {
             // NOTE: !res.successはRUNするためのページ環境になっていないことを示し、アプリケーションのエラーではない
             .then((res) => {
                 const { success } = res;
-                console.log('[popup] Rebuilding Successfully Complete!');
+                
                 setBuilt(success);
                 setBuilding(false);
                 setDisableSlider(false);
@@ -145,13 +145,13 @@ const Popup = (): JSX.Element => {
     const handlerOfToggle = (): void => {
         turningOn
             ? (function () {
-                  console.log('[popup] Turning off...');
+                  
                   setTurningOn(false);
                   setDisableSlider(true);
                   handlerOfTurnOff();
               })()
             : (function () {
-                  console.log('[popup] Turning on...');
+                  
                   setTurningOn(true);
                   setDisableSlider(true);
                   handlerOfRun();

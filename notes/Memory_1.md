@@ -563,7 +563,7 @@ const state = ((): stateModule => {
 
     return {
         setState: (o) => {
-            console.log('setState');
+
             _state = {
                 ..._state,
                 ...o,
@@ -571,9 +571,9 @@ const state = ((): stateModule => {
             chrome.storage.local.set({ key__local_storage_state: _state });
         },
         getState: () => {
-            console.log('getState');
+
             chrome.storage.local.get(_key, (s: iState) => {
-                console.log('get localstorage');
+
                 _setState(s);
             });
             return _state;
@@ -591,7 +591,7 @@ const getLocalStorage = (key: string) => {
       if (chrome.runtime.lastError) {
         reject(chrome.runtime.lastError);
       }
-      console.log("getLocalStorage() item successfully has been got.")
+
       resolve(s);
     });
   }
@@ -603,7 +603,7 @@ const setLocalStorage = (key: string, data: iState) => {
       if (chrome.runtime.lastError) {
         reject(chrome.runtime.lastError);
       }
-      console.log("setLocalStorage() item successfully has been stored.")
+
       resolve("item has been stored.");
     });
   }
@@ -622,7 +622,7 @@ const state = ((): stateModule => {
 
     return {
         setState: async (o) : void => {
-            console.log('setState');
+
             _state = {
                 ..._state,
                 ...o,
@@ -635,7 +635,7 @@ const state = ((): stateModule => {
             }
         },
         getState: async (): iState => {
-            console.log('getState');
+
             try {
               await getLocalStorage(_key);
               return _state;
@@ -667,15 +667,15 @@ function delay(milliseconds: number, count: number): Promise<number> {
 
 // async関数は常にPromiseを返します
 async function dramaticWelcome(): Promise<void> {
-    console.log("Hello");
+
 
     for (let i = 0; i < 5; i++) {
         // awaitは、Promise<number>をnumberに変換します
         const count:number = await delay(500, i);
-        console.log(count);
+
     }
 
-    console.log("World!");
+
 }
 
 dramaticWelcome();
@@ -715,7 +715,7 @@ const state = ((): stateModule => {
 
     return {
         setState: async (o) : void => {
-            console.log('setState');
+
             _state = {
                 ..._state,
                 ...o,
@@ -728,7 +728,7 @@ const state = ((): stateModule => {
             }
         },
         getState: async (): iState => {
-            console.log('getState');
+
             try {
               await getLocalStorage(_key);
               return _state;
@@ -780,7 +780,7 @@ const state = ((): stateModule => {
 
     return {
         setState: async (o): Promise<void> => {
-            console.log('setState');
+
             _state = {
                 ..._state,
                 ...o,
@@ -792,12 +792,12 @@ const state = ((): stateModule => {
             }
         },
         getState: async (): Promise<iState> => {
-            console.log('getState');
+
             try {
                 const current = await getLocalStorage(_key);
                 _setState(current);
-                console.log(current);
-                console.log(_state);
+
+
                 return _state;
             } catch (err) {
                 console.error(err);
@@ -953,7 +953,7 @@ CC Popup ボタンに MutationObserver を付ける
 
 ```TypeScript
 const ccPopupButtonHandler = (ev: MouseEvent): void => {
-    console.log('CC popup button was clicked');
+
 
     const e: HTMLElement = document.querySelector<HTMLElement>(
         _selectors.controlBar.cc.popupButton
@@ -1028,7 +1028,7 @@ const ccPopupMenuClickHandler = (ev: PointerEvent): void => {
   if(path.includes(menu)){
     // menuの内側でclickが発生した
     // 何もしない
-    console.log("click inside");
+
   }
   else{
     // menuの外側でclickが発生した
@@ -1056,7 +1056,7 @@ const ccPopupMenuClickHandler = (ev: PointerEvent): void => {
   if(isInside){
     // menuの内側でclickが発生した
     // 何もしない
-    console.log("click inside");
+
   }
     else{
     // menuの外側でclickが発生した
@@ -1071,7 +1071,7 @@ const ccPopupMenuClickHandler = (ev: PointerEvent): void => {
 
 ```TypeScript
 const ccPopupButtonHandler = (ev: MouseEvent): void => {
-  console.log("CC popup button was clicked");
+
   // is it opening?
   const e: HTMLElement = document.querySelector<HTMLElement>(
     _selectors.controlBar.cc.popupButton
@@ -1175,12 +1175,12 @@ https://v8.dev/features/dynamic-import
 ```JavaScript
 // Default export
 export default () => {
-  console.log('Hi from the default export!');
+
 };
 
 // Named export `doStuff`
 export const doStuff = () => {
-  console.log('Doing stuff…');
+
 };
 ```
 
@@ -1421,7 +1421,7 @@ const state = ((): stateModule => {
           console.error(err);
         }
         else{
-        console.log(err);
+
         }
       }
     },
@@ -1437,7 +1437,7 @@ const state = ((): stateModule => {
           console.error(err);
         }
         else{
-        console.log(err);
+
         }
       }
     },
@@ -1593,7 +1593,7 @@ const state = ((): stateModule => {
 
     return {
         setState: async (o): Promise<void> => {
-            console.log('setState');
+
             _state = {
                 ..._state,
                 ...o,
@@ -1604,7 +1604,7 @@ const state = ((): stateModule => {
                 if (err === chrome.runtime.lastError) {
                     console.error(err.message);
                 } else {
-                    console.log(err);
+
                 }
             }
         },
@@ -1617,13 +1617,13 @@ const state = ((): stateModule => {
                 if (err === chrome.runtime.lastError) {
                     console.error(err);
                 } else {
-                    console.log(err);
+
                 }
             }
         },
         saveSubtitles: async (d: subtitle_piece[]): Promise<void> => {
           // Note: 中身は常に上書きではなく新しくなる
-          console.log('save subtitle');
+
           _subtitle.splice(0);
           _subtitle.push(...d);
           try {
@@ -1633,12 +1633,12 @@ const state = ((): stateModule => {
             if (err === chrome.runtime.lastError) {
                     console.error(err.message);
                 } else {
-                    console.log(err);
+
                 }
           }
         },
         loadSubtitles: async (): Promise<subtitle_piece[]> => {
-          console.log("load subtitles");
+
           _subtitle.splice(0);
           try {
             const loaded: subtitle_piece[] = await chrome.storage.local.get(_key_subtitles);
@@ -1649,7 +1649,7 @@ const state = ((): stateModule => {
             if (err === chrome.runtime.lastError) {
                     console.error(err);
                 } else {
-                    console.log(err);
+
                 }
           }
         }
@@ -1712,14 +1712,14 @@ active な window で active な tab で、url パターンが`/https:\/\/www.ud
 ```TypeScript
 const startInjectCaptureSubtitleScript = async (): Promise<void> => {
     try {
-        console.log('[startInjectCaptureSubtitleScript]');
+
         await getWebpageStatus();
         const { pageStatus } = await state.getState();
         // tabIdはstateに保存しておいた方がいいかも
         const tabId: number = await checkTabIsCorrect();
-        console.log(tabId);
+
         if (pageStatus.isEnglish && pageStatus.isTranscriptOn && tabId) {
-            console.log('Start injecting script...');
+
 
             // 共通化できない部分 ----
             const { progress } = await state.getState();
@@ -1737,10 +1737,10 @@ const startInjectCaptureSubtitleScript = async (): Promise<void> => {
                     target: { tabId: tabId },
                     files: ['captureSubtitle.js'],
                 });
-            console.log(result);
+
         } else {
             // いずれかだけがfalseのときに適切なエラーメッセージをpopup上に発せるようにしたい...
-            console.log(
+
                 'Change subtitle language English and Turn on transcript. Or You may try to turn on extension invalid web page.'
             );
         }
@@ -1748,7 +1748,7 @@ const startInjectCaptureSubtitleScript = async (): Promise<void> => {
         if (err === chrome.runtime.lastError) {
             console.error(err.message);
         } else {
-            console.log(err);
+
         }
     }
 };
@@ -1766,7 +1766,7 @@ iState 上のどのプロパティか
 ```TypeScript
 const injectContentScript = async (filename: string, requiredCondition): Promise<void> => {
     try {
-        console.log(`Inject script: ${filename}`);
+
 
         await getWebpageStatus();
         const { pageStatus } = await state.getState();
@@ -1775,7 +1775,7 @@ const injectContentScript = async (filename: string, requiredCondition): Promise
 
         // この条件分岐を汎用化させたい...
         if (pageStatus.isEnglish && pageStatus.isTranscriptOn && tabId) {
-            console.log('Start injecting script...');
+
             // inject content script
             const result: chrome.scripting.InjectionResult[] =
                 await chrome.scripting.executeScript({
@@ -1784,7 +1784,7 @@ const injectContentScript = async (filename: string, requiredCondition): Promise
                 });
         } else {
             // いずれかだけがfalseのときに適切なエラーメッセージをpopup上に発せるようにしたい...
-            console.log(
+
                 'Change subtitle language English and Turn on transcript. Or You may try to turn on extension invalid web page.'
             );
         }
@@ -1792,7 +1792,7 @@ const injectContentScript = async (filename: string, requiredCondition): Promise
         if (err === chrome.runtime.lastError) {
             console.error(err.message);
         } else {
-            console.log(err);
+
         }
     }
 };
@@ -1830,7 +1830,7 @@ controller.js を inject する処理に移ればよい
 
 ```TypeScript
 const getWebpageStatus = async (): Promise<void> => {
-    console.log('[getWebpageStatus]');
+
     const tabId = await checkTabIsCorrect();
     if (!tabId) return;
     const message: iMessage = {
@@ -1842,7 +1842,7 @@ const getWebpageStatus = async (): Promise<void> => {
     });
     // callbackが実行されたら送信完了の合図ってことにできないかな~
     await chrome.tabs.sendMessage(tabId, message, () => {
-        console.log('[getWebpageStatus] is it done?');
+
     });
 };
 ```
@@ -1863,7 +1863,7 @@ sendMessage のコールバックに Promise.resolve()を返させる方法
 
 const getWebpageStatus = async (): Promise<void> => {
   try {
-    console.log('[getWebpageStatus]');
+
     const tabId = await checkTabIsCorrect();
     if (!tabId) return;
     const message: iMessage = {
@@ -1894,7 +1894,7 @@ const getWebpageStatus = async (): Promise<void> => {
             if (err === chrome.runtime.lastError) {
             console.error(err.message);
         } else {
-            console.log(err);
+
         }
   }
 };
@@ -1995,7 +1995,7 @@ const key = "__key__";
 chrome.storage.local.set({key: "this is stored data"});
 chrome.storage.local.get(key, (items) => {
   // 空のオブジェクト
-  console.log(items);
+
 });
 
 ```
@@ -2007,7 +2007,7 @@ set したときの key/value の key の文字列と
 
 ```TypeScript
 chrome.storage.local.get(null, (items) => {
-  console.log(items);
+
   // {key: {...}}
   // オブジェクトのキーが"key"であって"__key__"ではない
 })
@@ -2024,7 +2024,7 @@ const key = "__key__";
 + chrome.storage.local.set({__key__: "this is stored data"});
 chrome.storage.local.get(key, (items) => {
   // 空のオブジェクト
-  console.log(items);
+
 });
 ```
 
@@ -2120,13 +2120,13 @@ const sendMessagePromise = async (message: iMessage): Promise<void> => {
 
 const startInjectCaptureSubtitleScript = async (): Promise<void> => {
     try {
-        console.log('[startInjectCaptureSubtitleScript]');
+
         await getWebpageStatus();
         const { pageStatus } = await state.getState();
         const tabId: number = await checkTabIsCorrect();
-        console.log(tabId);
+
         if (pageStatus.isEnglish && pageStatus.isTranscriptOn && tabId) {
-            console.log('Start injecting script...');
+
 
             // update status
             const { progress } = await state.getState();
@@ -2144,7 +2144,7 @@ const startInjectCaptureSubtitleScript = async (): Promise<void> => {
                     target: { tabId: tabId },
                     files: ['captureSubtitle.js'],
                 });
-            console.log(result);
+
 
             // sendMessage to popup
             await sendMessagePromise({
@@ -2154,7 +2154,7 @@ const startInjectCaptureSubtitleScript = async (): Promise<void> => {
 
         } else {
             // いずれかだけがfalseのときに適切なエラーメッセージをpopup上に発せるようにしたい...
-            console.log(
+
                 'Change subtitle language English and Turn on transcript. Or You may try to turn on extension invalid web page.'
             );
         }
@@ -2162,7 +2162,7 @@ const startInjectCaptureSubtitleScript = async (): Promise<void> => {
         if (err === chrome.runtime.lastError) {
             console.error(err.message);
         } else {
-            console.log(err);
+
         }
     }
 };
@@ -2170,19 +2170,19 @@ const startInjectCaptureSubtitleScript = async (): Promise<void> => {
 
 const startInjectControllerScript = async (): Promise<void> => {
     try {
-        console.log('[startInjectControllerScript]');
+
         await getWebpageStatus();
         const { progress } = await state.getState();
         // tabIdはstateに保存しておいた方がいいかも
         const tabId: number = await checkTabIsCorrect();
-        console.log(tabId);
+
         if (
             progress.captured &&
             !progress.capturing &&
             progress.stored &&
             tabId
         ) {
-            console.log('Start injecting script...');
+
 
             // inject content script
             const result: chrome.scripting.InjectionResult[] =
@@ -2190,7 +2190,7 @@ const startInjectControllerScript = async (): Promise<void> => {
                     target: { tabId: tabId },
                     files: ['controller.js'],
                 });
-            console.log(result);
+
 
 
             // sendMessage to popup
@@ -2206,7 +2206,7 @@ const startInjectControllerScript = async (): Promise<void> => {
         if (err === chrome.runtime.lastError) {
             console.error(err.message);
         } else {
-            console.log(err);
+
         }
     }
 };
@@ -2328,7 +2328,7 @@ chrome.runtime.onMessage.addListener(
             if (err === chrome.runtime.lastError) {
                 console.error(err.message);
             } else {
-                console.log(err);
+
             }
         }
     }
@@ -2410,7 +2410,7 @@ SidebarTranscriptView.prototype.generateSubtitleMarkup = function(subtitles: sub
 SidebarTranscriptView.prototype.render = function (
   subtitles?: subtitle_piece[]
 ): void {
-  console.log("[SidebarTranscriptView] render");
+
 
   const e: Element = document.querySelector(this.insertParentSelector);
   const p: InsertPosition = this.insertPosition;
@@ -2689,19 +2689,19 @@ _postMessage(port, {activated: true});
 _postMessage(port, {order: "send-subtitles"});
 port.onMessage.addListener((msg: iMessage) => {
   // 取得できるのか？
-  console.log(port.sender);
+
   const { from, to, subtitles } = msg;
   if(subtitles) {
     state.saveSubtitles(subtitles);
     // Invoke next process...
     port.disconnect(() => {
-      console.log("[controller] port disconnected manually");
+
     })
   }
 });
 port.onDisconnect((p: chrome.runtime.Port) => {
-  console.log("[controller] Port has been disconnected accidentally");
-  console.log(p);
+
+
 })
 
 
@@ -2719,8 +2719,8 @@ chrome.runtime.onConnect.addListener((port) => {
     }
   });
   port.onDisconnect((port: chrome.runtime.Port) => {
-    console.log("[background] Port has been disconnected");
-    console.log(p);
+
+
   });
 })
 ```
@@ -2812,7 +2812,7 @@ const setDetectScroll = (): void => {
     );
     latestIndex = getElementIndexOfList(list, latestHighlight);
     state.setCurrentHighlight(latestIndex);
-    console.log("OBSERVED");
+
     // TODO: update highlighting Extranscript
   };
 
@@ -2931,7 +2931,7 @@ const detectTranscriptScroll = (): void => {
     );
     latestIndex = getElementIndexOfList(list, latestHighlight);
     state.setCurrentHighlight(latestIndex);
-    console.log("OBSERVED");
+
     // update highlighting Extranscript
     updateExTranscriptScroll()
   };
@@ -2996,7 +2996,7 @@ BottomTranscriptView.prototype.generateSubtitleMarkup = function (
     // concatでいいのかな...
     mu = mu.concat(_mu);
   }
-  console.log(mu);
+
   return mu;
 };
 
@@ -3100,7 +3100,7 @@ const updateExTranscriptScroll = (): void => {
 
 (async (): Promise<void> => {
     try {
-        console.log('[controller] Initializing...');
+
 
         // ...中略
 
@@ -3112,7 +3112,7 @@ const updateExTranscriptScroll = (): void => {
         if (err === chrome.runtime.lastError) {
             console.error(err.message);
         } else {
-            console.log(err);
+
         }
     }
 })();
@@ -3239,7 +3239,7 @@ const updateExTranscriptHighlight = (): void => {
 
 */
 const initializeDetecting = (): void => {
-    console.log('[controller] Initialize Detecting...');
+
     updateHighlightIndexes();
     updateExTranscriptHighlight();
 };
@@ -3254,7 +3254,7 @@ const initializeDetecting = (): void => {
 */
 const detectScroll = (): void => {
     const _callback = (mr: MutationRecord[]): void => {
-        console.log('observed');
+
         updateHighlightIndexes();
         updateExTranscriptHighlight();
     };
@@ -3283,7 +3283,7 @@ const detectScroll = (): void => {
 */
 (async (): Promise<void> => {
     try {
-        console.log('[controller] Initializing...');
+
         //
         // transcript viewを挿入する
         // transcript viewにはLoading画面を表示させる
@@ -3303,7 +3303,7 @@ const detectScroll = (): void => {
         //   activated: true,
         // });
         // const temporary = state.loadSubtitles();
-        // console.log(temporary);
+        //
         const w: number = document.documentElement.clientWidth;
         const s: keyof_positionStatus =
             w > RESIZE_BOUNDARY
@@ -3336,8 +3336,8 @@ const detectScroll = (): void => {
         // ここからPortを呼出、subtitlesデータを取得する
         const porter = new Porter(port_names._requring_subtitles);
         porter.onMessageListener((m) => {
-            console.log('[controller] Port onMessage...');
-            console.log(porter.port.sender);
+
+
             const { subtitles } = m;
             if (subtitles) {
                 state.saveSubtitles(subtitles);
@@ -3350,7 +3350,7 @@ const detectScroll = (): void => {
                     bottomTranscriptView.render(subtitles);
                 }
                 porter.port.disconnect();
-                console.log('[controller] port disconnected manually');
+
 
                 // Autor Scroll 機能を呼出す
                 // 初期化
@@ -3360,8 +3360,8 @@ const detectScroll = (): void => {
             }
         });
         porter.onDisconnect((p) => {
-            console.log('[controller] Port has been disconnected accidentally');
-            console.log(p);
+
+
         });
         porter.postMessage({
             from: extensionNames.controller,
@@ -3372,7 +3372,7 @@ const detectScroll = (): void => {
         if (err === chrome.runtime.lastError) {
             console.error(err.message);
         } else {
-            console.log(err);
+
         }
     }
 })();
@@ -3408,7 +3408,7 @@ FIXED:
 
 const detectScroll = (): void => {
   const _callback = (mr: MutationRecord[]): void => {
-    console.log("observed");
+
     updateHighlightIndexes();
     updateExTranscriptHighlight();
   };
@@ -3434,7 +3434,7 @@ const detectScroll = (): void => {
 
 const detectScroll = (): void => {
     const _callback = (mr: MutationRecord[]): void => {
-        console.log(mr);
+
         var isItDone: boolean = false;
         mr.forEach((record: MutationRecord) => {
             if (
@@ -3447,7 +3447,7 @@ const detectScroll = (): void => {
                 // "ranscript--highlight-cue--1bEgq"をoldValueで受け取るときは
                 // ハイライトのclassをその要素からremoveしたときと考えて
                 // その時は何もしない
-                console.log('observed');
+
                 // 処理は1度だけになるように
                 isItDone = true;
                 updateHighlightIndexes();

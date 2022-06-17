@@ -49,7 +49,7 @@ const Popup = (): JSX.Element => {
 
     useEffect(() => {
         // NOTE: DON'T USE AWAIT inside of useEffect().
-        console.log('[popup] OPENED');
+        
         verifyValidPage();
     }, []);
 
@@ -71,7 +71,7 @@ const Popup = (): JSX.Element => {
     //
     // If it's valid URL, save that chrome.tabs.Tab[0] into tabInfo
     const verifyValidPage = (): void => {
-        console.log('[popup] verify valid page');
+        
         chrome.tabs
             .query({
                 active: true,
@@ -79,16 +79,16 @@ const Popup = (): JSX.Element => {
                 lastFocusedWindow: true,
             })
             .then((tabs: chrome.tabs.Tab[]) => {
-                console.log(tabs);
+                
                 const r: RegExpMatchArray = tabs[0].url.match(urlPattern);
-                console.log(
+                
                     `Is this page valid?: ${r && r.length ? true : false}`
                 );
                 if (r && r.length) {
                     setCorrectUrl(true);
                     setTabInfo(tabs[0]);
-                    console.log('[popup] saved Tab info');
-                    console.log(tabs[0]);
+                    
+                    
                 } else {
                     setCorrectUrl(false);
                 }
@@ -103,7 +103,7 @@ const Popup = (): JSX.Element => {
     const handlerOfRun = (): void => {
         if (!tabInfo) throw new Error('Error: tabInfo is null');
         setBuilding(true);
-        console.log('[popup] handler of run: Rebuilding...');
+        
 
         sendMessagePromise({
             from: extensionNames.popup,
@@ -114,7 +114,7 @@ const Popup = (): JSX.Element => {
             // NOTE: !res.successはRUNするためのページ環境になっていないことを示し、実行不可能のエラーではない
             .then((res) => {
                 const { success } = res;
-                console.log('[popup] Rebuilding Successfully Complete!');
+                
                 setBuilt(success);
                 setBuilding(false);
             })
@@ -128,7 +128,7 @@ const Popup = (): JSX.Element => {
     };
 
     const handlerOfTurnOff = (): void => {
-        console.log('[popup] handler of toggle');
+        
         sendMessagePromise({
             from: extensionNames.popup,
             to: extensionNames.background,
@@ -151,7 +151,7 @@ const Popup = (): JSX.Element => {
     // toggles handler according to turningOn value.
     //
     const handlerOfToggle = (): void => {
-        console.log('[popup] handler of toggle');
+        
         turningOn
             ? (function () {
                   setTurningOn(false);

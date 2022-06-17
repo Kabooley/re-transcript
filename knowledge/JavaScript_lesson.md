@@ -17,9 +17,9 @@
 ```JavaScript
 
 // true
-console.log(!undefined ? true : false);
+
 // false
-console.log(undefined ? true : false);
+
 
 ```
 
@@ -96,7 +96,7 @@ await state.set({subtitles: [
 ]})
 
 const functionRequiresSubtitleData = async (subtitles: string[]): Promise<void> => {
-  console.log(subtitles);
+
 }
 
 // NOTE: 関数の中でawait呼出は可能である
@@ -136,10 +136,10 @@ Codesandbox で確認済。
   };
 
   // const r = (await foo()).subtitles;
-  // console.log(r);
+  //
 
   const bar = async function(subtitles) {
-    console.log(subtitles);
+
   }
 
   bar((await foo()).subtitles);
@@ -197,7 +197,7 @@ function a() {
     b();
   }
   catch(e) {
-    console.log(`Error caught ${e}`);
+
   }
 }
 

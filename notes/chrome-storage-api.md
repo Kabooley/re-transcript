@@ -4,15 +4,15 @@
 
 ストレージには 3 つの種類がある
 
-- sync
+-   sync
 
-  chrome によって同期される。google アカウントに対して保存される感じ。なので異なるデバイス間で共有できる。
+    chrome によって同期される。google アカウントに対して保存される感じ。なので異なるデバイス間で共有できる。
 
-- local
+-   local
 
-  ブラウザに保存する。
+    ブラウザに保存する。
 
-- managed
+-   managed
 
 読み取り専用
 ドメイン管理者によって設定される。
@@ -39,11 +39,11 @@ QUOTA_BYTES:
 
 ```JavaScript
 chrome.storage.local.set({key: value}, function() {
-  console.log('Value is set to ' + value);
+
 });
 
 chrome.storage.local.get(['key'], function(result) {
-  console.log('Value currently is ' + result.key);
+
 });
 ```
 
@@ -57,12 +57,12 @@ chrome.storage.local.get(['key'], function(result) {
 
 非同期関数で Promise を返す。
 
-- items:
+-   items:
 
 > ストレージを更新するための各キー／バリューペアを与えるオブジェクトです。ストレージ内の他のキーと値のペアは影響を受けません。
 > 数字などのプリミティブな値は、期待通りにシリアル化されます。typeof が "object "と "function "の値は、通常{}にシリアライズされます。ただし、Array（期待通りにシリアライズされます）、Date、Regex（文字列表現を使用してシリアライズされます）は例外です。
 
-- callback:
+-   callback:
 
 Promise を受け取るコールバック関数
 
@@ -74,12 +74,11 @@ storage から一つ以上のアイテムを取得する
 (keys?: string | string[] | object, callback?: function) => {...}
 ```
 
-非同期関数でPromiseを返す
+非同期関数で Promise を返す
 
-- keys:
-  
-  > 取得する単一のキー、取得するキーのリスト、またはデフォルト値を指定するディクショナリー（オブジェクトの説明を参照）。空のリストまたはオブジェクトは、空の結果オブジェクトを返します。nullを渡すと、ストレージの内容全体を取得します。
+-   keys:
 
+    > 取得する単一のキー、取得するキーのリスト、またはデフォルト値を指定するディクショナリー（オブジェクトの説明を参照）。空のリストまたはオブジェクトは、空の結果オブジェクトを返します。null を渡すと、ストレージの内容全体を取得します。
 
 #### onchanged
 
@@ -87,7 +86,7 @@ storage から一つ以上のアイテムを取得する
 
 #### clear
 
-storageからすべてのアイテムを除去する
+storage からすべてのアイテムを除去する
 
 #### getbytesInUse
 
@@ -96,4 +95,3 @@ storageからすべてのアイテムを除去する
 #### remove
 
 一つ以上のアイテムを除去する
-

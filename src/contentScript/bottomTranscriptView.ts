@@ -135,17 +135,11 @@ BottomTranscriptView.prototype.clear = function (): void {
     parent.style.position = '';
 };
 
-BottomTranscriptView.prototype.renderSpinner = function (): void {
-    console.log('[BottomTranscriptView] render spinner');
-};
+BottomTranscriptView.prototype.renderSpinner = function (): void {};
 
-BottomTranscriptView.prototype.renderError = function (): void {
-    console.log('[BottomTranscriptView] render error');
-};
+BottomTranscriptView.prototype.renderError = function (): void {};
 
-BottomTranscriptView.prototype.renderMessage = function (): void {
-    console.log('[BottomTranscriptView] render message');
-};
+BottomTranscriptView.prototype.renderMessage = function (): void {};
 
 export default new BottomTranscriptView();
 

@@ -139,15 +139,15 @@ export const port_names = {
 //     // この条件分岐ならばorderって何？ってはじかれることがないはず
 //     // 少なくともcodesandboxでは確認済
 //     if (order && Object.keys(order).length) {
-//         console.log('there is order');
+//
 //         if (order[orderNames.sendStatus]) {
-//             console.log('SEND STATUS');
+//
 //         }
 //         if (order[orderNames.disconnect]) {
-//             console.log('DISCONNECT');
+//
 //         }
 //         if (order[orderNames.injectCaptureSubtitleScript]) {
-//             console.log('injectCaptureSubtitleScript');
+//
 //         }
 //     }
 // };

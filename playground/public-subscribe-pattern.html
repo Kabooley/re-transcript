@@ -85,9 +85,7 @@
 
             // A simple message logger that logs any topics and data received through our
             // subscriber
-            var messageLogger = function (topics, data) {
-                console.log('Logging: ' + topics + ': ' + data);
-            };
+            var messageLogger = function (topics, data) {};
 
             // Subscribers listen for topics they have subscribed to and
             // invoke a callback function (e.g messageLogger) once a new

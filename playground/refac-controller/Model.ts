@@ -12,22 +12,22 @@
  * NOTE: 以下の定義のすべてのT型はすべてたった一つに統一されるようにすること
  *
  * **/
-import {} from "../../src/contentScript/controller";
+import {} from '../../src/contentScript/controller';
 interface iController {
-  // 本家Transcriptのポジション2通り
-  position: string;
-  // 本家Transcriptでハイライトされている字幕の要素の順番
-  highlight: number;
-  // ExTranscriptの字幕要素のうち、いまハイライトしている要素の順番
-  ExHighlight: number;
-  // _subtitlesのindexプロパティからなる配列
-  indexList: number[];
-  // 自動スクロール機能が展開済かどうか
-  isAutoscrollInitialized: boolean;
-  // ブラウザサイズが小さすぎる状態かどうか
-  isWindowTooSmall: boolean;
-  // Udemyの自動スクロール機能がONかOFFか
-  isAutoscrollOn: boolean;
+    // 本家Transcriptのポジション2通り
+    position: string;
+    // 本家Transcriptでハイライトされている字幕の要素の順番
+    highlight: number;
+    // ExTranscriptの字幕要素のうち、いまハイライトしている要素の順番
+    ExHighlight: number;
+    // _subtitlesのindexプロパティからなる配列
+    indexList: number[];
+    // 自動スクロール機能が展開済かどうか
+    isAutoscrollInitialized: boolean;
+    // ブラウザサイズが小さすぎる状態かどうか
+    isWindowTooSmall: boolean;
+    // Udemyの自動スクロール機能がONかOFFか
+    isAutoscrollOn: boolean;
 }
 
 // NOTE: 新規追加
@@ -38,124 +38,115 @@ type Callback<T> = (prop: iProps<T>) => void;
 
 // Base object of sStatus.
 const statusBase: iController = {
-  // NOTE: position, viewの初期値は意味をなさず、
-  // すぐに変更されることが前提である
-  position: null,
-  highlight: null,
-  ExHighlight: null,
-  indexList: null,
-  isAutoscrollInitialized: false,
-  isWindowTooSmall: false,
-  isAutoscrollOn: false,
+    // NOTE: position, viewの初期値は意味をなさず、
+    // すぐに変更されることが前提である
+    position: null,
+    highlight: null,
+    ExHighlight: null,
+    indexList: null,
+    isAutoscrollInitialized: false,
+    isWindowTooSmall: false,
+    isAutoscrollOn: false,
 };
 
 export class Attributes<T> {
-  // Requires Storage instance
-  constructor(private data: T) {
-    this.set = this.set.bind(this);
-    this.get = this.get.bind(this);
-  }
+    // Requires Storage instance
+    constructor(private data: T) {
+        this.set = this.set.bind(this);
+        this.get = this.get.bind(this);
+    }
 
-  // prop can have part of data
-  set(prop: iProps<T>): void {
-    this.data = {
-      ...this.data,
-      ...prop,
-    };
-  }
+    // prop can have part of data
+    set(prop: iProps<T>): void {
+        this.data = {
+            ...this.data,
+            ...prop,
+        };
+    }
 
-  // get always returns all.
-  get(): T {
-    return { ...this.data };
-  }
+    // get always returns all.
+    get(): T {
+        return { ...this.data };
+    }
 }
 
 export class Model<T> {
-  constructor(private attributes: Attributes<T>, private events: Events<T>) {}
+    constructor(private attributes: Attributes<T>, private events: Events<T>) {}
 
-  get get() {
-    return this.attributes.get;
-  }
+    get get() {
+        return this.attributes.get;
+    }
 
-  get on() {
-    return this.events.on;
-  }
+    get on() {
+        return this.events.on;
+    }
 
-  get trigger() {
-    return this.events.trigger;
-  }
+    get trigger() {
+        return this.events.trigger;
+    }
 
-  set(prop: iProps<T>) {
-    this.attributes.set(prop);
-    // NOTE: DO PASS prop
-    this.events.trigger("change", prop);
-    //
-    // DEBUG:
-    //
-    // Make sure how this.attributes.data changed
-    console.log("--------------------------");
-    console.log("prop:");
-    console.log(prop);
-    console.log("Updated data:");
-    console.log(this.attributes.get());
-    console.log("--------------------------");
-  }
+    set(prop: iProps<T>) {
+        this.attributes.set(prop);
+        // NOTE: DO PASS prop
+        this.events.trigger('change', prop);
+        //
+        // DEBUG:
+        //
+        // Make sure how this.attributes.data changed
+    }
 }
 
 export class Events<T> {
-  public events: { [key: string]: Callback<T>[] };
-  constructor() {
-    this.events = {};
-    this.on = this.on.bind(this);
-    this.trigger = this.trigger.bind(this);
-  }
+    public events: { [key: string]: Callback<T>[] };
+    constructor() {
+        this.events = {};
+        this.on = this.on.bind(this);
+        this.trigger = this.trigger.bind(this);
+    }
 
-  on(eventName: string, callback: Callback<T>): void {
-    const handlers = this.events[eventName] || [];
-    handlers.push(callback);
-    this.events[eventName] = handlers;
-  }
+    on(eventName: string, callback: Callback<T>): void {
+        const handlers = this.events[eventName] || [];
+        handlers.push(callback);
+        this.events[eventName] = handlers;
+    }
 
-  trigger(eventName: string, prop: iProps<T>): void {
-    const handlers = this.events[eventName];
-    if (handlers === undefined || !handlers.length) return;
-    handlers.forEach((cb) => {
-      cb(prop);
-    });
-  }
+    trigger(eventName: string, prop: iProps<T>): void {
+        const handlers = this.events[eventName];
+        if (handlers === undefined || !handlers.length) return;
+        handlers.forEach((cb) => {
+            cb(prop);
+        });
+    }
 }
 
 export class ExTranscriptModel extends Model<iController> {
-  static build(sStatusBase: iController): ExTranscriptModel {
-    return new ExTranscriptModel(
-      new Attributes<iController>(sStatusBase),
-      new Events<iController>()
-    );
-  }
+    static build(sStatusBase: iController): ExTranscriptModel {
+        return new ExTranscriptModel(
+            new Attributes<iController>(sStatusBase),
+            new Events<iController>()
+        );
+    }
 }
 
 const updatePosition = (prop: iProps<iController>): void => {
-  if (prop.position === undefined) return;
-  console.log("update psotion");
+    if (prop.position === undefined) return;
 };
 
 const updateHighlight = (prop: iProps<iController>): void => {
-  if (prop.highlight === undefined) return;
-  console.log("update highlight");
+    if (prop.highlight === undefined) return;
 };
 
 const updateExHighlight = (prop: iProps<iController>): void => {
-  if (prop.ExHighlight === undefined) return;
-  console.log("update ExHighlight");
+    if (prop.ExHighlight === undefined) return;
 };
 
 const _model = ExTranscriptModel.build(statusBase);
 
-_model.on("change", updatePosition);
-_model.on("change", updateHighlight);
-_model.on("change", updateExHighlight);
+_model.on('change', updatePosition);
+_model.on('change', updateHighlight);
+_model.on('change', updateExHighlight);
 
-_model.set({ position: "sidebar" });
+_model.set({ position: 'sidebar' });
 _model.set({ highlight: 11 });
 _model.set({ ExHighlight: 12 });
 _model.set(statusBase);
@@ -176,30 +167,28 @@ let mSubtitle: ExTranscriptModel;
  *
  * */
 (function (): void {
-  console.log("[controller] Initializing...");
+    // Modelの生成
+    model = ExTranscriptModel.build(statusBase);
+    mSubtitle = ExTranscriptModel.build(subtitleBase);
 
-  // Modelの生成
-  model = ExTranscriptModel.build(statusBase);
-  mSubtitle = ExTranscriptModel.build(subtitleBase);
+    // イベントハンドラの追加
+    model.on('change', updatePosition);
+    model.on('change', updateHighlight);
+    model.on('change', updateExHighlight);
+    mSubtitle.on('change', updateSubtitle);
 
-  // イベントハンドラの追加
-  model.on("change", updatePosition);
-  model.on("change", updateHighlight);
-  model.on("change", updateExHighlight);
-  mSubtitle.on("change", updateSubtitle);
+    // ExTranscriptの展開場所判定と生成
+    const w: number = document.documentElement.clientWidth;
+    const s: keyof_positionStatus =
+        w > RESIZE_BOUNDARY ? positionStatus.sidebar : positionStatus.noSidebar;
+    model.set({ position: s });
+    model.set({ isWindowTooSmall: w < MINIMUM_BOUNDARY ? true : false });
 
-  // ExTranscriptの展開場所判定と生成
-  const w: number = document.documentElement.clientWidth;
-  const s: keyof_positionStatus =
-    w > RESIZE_BOUNDARY ? positionStatus.sidebar : positionStatus.noSidebar;
-  model.set({ position: s });
-  model.set({ isWindowTooSmall: w < MINIMUM_BOUNDARY ? true : false });
-
-  // その他のリスナの設定
-  window.removeEventListener("resize", reductionOfwindowResizeHandler);
-  window.addEventListener("resize", reductionOfwindowResizeHandler);
-  // 自動スクロールチェック状態監視リスナ
-  resetAutoscrollCheckboxListener();
+    // その他のリスナの設定
+    window.removeEventListener('resize', reductionOfwindowResizeHandler);
+    window.addEventListener('resize', reductionOfwindowResizeHandler);
+    // 自動スクロールチェック状態監視リスナ
+    resetAutoscrollCheckboxListener();
 })();
 
 // あとはsStatusやsSubtitleをmodelとmSubtitleに変更するだけ...

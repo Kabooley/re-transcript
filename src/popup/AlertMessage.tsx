@@ -9,7 +9,7 @@
  *
  * */
 
-import React from "react";
+import React from 'react';
 import { useState, useEffect } from 'react';
 import Slide from '@mui/material/Slide';
 
@@ -25,24 +25,24 @@ const AlertMessage = (props): JSX.Element => {
 
     // NOTE: useEffect()内でsetTimeoutする場合は、無限ループを起こさないように
     // clearTimeoutをreturnすること
-    useEffect(function () {
-        console.log("[AlertMessage] use effect");
-        console.log(props.show);
-        let timerId = null;
-        if(props.show) {
-          setShow(true);
-            timerId = setTimeout(function () {
-            setShow(false);
-          }, props.timer);
-  
-        }
-          return () => {
-              clearTimeout(timerId);
-          };
-      }, [props.show]);
-  
-      if (!props.show) return null;
-  
+    useEffect(
+        function () {
+            let timerId = null;
+            if (props.show) {
+                setShow(true);
+                timerId = setTimeout(function () {
+                    setShow(false);
+                }, props.timer);
+            }
+            return () => {
+                clearTimeout(timerId);
+            };
+        },
+        [props.show]
+    );
+
+    if (!props.show) return null;
+
     return (
         <Slide
             direction="right"
@@ -61,15 +61,13 @@ const AlertMessage = (props): JSX.Element => {
 
 export default AlertMessage;
 
-
 // ----- Alert and retract on its own -------------------
-// 
+//
 // NOTE: timerが2つある
 // 1. 使う側のstateをfalseにするタイマー
 // 2. AlertMesageのslideコンポーネントのinに渡すbooleanをfalseにするタイマー
 // 1のタイマーは２のタイマーよりも長くないといけない
 // でないとアニメーションが終了する前にスライド中の要素が急に消える
-
 
 // Usage このままcodesandboxで確認できるよ
 
@@ -90,8 +88,8 @@ export default AlertMessage;
 //     // NOTE: useEffect()内でsetTimeoutする場合は、無限ループを起こさないように
 //     // clearTimeoutをreturnすること
 //     useEffect(function () {
-//       console.log("[AlertMessage] use effect");
-//       console.log(props.show);
+//
+//
 //       let timerId = null;
 //       if(props.show) {
 //         setShow(true);
@@ -157,7 +155,7 @@ export default AlertMessage;
 //   const handleChange = () => {
 //     setChecked((prev) => !prev);
 //   };
-// 
+//
 //   // NOTE: アラートは自動で引っ込んでほしいので
 //   // 一旦引っ込んだらstateはflaseになってほしい
 //   // なのでsetTimeoutでfalseにする
@@ -173,7 +171,7 @@ export default AlertMessage;
 //       }
 //     }
 //   }, [checked]);
-// 
+//
 //   return (
 //     <Box
 //       sx={{

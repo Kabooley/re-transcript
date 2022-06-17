@@ -11,9 +11,7 @@ import { extensionNames, orderNames, iMessage } from '../utils/constants';
 
 // --- LISTENERS -----------------------------------
 
-chrome.runtime.onInstalled.addListener(() => {
-    console.log('BACKGROUND RUNNING...');
-});
+chrome.runtime.onInstalled.addListener(() => {});
 
 chrome.runtime.onMessage.addListener(
     async (
@@ -21,40 +19,38 @@ chrome.runtime.onMessage.addListener(
         sender: chrome.runtime.MessageSender,
         sendResponse: (response: iMessage) => void
     ): Promise<boolean> => {
-        console.log('[background] ONMESSAGE');
         const { from, to, order, ...rest } = message;
         if (to !== extensionNames.background) return;
 
         // Order handling
         // もしもorderプロパティが存在して、中身が空じゃなければ
         if (order && Object.keys(order).length) {
-            console.log('[background] GOT ORDER');
             if (order[orderNames.sendStatus]) {
-                console.log('SEND STATUS');
             }
             if (order[orderNames.disconnect]) {
-                console.log('DISCONNECT');
             }
             if (order[orderNames.injectCaptureSubtitleScript]) {
-                console.log('injectCaptureSubtitleScript');
             }
             if (order[orderNames.injectExTranscriptScript]) {
-                console.log('injectExTranscriptScript');
             }
         }
 
         if (rest.activated && from === extensionNames.contentScript) {
-            console.log('[background] content script has been activated');
         }
 
         return true;
     }
 );
 
-chrome.tabs.onUpdated.addListener((tabId: number, changeInfo: chrome.tabs.TabChangeInfo, Tab: chrome.tabs.Tab): void => {
-    console.log("TAB UPDATED...");
-    messageSender();
-});
+chrome.tabs.onUpdated.addListener(
+    (
+        tabId: number,
+        changeInfo: chrome.tabs.TabChangeInfo,
+        Tab: chrome.tabs.Tab
+    ): void => {
+        messageSender();
+    }
+);
 
 const checkTabIsCorrect = async (pattern: RegExp): Promise<number> => {
     // https://www.udemy.com/course/*
@@ -75,7 +71,6 @@ const checkTabIsCorrect = async (pattern: RegExp): Promise<number> => {
         if (err === chrome.runtime.lastError) {
             console.error(err.message);
         } else {
-            console.log(err);
         }
     }
 };
@@ -85,7 +80,6 @@ const messageSender = async (): Promise<void> => {
         /https:\/\/developer.mozilla.org\/ja\//
     );
     setTimeout(function () {
-        console.log('content script running...');
         chrome.tabs.sendMessage(tabId, {
             to: extensionNames.contentScript,
             from: extensionNames.background,
@@ -94,7 +88,6 @@ const messageSender = async (): Promise<void> => {
     }, 3000);
 
     setTimeout(function () {
-        console.log('Send some orders');
         chrome.tabs.sendMessage(tabId, {
             from: extensionNames.contentScript,
             to: extensionNames.background,
@@ -106,7 +99,6 @@ const messageSender = async (): Promise<void> => {
     }, 3000);
 
     setTimeout(function () {
-        console.log('content script running...');
         chrome.tabs.sendMessage(tabId, {
             to: extensionNames.contentScript,
             from: extensionNames.background,
@@ -120,7 +112,6 @@ const messageSender = async (): Promise<void> => {
     }, 3000);
 
     setTimeout(function () {
-        console.log('content script running...');
         chrome.tabs.sendMessage(tabId, {
             to: extensionNames.contentScript,
             from: extensionNames.background,

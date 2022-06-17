@@ -6,9 +6,9 @@ https://www.patterns.dev/posts/observer-pattern/
 
 ## 登場人物
 
-- `observer`: 変更を知りたい人（オブジェクト）
+-   `observer`: 変更を知りたい人（オブジェクト）
 
-- `observable`: 変更を通知する人
+-   `observable`: 変更を通知する人
 
 ## sample
 
@@ -55,7 +55,7 @@ import { ToastContainer, toast } from "react-toastify";
 
 // observer その一
 function logger(data) {
-  console.log(`${Date.now()} ${data}`);
+
 }
 // observer その二
 function toastify(data) {
@@ -111,15 +111,17 @@ export default function App() {
 
 ## まとめ
 
-登場人物: 
-- `observer`: notify されたい人 
-- `observable`: notify する人
+登場人物:
 
-`observable`は自身に 
-- `observer`の登録リスト 
-- `notify`メソッド 
-- 他、登録、登録解除メソッド
-などを持つ
+-   `observer`: notify されたい人
+-   `observable`: notify する人
+
+`observable`は自身に
+
+-   `observer`の登録リスト
+-   `notify`メソッド
+-   他、登録、登録解除メソッド
+    などを持つ
 
 notify はひとたび呼び出すと、すべての observer に一気に通知され、observer らはすべて同じ引数を取得する
 
@@ -127,29 +129,25 @@ notify はひとたび呼び出すと、すべての observer に一気に通知
 
 ## 特徴など
 
-- トリガーは任意
+-   トリガーは任意
     observer.notify()を好きな時に呼び出せる
 
-- 必ずすべてのobserverに通知される
-    場合によっては関係ない場合に通知されるobserverもいるかも
+-   必ずすべての observer に通知される
+    場合によっては関係ない場合に通知される observer もいるかも
 
-- 通知する情報は自由
+-   通知する情報は自由
     notify()に渡す引数は自由
 
-- addEventListener()との違いは？
-    addEventListenerはリスンする対象はElement, Document, windowなどであるが、observer-patternは任意のオブジェクトである
-    addEventListenerはおなじみのイベントが起こったときに発火するが、observer-patternではnotifyの呼び出しは任意である
+-   addEventListener()との違いは？
+    addEventListener はリスンする対象は Element, Document, window などであるが、observer-pattern は任意のオブジェクトである
+    addEventListener はおなじみのイベントが起こったときに発火するが、observer-pattern では notify の呼び出しは任意である
 
-- pub/sub との違いは？
+-   pub/sub との違いは？
 
 #### 作成中のものに当てはめてみる
 
+state の値が変更されたらどうなればいいか:
 
-stateの値が変更されたらどうなればいいか:
-
-- validation
-- chrome.storage.localを更新する
-- 変更内容をobserverへnotifyする
-
-
-
+-   validation
+-   chrome.storage.local を更新する
+-   変更内容を observer へ notify する

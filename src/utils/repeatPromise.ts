@@ -37,16 +37,13 @@ export const repeatPromiseGenerator = function <T>(
             let counter: number = 0;
 
             intervalId = setInterval(async function () {
-                console.log(`Count: ${counter}`);
                 if (counter >= upTo) {
-                    console.log("It's over");
                     clearInterval(intervalId);
                     reject();
                     // reject時に返す値も予め用意できない
                 }
                 const result: T = await callback();
                 if (condition(result)) {
-                    console.log('Solved!');
                     clearInterval(intervalId);
                     resolve(result);
                 } else counter++;
@@ -95,7 +92,7 @@ export const repeatPromiseGenerator = function <T>(
 //             10
 //         );
 //         const result: subtitle_piece[] = await repeactCaptureSubtitlesTenTimes();
-//         console.log(result);
+//
 //     } catch (e) {
 //         console.error(e);
 //     }

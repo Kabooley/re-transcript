@@ -192,7 +192,7 @@ function a() {
     b();
   }
   catch(e) {
-    console.log(`Error caught ${e}`);
+
   }
 }
 
@@ -648,10 +648,10 @@ chrome.runtime.onMessage.addListener(
               (async function() {
 
               })()
-                console.log('Order: is this page including movie container?');
+
                 repeatQuerySelector(selectors.videoContainer)
                     .then((r: boolean) => {
-                        console.log(`result: ${r}`);
+
                         sendResponse({
                             complete: true,
                             isPageIncludingMovie: r,
@@ -663,7 +663,7 @@ chrome.runtime.onMessage.addListener(
             }
 
             if (order.includes(orderNames.turnOff)) {
-                console.log('Order: Turn off');
+
                 moControlbar.disconnect();
                 controlbar.removeEventListener('click', handlerOfControlbar);
                 // moControlbarとcontrolbarはnullにしておく必要があるかな？
@@ -760,31 +760,31 @@ chrome api の関数の引数として windowId が要求されるときにデ�
 
 chrome.runtime.onMessage.addListener((msg) => {
     if (msg.order === 'survey window') {
-        console.log('---- survey window ----');
-        console.log('Query tabs by some option cases:');
+
+
         // NOTE: 調査２のメモ
         //
         // {active: true}
         // いま開かれているすべてのwindowのアクティブなタブ（表示中のタブ）である
         // なので複窓のとき、各窓の表示中のタブの情報を取得する
         chrome.tabs.query({ active: true }, function (tabs) {
-            console.log('option: {active: true}');
-            console.log(tabs);
+
+
         });
         //
         // {currentWindow: true}
         // 状況のPOPUPを表示させていた（つまり最後にフォーカスした）ウィンドウの
         // すべてのタブ情報を配列で取得した
         chrome.tabs.query({ currentWindow: true }, function (tabs) {
-            console.log('option: {currentWindow: true}');
-            console.log(tabs);
+
+
         });
         //
         // { lastFocusedWindow: true }
         // {currentWindow: true}と同様
         chrome.tabs.query({ lastFocusedWindow: true }, function (tabs) {
-            console.log('option: {lastFocusedWindow: true}');
-            console.log(tabs);
+
+
         });
         //
         // { active: true, currentWindow: true, lastFocusedWindow: true }
@@ -792,10 +792,10 @@ chrome.runtime.onMessage.addListener((msg) => {
         chrome.tabs.query(
             { active: true, currentWindow: true, lastFocusedWindow: true },
             function (tabs) {
-                console.log(
+
                     'option: {active: true, currentWindow: true, lastFocusedWindow: true}'
                 );
-                console.log(tabs);
+
             }
         );
 
@@ -806,25 +806,25 @@ chrome.runtime.onMessage.addListener((msg) => {
         // windowIdではなくてその直前のwindowIdであった
         //
         chrome.windows.getLastFocused({}, (w) => {
-            console.log(`window last focused by getLastFocused()`);
-            console.log(w.id);
+
+
         });
         chrome.windows.getCurrent({}, (w) => {
-            console.log(`getCurrent with no options`);
-            console.log(w.id);
+
+
         });
     }
 });
 
 // chrome.windows.onFocusChanged.addListener((windowId) => {
-//     console.log(`window focuse changed: ${windowId}`);
+//
 //     chrome.windows.getLastFocused({}, (w) => {
-//         console.log(`window last focused by getLastFocused()`);
-//         console.log(w.id);
+//
+//
 //     });
 //     chrome.windows.getCurrent({}, (w) => {
-//         console.log(`getCurrent with no options`);
-//         console.log(w.id);
+//
+//
 //     });
 // });
 
@@ -1502,8 +1502,8 @@ const progressBase: iProgress = {
 // obseervableのインスタンスをいったん作る
 const observable = new Observable();
 const observer = (props) => {
-  console.log("[observer];");
-  console.log(props);
+
+
 };
 observable.register(observer);
 
@@ -1520,13 +1520,13 @@ const handler: ProxyHandler<iProgress> = {
     // 一旦コピーをとってこれをprevStateとする
     const temp = {...target};
     // 変更をnotifyする
-    console.log("[proxy] set");
+
     observable.notify({ prop: property, value: value, prevState: temp });
     return Reflect.set(target, property, value, receiver);
   },
   get: function (target: iProgress, property: keyof iProgress, receiver: any) {
     // Reflect.getは参照を返す
-    console.log("[proxy] get");
+
     return Reflect.get(target, property, receiver);
   },
 };
@@ -1536,10 +1536,10 @@ const handler: ProxyHandler<iProgress> = {
 // const proxyProgress = new Proxy(progressBase, handler);
 // proxyProgress.isScriptInjected = true;
 // const refProxyProgress = proxyProgress;
-// console.log(refProxyProgress);
+//
 // refProxyProgress.isSubtitleCaptured = true;
 // // isSubttileCaptured: trueだった
-// console.log(proxyProgress);
+//
 
 // THIS WORKED
 // なんだかhandlerともとのオブジェクトをそのまま渡すくらいなら
@@ -1553,8 +1553,8 @@ state_progress.setState({
   isSubtitleCaptured: true,
 });
 
-console.log("current proxy:");
-console.log(state_progress.getState());
+
+
 
 state_progress.setState({
   isTranscriptRestructured: true,
@@ -1563,11 +1563,11 @@ state_progress.setState({
 
 
 
-console.log("current proxy:");
-console.log(state_progress.getState());
+
+
 
 // いまんところ
-console.log(state_progress.getState("isScriptInjected"));
+
 
 
 // おさらい
@@ -1580,8 +1580,8 @@ const dummy = {
 
 const tmp = {...dummy};
 tmp.name = "JOJO";
-console.log(dummy)
-console.log(tmp)
+
+
 
 // // https://stackoverflow.com/questions/32308370/what-is-the-syntax-for-typescript-arrow-functions-with-generics
 // const generateProxyHandler = <TYPE extends object, K extends keyof TYPE>(observable: Observable): ProxyHandler<TYPE> => {
@@ -1680,7 +1680,7 @@ const Popup = (): JSX.Element => {
   const [matchedPage, setMatchedPage] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log("[popup] Set onMessage listener");
+
     chrome.runtime.onMessage.addListener(messageHandler);
     chrome.runtime.sendMessage({
       from: extensionNames.popup,
@@ -1688,33 +1688,33 @@ const Popup = (): JSX.Element => {
       order: [orderNames.isUrlCorrect]
     })
       .then((result) => {
-        console.log(result);
+
         setMatchedPage(result);
       })
       .catch((err) => console.error(err));
 
     return () => {
-      console.log("[popup] Removed onMessage listener");
+
       chrome.runtime.onMessage.removeListener(messageHandler);
     };
   }, []);
 
   useEffect(() => {
-    console.log("Is this page correct?");
+
     chrome.runtime.sendMessage({
       from: extensionNames.popup,
       to: extensionNames.background,
       order: [orderNames.isUrlCorrect]
     })
       .then((result) => {
-        console.log(result);
+
         setMatchedPage(result);
       })
       .catch((err) => console.error(err));
   });
 
   const buttonHandler = (): void => {
-    console.log("[popup] RUN");
+
     chrome.runtime.sendMessage(messageTemplates.run);
   };
 
@@ -1741,7 +1741,7 @@ const Popup = (): JSX.Element => {
 
 const popupMessageHandler = async (m: messageTemplate): Promise<void> => {
   try {
-    console.log("...message from POPUP");
+
     const { message, sender, sendResponse } = m;
     const { order, ...rest } = message;
     const refStatus: State<iStatus> = stateList.caller<iStatus>(
@@ -1826,7 +1826,7 @@ const Popup = (): JSX.Element => {
 
 
   const buttonHandler = (): void => {
-    console.log("[popup] RUN");
+
     chrome.runtime.sendMessage({
       from: extensionNames.popup,
       to: extensionNames.background,
@@ -1852,7 +1852,7 @@ const Popup = (): JSX.Element => {
 
 const popupMessageHandler = async (m: messageTemplate): Promise<void> => {
   try {
-    console.log("...message from POPUP");
+
     const { message, sender, sendResponse } = m;
     const { order, ...rest } = message;
     const refStatus: State<iStatus> = stateList.caller<iStatus>(
@@ -2357,7 +2357,7 @@ class Model<T exntends object> {
 ```TypeScript
 
 chrome.runtime.onInstalled.addListener((details: chrome.runtime.InstalledDetails): void => {
-    console.log(`[background] onInstalled: ${details.reason}`);
+
     const model: Model = new Model("__key__local_storage_", modelBase);
 });
 
@@ -2607,7 +2607,7 @@ chrome.runtime.onMessage.addListener(
   ): Promise<boolean> => {
     try {
       if (message.to !== extensionNames.controller) return;
-      console.log("CONTROLLER GOT MESSAGE");
+
       const { order, ...rest } = message;
       if (order && order.length) {}
       // 字幕データが送られてきたら
@@ -2625,7 +2625,7 @@ chrome.runtime.onMessage.addListener(
 // Updated
 //
 const onWindowResizeHandler = (): void => {
-  console.log("[onWindowResizeHandler]");
+
 
   const w: number = document.documentElement.clientWidth;
   const { position, view } = sStatus.getState();
@@ -2669,7 +2669,7 @@ const onWindowResizeHandler = (): void => {
 // Updated
 //
 (function(): void{
-    console.log("[controller] Initializing...");
+
 
     // 初期のExTranscriptの展開場所に関するステータスを取得する
     const w: number = document.documentElement.clientWidth;
@@ -2787,16 +2787,16 @@ chrome.runtime.onMessage.addListener(
   ): Promise<boolean> => {
     try {
       if (message.to !== extensionNames.controller) return;
-      console.log("CONTROLLER GOT MESSAGE");
+
       const { order, ...rest } = message;
       if (order && order.length) {
         if (order.includes(orderNames.reset)) {
-          console.log("order: RESET controller.ts");
+
           handlerOfReset();
           sendResponse({complete: true, success: true});
         }
         if(order.includes(orderNames.turnOff)){
-          console.log("order: TURN OFF ExTranscript");
+
           handlerOfTurnOff();
           sendResponse({complete: true, success: true});
         }
@@ -2825,7 +2825,7 @@ const reductionOfwindowResizeHandler = (): void => {
 }
 
 const handlerOfTurnOff = (): void => }{
-  console.log("Turning off ExTranscript");
+
 
   // REMOVAL Listeners
   window.removeEventListener("resize", reductionOfwindowResizeHandler);
@@ -2851,7 +2851,7 @@ const handlerOfTurnOff = (): void => }{
 }
 
 const handlerOfReset = (): boolean => {
-  console.log("Reset ExTranscript");
+
 
   handlerOfTurnOff();
 
@@ -2916,7 +2916,7 @@ const moConfig: MutatoinOBserevreInit = {
 }
 
 const moCallback = (mr: MutationRecord[]): void => {
-    console.log("observed");
+
     mr.forEach((record: MutationRecord) => {
       if(
           record.type === "attributes" &&
@@ -3131,9 +3131,9 @@ const controlbarCallback = (mr: MutationRecord[]): void => {
         if(record.type === "childList"){
             // 子要素の何が追加されたのか、削除されたのか調査する
             // 追加された要素
-            console.log(record.addedNodes);
+
             // 削除された要素
-            console.log(record.removedNodes);
+
 
             if(/* record.addedNodes の子要素にトランスクリプト・トグルボタンが含まれているならば */) {
               // トランスクリプトが再表示された可能性がある
@@ -3392,7 +3392,7 @@ document にイベントリスナをつけずとも
 // contentScript.ts
 
 const handlerOfControlbar = function (ev: PointerEvent): void {
-  console.log("[contentScript] controlbar clicked");
+
 
   const path: EventTarget[] = ev.composedPath();
   const transcriptToggle: HTMLElement = document.querySelector<HTMLElement>(
@@ -3417,7 +3417,7 @@ const handlerOfControlbar = function (ev: PointerEvent): void {
     // となると、クリックされるかどうかわからない状況で反応しても意味がない...
     // CC POUPボタンが押されたら
     if (path.includes(ccPopupButton)) {
-      console.log("[contentScript] CC Popup button clicked");
+
       document.removeEventListener("click", ccPopupMenuClickHandler);
       document.addEventListener("click", ccPopupMenuClickHandler);
     }
@@ -3430,11 +3430,11 @@ const handlerOfControlbar = function (ev: PointerEvent): void {
     // ccPopupMenuClickHandler()も必要ない
     if(path.includes(ccPopupMenu)){
       const r: boolean = isSubtitleEnglish();
-      console.log(`Have subtitle language been changed? ${r}`);
+
       sendToBackground({isEnglish: r});
     }
   }, 200);
-  console.log("[contentScript] controlbar clicke event done");
+
 };
 
 ```
@@ -3539,7 +3539,7 @@ const moCallback = function (
       record.oldValue === "" &&
       !guard
     ) {
-      console.log("OBSERVED");
+
       guard = true;
       updateHighlightIndexes();
       updateExTranscriptHighlight();
@@ -3553,7 +3553,7 @@ const moCallback = function (
 // check `isAutoscrollInitialized` inside funciton.
 // Put out requiremnts of MutationObserver.
 const resetDetectScroll = (): void => {
-  console.log("[controller] reset Autro Scroll System");
+
 
     const { isAutoscrollInitialized } = sStatus.getState();
     if(!isAutoscrollInitialized) {
@@ -3639,7 +3639,7 @@ State は key を使って呼び出しに応じて localStorage を呼出す
 
 chrome.runtime.onInstalled.addListener(
   async (details: chrome.runtime.InstalledDetails): Promise<void> => {
-    console.log(`[background] onInstalled: ${details.reason}`);
+
     try {
       state.unregister();
       await state.register(new State<iModel>(_key_of_model_state__));
@@ -3679,7 +3679,7 @@ const { tabId } = await s.getState();
 
 // LOCALSTORAGE GET
 chrome.storage.local.get(KEY, function(data){
-  console.log("data from local storage");
+
   // dataを外に出す
 });
 
@@ -3802,7 +3802,7 @@ chrome.tabs.onUpdated.addListener(
         changeInfo: chrome.tabs.TabChangeInfo,
         Tab: chrome.tabs.Tab
     ): Promise<void> => {
-        console.log(changeInfo);
+
         // "https://www.udemy.com/course/*"以外のURLなら無視する
         const { url, tabId, isExTranscriptStructured } = await state.get();
 
@@ -3826,7 +3826,7 @@ chrome.tabs.onUpdated.addListener(
                 // 拡張機能OFF処理へ
                 // TODO: 拡張機能OFF処理の実装
 
-                console.log('[background] TURN OFF this extension');
+
             }
 
             // 展開中のtabIdである && changeInfo.urlが講義ページだけど末尾が変化した(#以下は無視)
@@ -3947,11 +3947,11 @@ chrome.tabs.onRemoved.addListener(
     ):void => {
         const { tabId } = await state.get();
         if(removeInfo.isWindowClosing) {
-            console.log("Window closing!");
+
             // 後始末
         }
         if(_tabId === tabId) {
-            console.log("tab closed!");
+
             // 後始末
         }
     }
@@ -4006,7 +4006,7 @@ POPUP で同じ処理を行うと、popup を開いたタブの window.id を取
       .then((res: iResponse) => {
         const { correctUrl } = res;
         // DEBUG:
-        console.log(`[popup] is valid page?: ${correctUrl}`);
+
         setCorrectUrl(correctUrl);
       })
       .catch((err) => console.error(err.message));
@@ -4019,9 +4019,9 @@ POPUP で同じ処理を行うと、popup を開いたタブの window.id を取
         return chrome.tabs.query({ active: true, windowId: res.id });
       })
       .then((tabs: chrome.tabs.Tab[]) => {
-          console.log(tabs);
+
           const r: RegExpMatchArray = tabs[0].url.match(urlPattern);
-          console.log(`Is this page valid?: ${r && r.length}`);
+
         setCorrectUrl(r && r.length);
     })
       .catch((err) => console.error(err.message));
@@ -4030,7 +4030,7 @@ POPUP で同じ処理を行うと、popup を開いたタブの window.id を取
 // before
   const buttonClickHandler = (): void => {
     setRunning(true);
-    console.log("[popup] RUNNING...");
+
 
         chrome.windows.getCurrent()
       .then((res) => {
@@ -4038,7 +4038,7 @@ POPUP で同じ処理を行うと、popup を開いたタブの window.id を取
       })
       .then((tabs: chrome.tabs.Tab[]) => {
           const r: RegExpMatchArray = tabs[0].url.match(urlPattern);
-          console.log(`Is this page valid?: ${r && r.length}`);
+
         setCorrectUrl(r && r.length);
     })
     sendMessagePromise({
@@ -4048,7 +4048,7 @@ POPUP で同じ処理を行うと、popup を開いたタブの window.id を取
     })
       .then((res) => {
         const { success } = res;
-        console.log("[popup] Successfully Complete!");
+
         setComplete(success);
         setRunning(false);
         if (!success) {
@@ -4069,7 +4069,7 @@ POPUP で同じ処理を行うと、popup を開いたタブの window.id を取
 // After
   const buttonClickHandler = (): void => {
     setRunning(true);
-    console.log("[popup] RUNNING...");
+
 
     sendMessagePromise({
       from: extensionNames.popup,
@@ -4078,7 +4078,7 @@ POPUP で同じ処理を行うと、popup を開いたタブの window.id を取
     })
       .then((res) => {
         const { success } = res;
-        console.log("[popup] Successfully Complete!");
+
         setComplete(success);
         setRunning(false);
         if (!success) {
@@ -4142,7 +4142,7 @@ chrome.runtime.onMessage.addListener(
     sender,
     sendResponse: (response: iResponse) => void
   ): Promise<boolean> => {
-    console.log("CONTENT SCRIPT GOT MESSAGE");
+
     const { from, order, to } = message;
     const response: iResponse = {
       from: extensionNames.contentScript,
@@ -4155,10 +4155,10 @@ chrome.runtime.onMessage.addListener(
       if (order && order.length) {
         // RESET
         if (order.includes(orderNames.reset)) {
-          console.log("Order: RESET");
+
 
           await handlerOfReset();
-          console.log("sfdadfsadfsafdsadfa");
+
           if (sendResponse) {
             sendResponse({
               from: extensionNames.contentScript,
@@ -4185,7 +4185,7 @@ chrome.runtime.onMessage.addListener(
     sender,
     sendResponse: (response: iResponse) => void
   ): boolean => {
-    console.log("CONTENT SCRIPT GOT MESSAGE");
+
     const { from, order, to } = message;
     const response: iResponse = {
       from: extensionNames.contentScript,
@@ -4199,11 +4199,11 @@ chrome.runtime.onMessage.addListener(
         //
         // NOTE: solve way 1: use promise chain.
         if (order.includes(orderNames.reset)) {
-          console.log("Order: RESET");
+
 
           handlerOfReset()
           .then(() => {
-            console.log("[contentScript] Reset resolved");
+
           if (sendResponse) {
             sendResponse({
               from: extensionNames.contentScript,
@@ -4221,7 +4221,7 @@ chrome.runtime.onMessage.addListener(
         // NOTE: solve way 2:
         // use IIFE
         if (order.includes(orderNames.reset)) {
-          console.log("Order: RESET");
+
           (async () => {
             try {
               await handlerOfReset();
@@ -4555,7 +4555,7 @@ const handlerOfPopupMessage = async (
 ): Promise<void> => {
   // ...
   if(order.includes(orderNames.turnOff)) {
-    console.log("[background] TURN OFF ordered.");
+
     // phase1. reset injected content script
     await turnOffEachContentScripts(tabId: number);
     const {
@@ -4576,7 +4576,7 @@ const handlerOfPopupMessage = async (
 // NOTE: new added
 const turnOffEachContentScripts = async (tabId: number): Promise<void> => {
     try {
-        console.log('[background] Turning off each content scripts');
+
 
         const contentScript = sendMessageToTabsPromise(tabId, {
             from: extensionNames.background,
@@ -4606,7 +4606,7 @@ const turnOffEachContentScripts = async (tabId: number): Promise<void> => {
             );
         }
 
-        console.log('[background] Done turning off each content scripts');
+
     } catch (err) {
         console.error(err.message);
     }
@@ -4623,14 +4623,14 @@ chrome.tabs.onRemoved.addListener(
       try {
         const { tabId } = await state.get();
         if (removeInfo.isWindowClosing) {
-            console.log('Window closed!');
+
             // 後始末
             // NOTE: 将来的にはそのwinodwに含まれるすべての展開中拡張機能をOFFにする処理が必要になる
             await turnOffEachContentScripts(tabId);
             await state.set(modelBase);
         }
         if (_tabId === tabId) {
-            console.log('tab closed!');
+
             // 後始末
             await turnOffEachContentScripts(tabId);
             await state.set(modelBase);
@@ -4706,11 +4706,11 @@ chrome.tabs.onUpdated.addListener(
         if (isExTranscriptStructured && tabIdUpdatedOccured === tabId) {
             // おなじURLでのリロードか？
             if (changeInfo.url === undefined) {
-                console.log('[background] Turn off extension because page reloaded');
+
                 await state.set(modelBase);
             } else if (!changeInfo.url.match(urlPattern)) {
                 // Udemy講義ページ以外に移動した
-                console.log('[background] the page moved to invalid url');
+
                 await state.set(modelBase);
             }
 
@@ -4723,7 +4723,7 @@ chrome.tabs.onUpdated.addListener(
             ) {
                 // ページが切り替わった
                 // NOTE: MUST Update URL
-                console.log('[background] page moved');
+
                 await state.set({ url: exciseBelowHash(changeInfo.url) });
 
                 // 動画ページ以外に切り替わったのか？
@@ -4738,7 +4738,7 @@ chrome.tabs.onUpdated.addListener(
                 // これの対処
                 // DEBUG:
                 //
-                console.log(res);
+
 
                 res.isPageIncludingMovie
                     ? // 次の動画に移った
@@ -4869,7 +4869,7 @@ chrome.runtime.onMessage.addListener(
     sender,
     sendResponse: (response: iResponse) => void
   ): boolean => {
-    console.log("CONTENT SCRIPT GOT MESSAGE");
+
     const { from, order, to } = message;
     const response: iResponse = {
       from: extensionNames.contentScript,
@@ -4881,7 +4881,7 @@ chrome.runtime.onMessage.addListener(
     if (order && order.length) {
       // SEND STATUS
       if (order.includes(orderNames.sendStatus)) {
-        console.log("Order: SEND STATUS");
+
         try {
           const isEnglish: boolean = isSubtitleEnglish();
           let isOpen: boolean = false;
@@ -4912,7 +4912,7 @@ chrome.runtime.onMessage.addListener(
       }
       // RESET
       if (order.includes(orderNames.reset)) {
-        console.log("Order: RESET");
+
         handlerOfReset()
           .then(() => {
             response.success = true;
@@ -4929,7 +4929,7 @@ chrome.runtime.onMessage.addListener(
       }
       // Require to make sure the page is including movie container or not.
       if (order.includes(orderNames.isPageIncludingMovie)) {
-        console.log("Order: Is this page including movie container?");
+
         repeatQuerySelector(selectors.videoContainer)
           .then((r: boolean) => {
             response.isPageIncludingMovie = r;
@@ -4947,7 +4947,7 @@ chrome.runtime.onMessage.addListener(
       }
       // TURN OFF
       if (order.includes(orderNames.turnOff)) {
-        console.log("Order: Turn off");
+
         moControlbar.disconnect();
         controlbar.removeEventListener("click", handlerOfControlbar);
         // moControlbarとcontrolbarはnullにしておく必要があるかな？
@@ -5051,7 +5051,7 @@ const moCallback = function (
       record.oldValue === "" &&
       !guard
     ) {
-      console.log("OBSERVED");
+
       guard = true;
       try {
         updateHighlightIndexes();
@@ -5101,7 +5101,7 @@ chrome.storage.local.get()起因
 
 chrome.runtime.onInstalled.addListener(
 async (details: chrome.runtime.InstalledDetails): Promise<void> => {
-  console.log(`[background] onInstalled: ${details.reason}`);
+
   try {
     state.clearAll();
     state.set(modelBase);
@@ -5547,7 +5547,7 @@ const counter = async (times: number): Promise<boolean> => {
     let timerId: number;
     let num: number = 0;
     timerId = setInterval(function() {
-      console.log(`counter: ${num}`);
+
       if(num >= times) {
         clearInterval(timerId);
         const random_boolean = Math.random() < 0.7;
@@ -5567,7 +5567,7 @@ const counter = async (times: number): Promise<boolean> => {
 // 戻り値は任意であるが、condition関数のgenerics型と同じにすること
 const cb: iCallbackOfCirculater = async (): Promise<boolean> => {
   const n: boolean = await counter(7);
-  console.log(`cb: ${n}`);
+
   return n;
 };
 
@@ -5577,7 +5577,7 @@ const cb: iCallbackOfCirculater = async (): Promise<boolean> => {
 //
 // circulaterへ渡す引数callbackの戻り値の型と同じ型をgenericsとして渡すこと
 const counterCondition: iConditionOfCirculater = <iOp>(operand: iOp): iOp => {
-  console.log(`condition: ${operand ? true: false}`);
+
   return operand ? true: false;
 }
 
@@ -5585,7 +5585,7 @@ const counterLoop = circulater(cb, counterCondition, 3);
 
 (async function() {
   const r = await counterLoop();
-  console.log(`RESULT: ${r}`);
+
 })();
 ```
 
@@ -5710,7 +5710,7 @@ chrome.tabs.onUpdated.addListener(
 ```TypeScript
 const handlerOfReset = async (tabId: number): Promise<void> => {
   try {
-    console.log("[background] RESET Begin...");
+
     await state.set({
       isTranscriptDisplaying: false,
       isSubtitleCaptured: false,
@@ -5750,7 +5750,7 @@ const handlerOfReset = async (tabId: number): Promise<void> => {
       isTranscriptDisplaying: true,
     });
 
-    console.log("[background] RESET Complete!");
+
   } catch (e) {
     throw e;
   }
@@ -5766,7 +5766,7 @@ const handlerOfReset = async (
     subtitles: subtitle_piece[]
 ): Promise<void> => {
   try {
-    console.log("[background] RESET Begin...");
+
     await state.set({
       isTranscriptDisplaying: false,
       isSubtitleCaptured: false,
@@ -5802,7 +5802,7 @@ const handlerOfReset = async (
       isTranscriptDisplaying: true,
     });
 
-    console.log("[background] RESET Complete!");
+
   } catch (e) {
     throw e;
   }
@@ -5859,10 +5859,10 @@ codesandbox で確認済
   };
 
   // const r = (await foo()).subtitles;
-  // console.log(r);
+  //
 
   const bar = async function(subtitles) {
-    console.log(subtitles);
+
   }
 
   bar((await foo()).subtitles);
@@ -5918,7 +5918,7 @@ await state.set({subtitles: [
 ]})
 
 const functionRequiresSubtitleData = async (subtitles: string[]): Promise<void> => {
-  console.log(subtitles);
+
 }
 
 // NOTE: 関数の中でawait呼出は可能である
@@ -5958,10 +5958,10 @@ Codesandbox で確認済。
   };
 
   // const r = (await foo()).subtitles;
-  // console.log(r);
+  //
 
   const bar = async function(subtitles) {
-    console.log(subtitles);
+
   }
 
   bar((await foo()).subtitles);
@@ -6266,7 +6266,7 @@ export const EX = {
  * And clear previoud ExTranscript.
  * */
 const renderSidebarTranscript = (): void => {
-    console.log('[controller] Rerender sidebar ExTranscript');
+
     const { subtitles } = sSubtitles.getState();
     bottomTranscriptView.clear();
     sidebarTranscriptView.clear();
@@ -6283,7 +6283,7 @@ const renderSidebarTranscript = (): void => {
  * And clear previoud ExTranscript.
  * */
 const renderBottomTranscript = (): void => {
-    console.log('[controller] Rerender bottom ExTranscript');
+
 
     const { subtitles } = sSubtitles.getState();
     sidebarTranscriptView.clear();
@@ -6549,7 +6549,7 @@ const autoscroll_checkbox: string = "[name='autoscroll-checkbox']" as const;
 // querySelectorAll()も試したけどただ一つの要素だけマッチする
 const cb: HTMLElement = document.querySelector(autoscroll_checkbox);
 // チェックボックスを外したり付けたりして確認したらチェック状態を反映した値を取得できた
-console.log(cb.checked);
+
 ```
 
 ```TypeScript
@@ -6686,7 +6686,7 @@ const moCallback = function (
             record.oldValue === '' &&
             !guard
         ) {
-            console.log('OBSERVED');
+
             guard = true;
             try {
                 updateHighlightIndexes();
@@ -6715,7 +6715,7 @@ const moCallback = function (
             record.oldValue === '' &&
             !guard
         ) {
-            console.log('OBSERVED');
+
             guard = true;
             try {
                 updateHighlightIndexes();
@@ -6759,7 +6759,7 @@ const moWatchHighlight = function (
             record.oldValue === '' &&
             !guard
         ) {
-            console.log('OBSERVED');
+
             guard = true;
             try {
                 updateHighlightIndexes();
@@ -6784,7 +6784,7 @@ const moWatchHighlight = function (
 
 ```TypeScript
 const scrollToHighlight = (): void => {
-    console.log('[controller] scrollToHighlight()');
+
     // autoscroll: booleanだとして...
     const { autoScroll } = sStatus.getState();
     if(!autoscroll) return;
@@ -6936,7 +6936,7 @@ intersection observer API の導入の検討
 
 ```TypeScript
 const onWindowResizeHandler = (): void => {
-    console.log('[controller] onWindowResizeHandler()');
+
 
     const w: number = document.documentElement.clientWidth;
     const { position, isWindowTooSmall } = sStatus.getState();
@@ -7115,7 +7115,7 @@ const handlerOfControlbar = function (ev: PointerEvent): void {
     // 字幕が変更されたのか調べる
     if (path.includes(ccPopupMenu)) {
         // DEBUG:
-        console.log("[contentScript] clicked on CC popup menu");
+
       // isSubtitleEnglish()の前に、
       const r: boolean = isSubtitleEnglish();
       sendToBackground({ isEnglish: r });
@@ -7441,7 +7441,7 @@ const handlerOfControlbar = function (ev: PointerEvent): void {
     // 字幕が変更されたのか調べる
     if (path.includes(ccPopupMenu)) {
         // DEBUG:
-        console.log("[contentScript] clicked on CC popup menu");
+
     //   NOTE: new function added.
         if(isItSelectLanguageMenu()) {
           const r: boolean = isSubtitleEnglish();
@@ -7557,19 +7557,19 @@ const repeatCaptureSubtitles = async function (
         let intervalId: NodeJS.Timer;
         let counter: number = 0;
 
-        console.log('[repeatCaptureSubtitles]Begin to capture subtitles... ');
+
 
         intervalId = setInterval(async function () {
             if (counter >= 10) {
                 // Failed
-                console.log(
+
                     "[repeatCaptureSubtitles] Time out! It's over 10 times"
                 );
                 clearInterval(intervalId);
                 reject([]);
             }
 
-            console.log('[repeatCaptureSubtitles] capture again...');
+
             const r: iResponse = await sendMessageToTabsPromise(tabId, {
                 from: extensionNames.background,
                 to: extensionNames.captureSubtitle,
@@ -7577,7 +7577,7 @@ const repeatCaptureSubtitles = async function (
             });
             if (r.subtitles !== undefined && r.subtitles.length) {
                 // Succeed
-                console.log('[repeatCaptureSubtitles] Succeed to capture!');
+
                 clearInterval(intervalId);
                 resolve(r.subtitles);
             } else counter++;
@@ -7698,7 +7698,7 @@ scrollToHighlight()
 ```TypeScript
 // 現在
 const updateHighlightIndexes = (): void => {
-    console.log('[controller] updateHighlightIndexes()');
+
     // １．本家のハイライト要素を取得して、その要素群の中での「順番」を保存する
     const nextHighlight: Element = document.querySelector<Element>(
         selectors.transcript.highlight
@@ -7747,7 +7747,7 @@ const updateHighlight: iObserver<iController> = (prop, prev): void => {
 
   if(prop.highlight === undefined || !isAutoscrollInitialized) return;
 
-  console.log("[controller] updateHighlight running...");
+
 
   // ExTranscriptのハイライト要素の番号を保存する
   const next: number = prop.highlight;
@@ -7779,7 +7779,7 @@ const updateExHighlight: iObserver<iController> = (prop, prev): void => {
   const { isAutoscrollInitialized } = sStatus.getState();
   if(prop.ExHighlight === undefined || !isAutoscrollInitialized) return;
 
-  console.log("[controller] updateExHighlight running...");
+
 
   // TODO: updateExTranscriptHighlightの名称をhighlightExTranscriptにする
   highlightExTranscript();
@@ -7806,7 +7806,7 @@ const moCallback = function (
             record.oldValue === '' &&
             !guard
         ) {
-            console.log('OBSERVED');
+
             guard = true;
             try {
                 // この関数の呼び出しだけで済むようになる
@@ -8020,7 +8020,6 @@ dist --
 
 FLAIR void chords
 
-
 ```JavaScript
 
 module.exports = {
@@ -8033,9 +8032,9 @@ module.exports = {
         captureSubtitle: path.resolve('src/contentScript/captureSubtitle.ts'),
         controller: path.resolve('src/contentScript/controller.ts'),
         popup: path.resolve('src/popup/popup.tsx'),
-        // 
+        //
         // --- 今回追加した出力ファイル ----
-        // 
+        //
         Attributes: path.resolve('src/attributes/Attributes.ts'),
         bottomTranscriptView: path.resolve(
             'src/contentScript/bottomTranscriptView.ts'
@@ -8059,16 +8058,16 @@ module.exports = {
         Dashboard: path.resolve('src/view/Dashboard.ts'),
         Sidebar: path.resolve('src/view/Sidebar.ts'),
         View: path.resolve('src/view/View.ts'),
-        // 
+        //
         // ---------------------------------------
-        // 
+        //
     },
     // ...
 ```
 
 動作は多分問題ない。
 
-しかし、webpackでより多くのファイルを出力すべきか、
+しかし、webpack でより多くのファイルを出力すべきか、
 もしくは多くのファイルを少ないファイルにまとめるべきなのか
 
 どちらがいいのかはわからない...
@@ -8077,12 +8076,24 @@ module.exports = {
 
 やっぱり少ないファイルにまとめた方がいい気がする
 
-- 少ないファイルにまとめた方が出力ファイルの中身が複雑になるから盗み見る人にとって難解になる
-- 頻繁にロードするファイルでないならば、パフォーマンスは一つのファイルにまとめた方が動作が速いのでは？
-- たくさんファイル出力するメリットが今のところない...
+-   少ないファイルにまとめた方が出力ファイルの中身が複雑になるから盗み見る人にとって難解になる
+-   頻繁にロードするファイルでないならば、パフォーマンスは一つのファイルにまとめた方が動作が速いのでは？
+-   たくさんファイル出力するメリットが今のところない...
 
 ということでいままで通りにした。
 
-#### 頒布前の準備：英語表記を日本語に
+#### 頒布前の準備：コードを人前に出すための処理
 
-あとlogコメントアウト
+- 表示文章を英語から日本語に
+- すべてのTODO:を処理する
+- コメントをなるべく英語に
+- 余計なコメントを消す 
+
+
+
+
+#### VSCode Tips: console.logを一挙に消す
+
+https://dev.to/suhailkakar/remove-all-console-log-from-your-project-in-less-a-minutes-3glg
+
+#### VSCodeで開いているファイルの`TODO:`コメントを確認する方法

@@ -13,66 +13,63 @@
  * - <TYPE extends object>でobjectだよってTypeScriptエンジンに伝えることができる
  *
  * ******************************************************/
-import { LocalStorage } from "../LocalStorage";
-import { deepCopier } from "../helpers";
+import { LocalStorage } from '../LocalStorage';
+import { deepCopier } from '../helpers';
 
 // @param key {string}: key for chrome.storage.local
 class State<TYPE extends object> {
-  private _state: TYPE;
-  private _localStorage: LocalStorage<TYPE>;
-  private _key: string;
+    private _state: TYPE;
+    private _localStorage: LocalStorage<TYPE>;
+    private _key: string;
 
-  constructor(key: string) {
-    this._key = key;
-    this._localStorage = new LocalStorage<TYPE>(this._key);
-  }
-
-  async setState(prop: {
-    [Property in keyof TYPE]?: TYPE[Property];
-  }): Promise<void> {
-    this._state = {
-      ...this._state,
-      ...prop,
-    };
-    try {
-      await this._localStorage.save(this._state);
-    } catch (err) {
-      if (err === chrome.runtime.lastError) {
-        console.error(err.message);
-      } else {
-        console.log(err);
-      }
+    constructor(key: string) {
+        this._key = key;
+        this._localStorage = new LocalStorage<TYPE>(this._key);
     }
-  }
 
-  async getState(): Promise<TYPE> {
-    try {
-      const s: TYPE = await this._localStorage.load();
-      this._state = {
-        ...this._state,
-        ...s,
-      };
-      return deepCopier(this._state);
-    } catch (err) {
-      if (err === chrome.runtime.lastError) {
-        console.error(err.message);
-      } else {
-        console.log(err);
-      }
+    async setState(prop: {
+        [Property in keyof TYPE]?: TYPE[Property];
+    }): Promise<void> {
+        this._state = {
+            ...this._state,
+            ...prop,
+        };
+        try {
+            await this._localStorage.save(this._state);
+        } catch (err) {
+            if (err === chrome.runtime.lastError) {
+                console.error(err.message);
+            } else {
+            }
+        }
     }
-  }
 
-  async clearStorage(): Promise<void> {
-    try {
-      await this._localStorage.clearAll();
-    } catch (err) {
-      if (err === chrome.runtime.lastError) {
-        console.error(err.message);
-      } else {
-        console.log(err);
-      }
+    async getState(): Promise<TYPE> {
+        try {
+            const s: TYPE = await this._localStorage.load();
+            this._state = {
+                ...this._state,
+                ...s,
+            };
+            return deepCopier(this._state);
+        } catch (err) {
+            if (err === chrome.runtime.lastError) {
+                console.error(err.message);
+            } else {
+            }
+        }
     }
-  }
+
+    async clearStorage(): Promise<void> {
+        try {
+            await this._localStorage.clearAll();
+        } catch (err) {
+            if (err === chrome.runtime.lastError) {
+                console.error(err.message);
+            } else {
+            }
+        }
+    }
 }
 
 export default State;
@@ -83,8 +80,8 @@ export default State;
 //
 // chrome.runtime.onInstalled.addListener(
 //   async (details: chrome.runtime.InstalledDetails) => {
-//       console.log('BACKGROUND RUNNING...');
-//       console.log(details.reason);
+//
+//
 
 //       stateList.clearStorage("stateExtension");
 //       stateList.setState<iState>("stateExtension", {
@@ -152,7 +149,7 @@ export default State;
 // // 再ロードされても大丈夫にしておく
 // // ということで内部でインスタンスを呼び出し、登録する
 // const stateList: iStateList = (function () {
-//     console.log("stateList module invoked");
+//
 //   // _list will store these properties.
 //   // この場合の_listのAnnotationの仕方がわからない
 //   // _list = {

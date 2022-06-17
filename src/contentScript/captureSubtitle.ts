@@ -35,8 +35,6 @@ import {
     subtitle_piece,
 } from '../utils/constants';
 
-
-
 // --- chrome API Listener --------------------------------
 
 /**
@@ -204,7 +202,7 @@ const mainProcess = (): subtitle_piece[] => {
 
                 // temporary for debuging.
             if( piece.join(' ') === undefined) {
-                console.log(piece.join(' '))
+                
             }
     というのを追加してみたけどundefinedは検出されず
 
@@ -344,9 +342,9 @@ const mainProcess = (): subtitle_piece[] => {
 //         e: latestHighlight,
 //       });
 
-//       console.log("OBSERVED");
-//       console.log(latestHighlight);
-//       console.log(currentHighlight.getCurrentHighlight());
+//
+//
+//
 //     }
 //   };
 

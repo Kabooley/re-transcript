@@ -55,8 +55,8 @@ const scrollToHighlight = (): void => {
   const panel: HTMLElement = document.querySelector(SELECTORS.EX.dashboardTranscriptPanel);
 
   const { top } = current.getBoundingClientRect();
-  console.log(current);
-  console.log(top);
+
+
   panel.scrollTo({
     top: top,
     left: auto,
@@ -284,19 +284,19 @@ controller.ts から port 経由で ExTranscript を展開できたら
 // background.ts
 const startInjectControllerScript = async (): Promise<void> => {
   try {
-      console.log('[startInjectControllerScript]');
+
       await getWebpageStatus();
       const { progress } = await state.getState();
       // tabIdはstateに保存しておいた方がいいかも
       const tabId: number = await checkTabIsCorrect();
-      console.log(tabId);
+
       if (
           progress.captured &&
           !progress.capturing &&
           progress.stored &&
           tabId
       ) {
-          console.log('Start injecting script...');
+
 
           const s: subtitle_piece[] = await state.loadSubtitles();
 
@@ -311,7 +311,7 @@ const startInjectControllerScript = async (): Promise<void> => {
                       );
                   }
                   port.onMessage.addListener((msg: iMessage) => {
-                    console.log(msg);
+
                       port.postMessage({
                           from: extensionNames.background,
                           to: extensionNames.controller,
@@ -321,7 +321,7 @@ const startInjectControllerScript = async (): Promise<void> => {
 
                   port.onDisconnect.addListener(
                       (port: chrome.runtime.Port) => {
-                          console.log(
+
                               `Port :${port.name} has been disconnected`
                           );
                       }
@@ -349,7 +349,7 @@ const startInjectControllerScript = async (): Promise<void> => {
       if (err === chrome.runtime.lastError) {
           console.error(err.message);
       } else {
-          console.log(err);
+
       }
   }
 };
@@ -361,7 +361,7 @@ const startInjectControllerScript = async (): Promise<void> => {
 // background.ts
 const startInjectControllerScript = async (): Promise<void> => {
     try {
-        console.log('[startInjectControllerScript]');
+
         await getWebpageStatus();
         const { progress } = await state.getState();
         // tabIdはstateに保存しておいた方がいいかも
@@ -372,7 +372,7 @@ const startInjectControllerScript = async (): Promise<void> => {
             progress.stored &&
             tabId
         ) {
-            console.log('Start injecting script...');
+
 
             const s: subtitle_piece[] = await state.loadSubtitles();
 
@@ -412,7 +412,7 @@ const startInjectControllerScript = async (): Promise<void> => {
 
                     port.onDisconnect.addListener(
                         (port: chrome.runtime.Port) => {
-                            console.log(
+
                                 `Port :${port.name} has been disconnected`
                             );
                         }
@@ -440,7 +440,7 @@ const startInjectControllerScript = async (): Promise<void> => {
         if (err === chrome.runtime.lastError) {
             console.error(err.message);
         } else {
-            console.log(err);
+
         }
     }
 };
@@ -679,7 +679,7 @@ const state = ((): stateModule => {
                 if (err === chrome.runtime.lastError) {
                     console.error(err.message);
                 } else {
-                    console.log(err);
+
                 }
             }
         },
@@ -693,7 +693,7 @@ const state = ((): stateModule => {
                 if (err === chrome.runtime.lastError) {
                     console.error(err.message);
                 } else {
-                    console.log(err);
+
                 }
             }
         };
@@ -706,13 +706,13 @@ const contentScriptMessageHandler = async (
     m: messageTemplate
 ): Promise<void> => {
     try {
-        console.log('...message from content script');
+
         const { message } = m;
 
         // ---中略--
         -
         if(message.title) {
-            console.log("section title has been sent");
+
 
         }
     } catch (e) {
@@ -762,7 +762,7 @@ class LocalStorage<T> {
             if (err === chrome.runtime.lastError) {
                 console.error(err.message);
             } else {
-                console.log(err);
+
             }
         }
     };
@@ -776,7 +776,7 @@ class LocalStorage<T> {
             if (err === chrome.runtime.lastError) {
                 console.error(err.message);
             } else {
-                console.log(err);
+
             }
         }
     }
@@ -849,7 +849,7 @@ const __state = (function(){
         if (err === chrome.runtime.lastError) {
           console.error(err.message);
         } else {
-            console.log(err);
+
         }
       }
     },
@@ -867,7 +867,7 @@ const __state = (function(){
         if (err === chrome.runtime.lastError) {
           console.error(err.message);
         } else {
-            console.log(err);
+
         }
       }
     }
@@ -996,7 +996,7 @@ class State<TYPE> {
           if (err === chrome.runtime.lastError) {
             console.error(err.message);
           } else {
-              console.log(err);
+
           }
         }
     };
@@ -1013,7 +1013,7 @@ class State<TYPE> {
           if (err === chrome.runtime.lastError) {
             console.error(err.message);
           } else {
-              console.log(err);
+
           }
         }
     };
@@ -1189,7 +1189,7 @@ const state = ((): stateModule => {
 
        },
         setState: async (o): Promise<void> => {
-            // console.log("setState");
+            //
             _state = {
                 ..._state,
                 ...o,
@@ -1202,13 +1202,13 @@ const state = ((): stateModule => {
                 if (err === chrome.runtime.lastError) {
                     console.error(err.message);
                 } else {
-                    console.log(err);
+
                 }
             }
         },
         getState: async (): Promise<iState> => {
             try {
-                // console.log("getState");
+                //
                 const current: iState = await _getLocalStorage<iState>(_key);
                 _setState(current);
                 return { ..._state };
@@ -1216,13 +1216,13 @@ const state = ((): stateModule => {
                 if (err === chrome.runtime.lastError) {
                     console.error(err);
                 } else {
-                    console.log(err);
+
                 }
             }
         },
         saveSubtitles: async (d: subtitle_piece[]): Promise<void> => {
             // Note: 中身は常に上書きではなく新しくなる
-            // console.log("save subtitle");
+            //
             _subtitle.splice(0);
             _subtitle.push(...d);
             try {
@@ -1233,12 +1233,12 @@ const state = ((): stateModule => {
                 if (err === chrome.runtime.lastError) {
                     console.error(err.message);
                 } else {
-                    console.log(err);
+
                 }
             }
         },
         loadSubtitles: async (): Promise<subtitle_piece[]> => {
-            // console.log("load subtitles");
+            //
             _subtitle.splice(0);
             try {
                 // const loaded: subtitle_piece[] = await chrome.storage.local.get(_key_subtitles);
@@ -1250,12 +1250,12 @@ const state = ((): stateModule => {
                 if (err === chrome.runtime.lastError) {
                     console.error(err);
                 } else {
-                    console.log(err);
+
                 }
             }
         },
         clearStorage: async (): Promise<void> => {
-            console.log('clear storage');
+
             await chrome.storage.local.remove(_key);
         },
         saveTabId: (id: number): void => {
@@ -1275,7 +1275,7 @@ const state = ((): stateModule => {
                 if (err === chrome.runtime.lastError) {
                     console.error(err.message);
                 } else {
-                    console.log(err);
+
                 }
             }
         },
@@ -1289,7 +1289,7 @@ const state = ((): stateModule => {
                 if (err === chrome.runtime.lastError) {
                     console.error(err.message);
                 } else {
-                    console.log(err);
+
                 }
             }
         }
@@ -1377,7 +1377,7 @@ export class State<TYPE> {
         //
         // LOG
         //
-        console.log('-- prop --');
+
         //
         //
         this._state = {
@@ -1389,14 +1389,14 @@ export class State<TYPE> {
             //
             // LOG
             //
-            console.log(this._state);
+
             //
             //
         } catch (err) {
             if (err === chrome.runtime.lastError) {
                 console.error(err.message);
             } else {
-                console.log(err);
+
             }
         }
     }
@@ -1467,8 +1467,8 @@ setupState()とか実行されていないまま、State のインスタンス�
 
 chrome.runtime.onInstalled.addListener(
     async (details: chrome.runtime.InstalledDetails) => {
-        console.log('BACKGROUND RUNNING...');
-        console.log(details.reason);
+
+
 
         setupState();
 
@@ -1500,10 +1500,10 @@ chrome.runtime.onInstalled.addListener(
 );
 
 chrome.tabs.onActivated.addListener(async (activeInfo) => {
-    console.log("ACTIVE TAB CHANGED...");
+
     const tabId: number = await checkTabIsCorrect();
     if (tabId === activeInfo.tabId) {
-        console.log('Udemy course tab turned on...');
+
     }
 });
 
@@ -1513,7 +1513,7 @@ Handling update on web page.
 */
 chrome.tabs.onUpdated.addListener(
     async (tabId: number, changeInfo, Tab: chrome.tabs.Tab): Promise<void> => {
-        console.log('BACKGROUND UPDATED...');
+
 
         const correctTabId: number = await checkTabIsCorrect();
         if (tabId !== correctTabId || changeInfo.status !== 'loading') return;
@@ -1529,7 +1529,7 @@ chrome.tabs.onUpdated.addListener(
             order: orderNames.sendSectionTitle,
         });
 
-        console.log('Require contentScript for sending section title');
+
         // contentScriptからシングルメッセージが送信されるので
         // メッセージハンドラが処理を引き継ぐ
     }
@@ -1572,7 +1572,7 @@ export interface iStateList {
 }
 
 const stateList: iStateList = (function () {
-    console.log('stateList module invoked');
+
     var _list = {};
 
     return {
@@ -1755,8 +1755,8 @@ const initialize = async ():Promise<void> => {
 */
 chrome.runtime.onInstalled.addListener(
     async (details: chrome.runtime.InstalledDetails) => {
-        console.log('BACKGROUND RUNNING...');
-        console.log(details.reason);
+
+
 
         if (!(await checkTabIsCorrect()) || isInitialized()) return;
         await initialize();
@@ -1771,7 +1771,7 @@ chrome.runtime.onInstalled.addListener(
 chrome.tabs.onActivated.addListener(async (activeInfo) => {
     const tabId: number = await checkTabIsCorrect();
     if (tabId !== activeInfo.tabId || isInitialized()) return;
-    console.log("this is udemy course page");
+
     await initialize();
 });
 
@@ -1792,8 +1792,8 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
 */
 chrome.tabs.onUpdated.addListener(
     async (tabId: number, changeInfo, Tab: chrome.tabs.Tab): Promise<void> => {
-        console.log('BACKGROUND UPDATED...');
-        console.log(changeInfo);
+
+
 
         // tabIdが正しく、ステータスがloadingならば次の処理へ
         const correctTabId: number = await checkTabIsCorrect();
@@ -1811,7 +1811,7 @@ chrome.tabs.onUpdated.addListener(
             to: extensionNames.contentScript,
             order: orderNames.sendSectionTitle,
         });
-        console.log('Require contentScript for sending section title');
+
         // contentScriptからシングルメッセージが送信されるので
         // メッセージハンドラが処理を引き継ぐ
     }
@@ -2003,7 +2003,7 @@ const injectedContentScriptPortHandler = (port: chrome.runtime.Port): void => {
         }
     });
     port.onDisconnected.addListener((port: chrome.runtime.Port) => {
-        console.log(`Port:${port.name} has been disconnected`);
+
     })
 }
 
@@ -2074,7 +2074,7 @@ export interface iMessage {
 import { Porter } from "../utils/Porter";
 
 const initialize = (): void => {
-    console.log("CONTENT SCRIPT INITIALIZING...");
+
     // // Send current status
     // const isOpen: boolean = isTranscriptOpen();
     // const isEnglish: boolean = isSubtitleEnglish();
@@ -2097,12 +2097,12 @@ const initialize = (): void => {
         if(to !== extensionNames.contentScript) return;
         if(disconnect && from === extensionNames.background) {
             porter.port.disconnect();
-                console.log('[contentScript] port disconnected manually');
+
         }
     });
     porter.onDisconnected((p) => {
-        console.log('[contentScript] Port has been disconnected accidentally');
-        console.log(p);
+
+
     })
     porter.postMessage({
         from: extensionNames.contentScript,
@@ -2146,7 +2146,7 @@ const initialize = (): void => {
 
 -   contentScript がインジェクトされたけれどいまだに`Could not establish connection. Receiving end does not exist.`のエラーが出る
 
-正しく処理されるならば次の順番に console.log()されるはず
+正しく処理されるならば次の順番に
 
 -   chrome.runtime.onInstalled(): 問題ない(更新ボタンを押したらちゃんと起動する。それだけ)
 -   タブを切り替える
@@ -2225,7 +2225,7 @@ popup アイコンがクリックされたときに起動しました信号を p
 
 const letExtensionsSendStatus = async (): Promise<void> => {
     try {
-        console.log('LET EXTENSIONS SEND STATUS...');
+
         const { tabId } = await stateList
             .caller<iTabId>(nameOfState.tabId)
             .getState();
@@ -2251,7 +2251,7 @@ const letExtensionsSendStatus = async (): Promise<void> => {
 
 const letExtensionsSendStatus = async (): Promise<void> => {
     try {
-        console.log('LET EXTENSIONS SEND STATUS...');
+
         const { tabId } = await stateList
             .caller<iTabId>(nameOfState.tabId)
             .getState();
@@ -2318,7 +2318,7 @@ const manageStatus = () => {
 
 const letExtensionsSendStatus = async (): Promise<void> => {
     try {
-        console.log('LET EXTENSIONS SEND STATUS...');
+
         const { tabId } = await stateList
             .caller<iTabId>(nameOfState.tabId)
             .getState();
@@ -2340,8 +2340,8 @@ chrome.runtime.onMessage.addListener(
         sender,
         sendResponse: (response?: any) => void
     ): Promise<void> => {
-        console.log('CONTENT SCRIPT GOT MESSAGE');
-        console.log(message);
+
+
         const { from, order, to } = message;
         if (to !== extensionNames.contentScript) return;
         // orderごとに振り分け
@@ -2380,8 +2380,8 @@ chrome.runtime.onMessage.addListener(
         sender,
         sendResponse: (response?: any) => void
     ): Promise<void> => {
-        console.log('CONTENT SCRIPT GOT MESSAGE');
-        console.log(message);
+
+
         const { from, order, to } = message;
         if (to !== extensionNames.contentScript) return;
         // orderごとに振り分け
@@ -2448,7 +2448,7 @@ background.ts での以下の処理を改善する
 ```TypeScript
 const letExtensionsSendStatus = async (): Promise<void> => {
     try {
-        console.log('LET EXTENSIONS SEND STATUS...');
+
         const { tabId } = await stateList
             .caller<iTabId>(nameOfState.tabId)
             .getState();
@@ -2466,13 +2466,13 @@ const contentScriptMessageHandler = async (
     m: messageTemplate
 ): Promise<void> => {
     try {
-        console.log('Message from content script...');
+
         const { message } = m;
         const refStatus: State<iStatus> = stateList.caller<iStatus>(
             nameOfState.status
         );
         if (message.order === orderNames.transcriptOpened) {
-            console.log('Opened transcript');
+
             const newStatus: state_page_status = { isTranscriptOn: true };
             const { pageStatus } = await refStatus.getState();
             await refStatus.setState({
@@ -2483,7 +2483,7 @@ const contentScriptMessageHandler = async (
             });
         }
         if (message.order === orderNames.transcriptClosed) {
-            console.log('Closed transcript');
+
             const newStatus: state_page_status = { isTranscriptOn: false };
             const { pageStatus } = await refStatus.getState();
             await refStatus.setState({
@@ -2494,7 +2494,7 @@ const contentScriptMessageHandler = async (
             });
         }
         if (message.order === orderNames.languageIsEnglish) {
-            console.log("It's English");
+
             const newStatus: state_page_status = { isEnglish: true };
             const { pageStatus } = await refStatus.getState();
             await refStatus.setState({
@@ -2505,7 +2505,7 @@ const contentScriptMessageHandler = async (
             });
         }
         if (message.order === orderNames.languageIsNotEnglish) {
-            console.log("It's not English");
+
             const newStatus: state_page_status = { isEnglish: false };
             const { pageStatus } = await refStatus.getState();
             await refStatus.setState({
@@ -2517,7 +2517,7 @@ const contentScriptMessageHandler = async (
         }
         // 取得した整形字幕があれば
         if (message.subtitles) {
-            console.log('Subtitles has been sent');
+
             await stateList
                 .caller<iSubtitles>(nameOfState.subtitles)
                 .setState({ subtitles: message.subtitles });
@@ -2537,14 +2537,14 @@ const contentScriptMessageHandler = async (
         }
         // section titleが送られてきたら
         if (message.title) {
-            console.log(`section title: ${message.title}`);
+
             const refSectionTitle: State<iSectionTitle> =
                 stateList.caller<iSectionTitle>(nameOfState.sectionTitle);
             const { title } = await refSectionTitle.getState();
 
             if (message.title !== title) {
                 // 動画が切り替わった判定
-                console.log('MOVIE CHANGED');
+
                 await refSectionTitle.setState({ title: message.title });
             }
         }
@@ -2624,7 +2624,7 @@ sendMessageToTabsPromise()に callback を追加したら：
 
 const letExtensionsSendStatus = async (): Promise<void> => {
     try {
-        console.log('LET EXTENSIONS SEND STATUS...');
+
         const { tabId } = await stateList
             .caller<iTabId>(nameOfState.tabId)
             .getState();
@@ -2644,7 +2644,7 @@ const contentScriptMessageHandler = async (
     m: messageTemplate
 ): Promise<void> => {
     try {
-        console.log('Message from content script...');
+
         const { message } = m;
         await _contentScriptMessageHandler(message);
     } catch (e) {
@@ -2659,7 +2659,7 @@ const _contentScriptMessageHandler = async(m: iMessage): Promise<void> => {
             nameOfState.status);
             const { pageStatus, progress } = await refStatus.getState();
         if (order === orderNames.transcriptOpened) {
-            console.log('Opened transcript');
+
             const newStatus: state_page_status = { isTranscriptOn: true };
 
             await refStatus.setState({
@@ -2670,7 +2670,7 @@ const _contentScriptMessageHandler = async(m: iMessage): Promise<void> => {
             });
         }
         if (order === orderNames.transcriptClosed) {
-            console.log('Closed transcript');
+
             const newStatus: state_page_status = { isTranscriptOn: false };
 
             await refStatus.setState({
@@ -2681,7 +2681,7 @@ const _contentScriptMessageHandler = async(m: iMessage): Promise<void> => {
             });
         }
         if (order === orderNames.languageIsEnglish) {
-            console.log("It's English");
+
             const newStatus: state_page_status = { isEnglish: true };
 
             await refStatus.setState({
@@ -2692,7 +2692,7 @@ const _contentScriptMessageHandler = async(m: iMessage): Promise<void> => {
             });
         }
         if (order === orderNames.languageIsNotEnglish) {
-            console.log("It's not English");
+
             const newStatus: state_page_status = { isEnglish: false };
 
             await refStatus.setState({
@@ -2704,7 +2704,7 @@ const _contentScriptMessageHandler = async(m: iMessage): Promise<void> => {
         }
         // 取得した整形字幕があれば
         if (subtitles) {
-            console.log('Subtitles has been sent');
+
             await stateList
                 .caller<iSubtitles>(nameOfState.subtitles)
                 .setState({ subtitles: subtitles });
@@ -2722,14 +2722,14 @@ const _contentScriptMessageHandler = async(m: iMessage): Promise<void> => {
         }
         //
         if (title) {
-            console.log("Section Title has been sent");
+
             const refSectionTitle: State<iSectionTitle> =
                 stateList.caller<iSectionTitle>(nameOfState.sectionTitle);
             const storedTitle = await refSectionTitle.getState();
 
             if (sectionTitle !== storedTitle.title) {
                 // 動画が切り替わった判定
-                console.log('MOVIE CHANGED');
+
                 await refSectionTitle.setState({ title: sectionTitle });
                 //
                 //
@@ -2747,8 +2747,8 @@ const _contentScriptMessageHandler = async(m: iMessage): Promise<void> => {
 
 chrome.tabs.onUpdated.addListener(
     async (tabId: number, changeInfo, Tab: chrome.tabs.Tab): Promise<void> => {
-        console.log('BACKGROUND UPDATED...');
-        console.log(changeInfo);
+
+
 
         try {
             // tabIdが正しく、ステータスがloadingならば次の処理へ
@@ -2768,7 +2768,7 @@ chrome.tabs.onUpdated.addListener(
                 order: orderNames.sendSectionTitle,
                 }, _contentScriptMessageHandler
             );
-            console.log('Require contentScript for sending section title');
+
             // contentScriptからシングルメッセージが送信されるので
             // メッセージハンドラが処理を引き継ぐ
         }
@@ -2830,7 +2830,7 @@ callback の呼び出しは同期呼出ししかしないから
 
 const letExtensionsSendStatus = async (): Promise<void> => {
     try {
-        console.log('LET EXTENSIONS SEND STATUS...');
+
         const { tabId } = await stateList
             .caller<iTabId>(nameOfState.tabId)
             .getState();
@@ -2887,8 +2887,8 @@ chrome.runtime.onMessage.addListener(
         sender,
         sendResponse: (response?: any) => void
     ): Promise<void> => {
-        console.log('CONTENT SCRIPT GOT MESSAGE');
-        console.log(message);
+
+
 
         // 中略...
         // sendResponse()を非同期に呼び出すには
@@ -3149,7 +3149,7 @@ background.js::startInjectCaptureSubtitlesScript()後の処理をおさらい
 // 変更前: contentScriptMessageHandler()
 
 if (rest.subtitles) {
-    console.log("Subtitles has been sent");
+
     await stateList
     .caller<iSubtitles>(nameOfState.subtitles)
     .setState({ subtitles: rest.subtitles });
@@ -3169,7 +3169,7 @@ if (rest.subtitles) {
 // 変更後
 
 if (rest.subtitles) {
-    console.log("Subtitles has been sent");
+
     const isCapturing: boolean = progress.capturing;
     await stateList
     .caller<iSubtitles>(nameOfState.subtitles)
@@ -3236,7 +3236,7 @@ getState なんて存在しないと表示した
 ```TypeScript
 // background.ts::_contentScriptMessageHandler
         if (!rest.language) {
-            console.log("It's not English");
+
             // ...中略
         }
 ```
@@ -3249,7 +3249,7 @@ getState なんて存在しないと表示した
 ```TypeScript
 // background.ts::_contentScriptMessageHandler
         if (rest.language === false) {
-            console.log("It's not English");
+
             // ...中略
         }
 ```
@@ -3284,7 +3284,7 @@ chrome.runtime.onMessage.addListener(
         sender,
         sendResponse: (response?: iResponse) => void
     ): Promise<boolean> => {
-        console.log('CONTENT SCRIPT GOT MESSAGE');
+
         const { from, order, to } = message;
         const response: iResponse = {
             from: extensionNames.contentScript,
@@ -3310,8 +3310,8 @@ chrome.runtime.onMessage.addListener(
                         // //
                         // // DEBUG:
                         // //
-                        // console.log('DEBUG: make sure response object');
-                        // console.log({
+                        //
+                        //
                         //     from: extensionNames.contentScript,
                         //     to: extensionNames.background,
                         //     language: isEnglish,
@@ -3348,8 +3348,8 @@ chrome.runtime.onMessage.addListener(
                 // //
                 // // DEBUG:
                 // //
-                // console.log('DEBUG: make sure response object:');
-                // console.log({
+                //
+                //
                 //     from: extensionNames.contentScript,
                 //     to: extensionNames.background,
                 //     title: title,
@@ -3390,7 +3390,7 @@ const contentScriptMessageHandler = async (
     m: messageTemplate
 ): Promise<void> => {
     try {
-        console.log('Message from content script...');
+
         const { message, sendResponse } = m;
         await _contentScriptMessageHandler(message);
         // 変更なし！
@@ -3421,7 +3421,7 @@ const _contentScriptMessageHandler = async (
 
 // 変更有
 const controllerMessageHandler = async (m: messageTemplate): Promise<void> => {
-    console.log('Message from controller...');
+
     try {
         const { message, sendResponse } = m;
         const { order, ...rest } = message;
@@ -3463,7 +3463,7 @@ const controllerMessageHandler = async (m: messageTemplate): Promise<void> => {
         if (err === chrome.runtime.lastError) {
             console.error(err.message);
         } else {
-            console.log(err);
+
         }
     }
 };
@@ -3495,7 +3495,7 @@ const captureSubtitleMessageHandler = async (
 
         // 取得した整形字幕があれば
         if (rest.subtitles) {
-            console.log('Subtitles has been sent');
+
             const isCapturing: boolean = progress.capturing;
             await stateList
                 .caller<iSubtitles>(nameOfState.subtitles)
@@ -3528,7 +3528,7 @@ const captureSubtitleMessageHandler = async (
 
 const popupMessageHandler = async (m: messageTemplate): Promise<void> => {
     try {
-        console.log('...message from POPUP');
+
         const { message } = m;
         const { order, ...rest } = message;
         const refStatus: State<iStatus> = stateList.caller<iStatus>(
@@ -3571,7 +3571,7 @@ sendResponse()不要の chrome.runtime.sendMe
 
 ```TypeScript
 const initialize = async (): Promise<void> => {
-    console.log('CONTENT SCRIPT INITIALIZING...');
+
     try {
 
         // このawait呼び出しを...
@@ -3585,7 +3585,7 @@ const initialize = async (): Promise<void> => {
 };
 
 const initialize = async (): Promise<void> => {
-    console.log('CONTENT SCRIPT INITIALIZING...');
+
     try {
 
         // 同期呼び出しにすることによって回避する
@@ -3673,7 +3673,7 @@ chrome.tabs.onUpdated.addListener(
         changeInfo: chrome.tabs.TabChangeInfo,
         Tab: chrome.tabs.Tab
     ): Promise<void> => {
-        console.log('BACKGROUND UPDATED...');
+
         const { status, url } = changeInfo;
 
         if (status === 'loading') {
@@ -3682,7 +3682,7 @@ chrome.tabs.onUpdated.addListener(
             const prev: iContentUrl = await refUrlState.getState();
             const currentUrl: string = splitStringBySeparater(url, '#');
             if ( currentUrl !== prev.url) {
-                console.log('MOVIE CHANGED!!');
+
                 await refUrlState.setState({url: currentUrl});
                 // TODO:
                 //
@@ -3711,7 +3711,7 @@ const checkTabIsCorrect = async (): Promise<number> => {
     if (err === chrome.runtime.lastError) {
       console.error(err.message);
     } else {
-      console.log(err);
+
     }
   }
 };
@@ -3784,13 +3784,13 @@ chrome.tabs.onUpdated.addListener(
         // Udemy講義ページ以外のURLのupdateは無視する
         if(!isUrlCorrect(url)) return;
 
-        console.log('BACKGROUND UPDATED...');
+
 
         // もしもstatusがloadingで
         // isInitialized()がfalseを返すならば
         if(status === "loading" && !isInitialized()) {
             // 初期化していない
-            console.log('INJECT contentScript.js...');
+
             await chrome.scripting.executeScript({
                 target: { tabId: tabId },
                 files: ['contentScript.js'],
@@ -3803,7 +3803,7 @@ chrome.tabs.onUpdated.addListener(
             const prev: iContentUrl = await refUrlState.getState();
             const currentUrl: string = splitStringBySeparater(url, '#');
             if (currentUrl !== prev.url) {
-                console.log('MOVIE CHANGED!!');
+
                 await refUrlState.setState({ url: currentUrl });
                 // TODO:
                 //
@@ -4098,7 +4098,7 @@ async 関数をコールバックとして登録してはならない
 // 問題あり
 useEffect(async () => {
   await new Promise(r => setTimeout(r, 1000));
-  console.log('side effect!');
+
 }, []);
 
 
@@ -4108,7 +4108,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 useEffect(() => {
   const f = async () => {
     await new Promise(r => setTimeout(r, 1000));
-    console.log('side effect!');
+
   };
   f();
 }, []);
@@ -4129,7 +4129,7 @@ import { tabsQuery } from "../utils/helpers";
 // ひとまず毎度レンダリング時にチェックするとして...
 // checkTabIsCorrectは外に出すとして
 useEffect(() =>{
-    console.log("[popup] useeffect");
+
     const checkTabIsCorrect = async(): Promise<boolean> => {
         const tabs: chrome.tabs.Tab = await tabsQuery();
         const pattern = /https:\/\/www.udemy.com\/course\/*/gm;
@@ -4137,9 +4137,9 @@ useEffect(() =>{
         return result ? true: false;
     };
         // 同期呼出なので大丈夫か？
-        console.log('Is this page correct?');
+
         checkTabIsCorrect()
-            .then((result) => console.log(result))
+            .then((result) =>
             .catch((err) => console.error(err));
 })
 ```
@@ -4160,7 +4160,7 @@ false ならばボタンは表示しないまたは無効化させてメッセ�
 const [matchedPage. setMatchedPage] = useState<boolean>(false);
 
 useEffect(() =>{
-    console.log('Is this page correct?');
+
     checkTabIsCorrect()
         .then((result) => {
             setMatchedPage(result);
@@ -4249,8 +4249,8 @@ onInstalled で初期化(State の生成だけ)済ませてみる
 
 chrome.runtime.onInstalled.addListener(
     async (details: chrome.runtime.InstalledDetails) => {
-        console.log('BACKGROUND RUNNING...');
-        console.log(details.reason);
+
+
 
         if(!isInitialized()) {
             await setupState();
@@ -4288,21 +4288,19 @@ HEAP snapshot: 910kb
 
 常にメモリにあっても問題なさそう...
 
-
-
 2. 初期化の流れ
 
-// onInstalledでStateの生成を済ませてあるとする
+// onInstalled で State の生成を済ませてあるとする
 // NEW
-popupからRUNメッセージが送信される
-tabIdとURLをStateへ保存する
-popupのstatusをworkingにする（もはや意味がない気がするけれども...）
-content scriptをinjectする
+popup から RUN メッセージが送信される
+tabId と URL を State へ保存する
+popup の status を working にする（もはや意味がない気がするけれども...）
+content script を inject する
 ~contentScript.js がインジェクトできたら activated: true を送信する~
 ~background.js はその送信を持って initialize()を実行して初期化を開始する~
 ~initializeStates(): STate インスタンスへ初期値を与える~
-contentScriptから初期値を送信させる
-Stateを必要に応じて更新する
+contentScript から初期値を送信させる
+State を必要に応じて更新する
 letExtensionSendStatus(): contentScript.js からステータスを送信させて、messagehandler で State を更新する
 
 ```TypeScript
@@ -4338,8 +4336,8 @@ export const orderNames = {
 
 chrome.runtime.onInstalled.addListener(
     async (details: chrome.runtime.InstalledDetails) => {
-        console.log('BACKGROUND RUNNING...');
-        console.log(details.reason);
+
+
 
         if (!isInitialized()) {
             await setupStates();
@@ -4375,7 +4373,7 @@ chrome.runtime.onInstalled.addListener(
 
 const popupMessageHandler = async (m: messageTemplate): Promise<void> => {
     try {
-        console.log('...message from POPUP');
+
         const { message, sendResponse } = m;
         const { order, ...rest } = message;
         // const refStatus: State<iStatus> = stateList.caller<iStatus>(
@@ -4389,7 +4387,7 @@ const popupMessageHandler = async (m: messageTemplate): Promise<void> => {
             if(order.includes(orderNames.run)){
                 // 初期化が済んでいなければ初期化を実行する
                 if(!isInitialized()){
-                    console.log('INJECT contentScript.js...');
+
                     await chrome.scripting.executeScript({
                         target: { tabId: tabId },
                         files: ['contentScript.js'],
@@ -4402,7 +4400,7 @@ const popupMessageHandler = async (m: messageTemplate): Promise<void> => {
             }
         }
         if (rest.activated) {
-            console.log("popup activated");
+
         }
         if(sendResponse) sendResponse({ complete: true });
     } catch (e) {
@@ -4412,38 +4410,37 @@ const popupMessageHandler = async (m: messageTemplate): Promise<void> => {
 
 ```
 
+拡張機能が ON になったら
+chrome.runtime.onInstalled で setupState, State<iStatus>だけ初期化完了しているとして
 
-拡張機能がONになったら
-chrome.runtime.onInstalledでsetupState, State<iStatus>だけ初期化完了しているとして
+初期化~ExTranscript 展開完了までのプロセス
 
-初期化~ExTranscript展開完了までのプロセス
+-   [ユーザ] popup で RUN クリック
 
-- [ユーザ] popupでRUNクリック
-    - [popup] runが押されたことをbackgroundへメッセージ送信
-    - [background] (もしまだしていなければ) contentScript.jsのinject
-    - [background] contentScript.jsのステータス送信を要請
-    - [contentScript] background.jsへステータス送信
-    - [background] contentScript.jsの初期値をStateへ反映
-    - [background] Stateの値を調査 
-        もしも準備完了ならばそのままcaptureSubtitles.jsをinject
-        そうでないならばpopupへキャンセルしたことを送信
-        - [popup] popupへの反映(注意：トランスクリプトをONにすること、英語字幕を選択すること)
+    -   [popup] run が押されたことを background へメッセージ送信
+    -   [background] (もしまだしていなければ) contentScript.js の inject
+    -   [background] contentScript.js のステータス送信を要請
+    -   [contentScript] background.js へステータス送信
+    -   [background] contentScript.js の初期値を State へ反映
+    -   [background] State の値を調査
+        もしも準備完了ならばそのまま captureSubtitles.js を inject
+        そうでないならば popup へキャンセルしたことを送信
+        -   [popup] popup への反映(注意：トランスクリプトを ON にすること、英語字幕を選択すること)
             アラート表示で最初に戻る
-    - [background] (もしまだしていなければ) captureSubtitles.jsをinject
-    - [captureSubtitles] 字幕データをbackgroundへ送信
-    - [background] 字幕データをStateへ保存
-    - [background] controller.jsをinject
-    - [background] controller.js正常動作確認
-    - [background] popupへ完了メッセージ送信
-    - [popup] completeを表示
+    -   [background] (もしまだしていなければ) captureSubtitles.js を inject
+    -   [captureSubtitles] 字幕データを background へ送信
+    -   [background] 字幕データを State へ保存
+    -   [background] controller.js を inject
+    -   [background] controller.js 正常動作確認
+    -   [background] popup へ完了メッセージ送信
+    -   [popup] complete を表示
 
-    - どこかしらでエラーが起こったらpopupへエラー表示させるようにメッセージを送信させる
-    
+    -   どこかしらでエラーが起こったら popup へエラー表示させるようにメッセージを送信させる
 
-chrome extensionを開発してよくある流れ
+chrome extension を開発してよくある流れ
 
-background scriptがcontent scriptをinjectした
-content scriptがインジェクトと初期完了して、完了したよメッセージを送信する
+background script が content script を inject した
+content script がインジェクトと初期完了して、完了したよメッセージを送信する
 メッセージ受信関数が処理の続きのポイントとなる
 
 ということで
@@ -4453,62 +4450,58 @@ content scriptがインジェクトと初期完了して、完了したよメッ
 
 メッセージハンドラをどう扱うべきか
 
-- modelに変更を施すだけにする
+-   model に変更を施すだけにする
     メッセージを受けて何をするのかに関心を置かない
 
-- modelの変更を検知するオブザーバを設置する
-    モデルの変化に応じてbackground scriptと連携する
+-   model の変更を検知するオブザーバを設置する
+    モデルの変化に応じて background script と連携する
 
-- modelを作る
-
+-   model を作る
 
 #### 1/20
-
 
 中規模設計に関する話
 
 https://qiita.com/yuku_t/items/961194a5443b618a4cac
 
-user-interface layer: 
-    ユーザに情報を表示、入力を解釈する層
+user-interface layer:
+ユーザに情報を表示、入力を解釈する層
 application layer:  
-    ドメイン層のオブジェクトを強調させる ビジネスロジックに関心がない
+ ドメイン層のオブジェクトを強調させる ビジネスロジックに関心がない
 domain layer:
-    ビジネスロジックを表現する
+ビジネスロジックを表現する
 infrastructure layer:
-    上位レイヤーを支える技術
+上位レイヤーを支える技術
 
-MVCに適用すると
+MVC に適用すると
 
 ユーザインタフェイス層： View
 アプリケーション層：Controller
 ドメイン層：Model
 
 気を付けること
-- ModelはControllerやViewでどう呼び出されるのか知るべきでない
-- ControllerはViewが何を描くのか知るべきでない
 
+-   Model は Controller や View でどう呼び出されるのか知るべきでない
+-   Controller は View が何を描くのか知るべきでない
 
 開発中のアプリケーションに当てはめる
 
 ユーザインタフェイス：
-    popup.tsx, bottomTranscriptView.ts, sidebarTranscriptView.ts
+popup.tsx, bottomTranscriptView.ts, sidebarTranscriptView.ts
 
 アプリケーション層：
-    background.ts, controller.ts
+background.ts, controller.ts
 
 ドメイン層：
-    (・・?
+(・・?
 
 わからん:
-    contentScript.ts, captureSubtitle.ts
+contentScript.ts, captureSubtitle.ts
 
-
-なんとかMVCの設計思想に合わせるために設計をまとめ中
+なんとか MVC の設計思想に合わせるために設計をまとめ中
 
 ダイアグラムの参考に
 
 https://www.acroquest.co.jp/webworkshop/programing_course/note.html
 
 https://c4model.com/
-

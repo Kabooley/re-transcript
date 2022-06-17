@@ -1,7 +1,6 @@
 # Note
 
-## command patternを当てはめるにあたって
-
+## command pattern を当てはめるにあたって
 
 ```TypeScript
 // Commandのインスタンスをthis.ordersに格納する
@@ -35,7 +34,7 @@ const _contentScriptMessageHandler = async (
         // これもsendResponse()に含めないといけない...
         // そこも考えていない...
         sendResponse({complete: true})
-    } 
+    }
     catch (e) {
         console.error(e.message);
     }
@@ -45,7 +44,7 @@ const _contentScriptMessageHandler = async (
 // @param rest: iMessageのfrom, to抜きのインターフェイスが型になる
 // なのでiResponseとおなじ...
 // ひとまずでiResponseを型としておく
-// 
+//
 // 何も考えずに実装すればこんな感じ
 const synchronizer = (order: orderTypes, rest: iResponse): Promise<any>[] => {
     const result: Promise<any>[] = [];
@@ -66,14 +65,14 @@ const synchronizer = (order: orderTypes, rest: iResponse): Promise<any>[] => {
 }
 
 
-// 
+//
 // 外部化された処理
 // 一例
-// 
+//
 // If language: true
 const setLanguageEnglish = async(): Promise<void> => {
     return new Promise(async (resolve, reject) => {
-        console.log("It's English");
+
         try {
             const refStatus: State<iStatus> = stateList.caller<iStatus>(nameOfStte.status);
             const { pageStatus} =
@@ -105,7 +104,7 @@ const sendStatus = async(): Promise<> => {
 ```TypeScript
 
 // このままだと型付けがanyだらけだ...
-// 
+//
 class Observable {
   private _observers: ((param?:any) => any)[];
   constructor() {
@@ -161,10 +160,10 @@ const proxyProgress = new Proxy(progressBase, handler);
 // proxy.getは参照を返している
 proxyProgress.isScriptInjected = true;
 const refProxyProgress = proxyProgress;
-console.log(refProxyProgress);
+
 refProxyProgress.isSubtitleCaptured = true;
 // isSubttileCaptured: trueだった
-console.log(proxyProgress);
+
 
 
 class State<TYPE extends object> {

@@ -148,7 +148,6 @@ SidebarTranscriptView.prototype.updateContentTop = function (
 SidebarTranscriptView.prototype.updateContentHeight = function (
     footerHeight: number
 ): void {
-    console.log('SidebarTranscriptView.prototype.updateContentHeight');
     const content = document.querySelector<HTMLElement>(
         selectors.EX.sidebarContent
     );
@@ -192,17 +191,11 @@ SidebarTranscriptView.prototype.updateContentHeight = function (
 //   content.style.height = height + "px";
 // };
 
-SidebarTranscriptView.prototype.renderSpinner = function () {
-    console.log('[SidebarTranscriptView] render spinner');
-};
+SidebarTranscriptView.prototype.renderSpinner = function () {};
 
-SidebarTranscriptView.prototype.renderError = function () {
-    console.log('[SidebarTranscriptView] render error');
-};
+SidebarTranscriptView.prototype.renderError = function () {};
 
-SidebarTranscriptView.prototype.renderMessage = function () {
-    console.log('[SidebarTranscriptView] render message');
-};
+SidebarTranscriptView.prototype.renderMessage = function () {};
 
 export default new SidebarTranscriptView();
 
@@ -228,7 +221,7 @@ export default new SidebarTranscriptView();
 // };
 
 // SidebarTranscriptView.prototype.render = function (): void {
-//   console.log("[SidebarTranscriptView] render");
+//
 
 //   const e: Element = document.querySelector(this.insertParentSelector);
 //   const p: InsertPosition = this.insertPosition;

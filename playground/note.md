@@ -172,7 +172,7 @@ droppable-zone 要素につけるリスナ：
 
 // dragされる要素のclassNameと座標を送信したいとき...
 const onDragStartHandler = (ev) => {
-  console.log("drag start");
+
 
   const rect = draggable.getBoudingClientRect();
   const diff = {x: rect.x - ev.clientX, y: rect.y - ev.clientY};
@@ -201,7 +201,7 @@ const onDragStartHandler = (ev) => {
 ```JavaScript
 
 const onDragStartHandler = (ev) => {
-  console.log("drag start");
+
 
   const rect = draggable.getBoudingClientRect();
   // const diff = {x: rect.x - ev.clientX, y: rect.y - ev.clientY};
@@ -215,11 +215,11 @@ const onDragStartHandler = (ev) => {
 };
 
 const onDropHandler = (ev) => {
-  console.log("dropped");
+
   ev.preventDefault();
 
   const data = ev.dataTransfer.getData("text/plain");
-  console.log(data);
+
   // ...
 }
 ```
@@ -239,7 +239,7 @@ const onDropHandler = (ev) => {
   ev.dataTransfer.setData("text/plain", data);
 // receiver
 const d = ev.dataTransfer.getData("text/plain").split(',');
-console.log(d);   // [draggable, 123, 456]
+
 
 ```
 
@@ -261,7 +261,7 @@ ev.dataTransfer.setData("text/plain", j);
 
 // receiver
 const d = JSON.parse(ev.dataTransfer.getData("text/plain"));
-console.log(d);
+
 ```
 
 いろんなデータを Object として
@@ -360,7 +360,7 @@ DataEvent.dataTransfer()で複数のデータを送ることになったので�
 const draggable = document.querySelector(".draggable");
 
 const onDragStartHandler = (ev) => {
-  console.log("drag start");
+
   // マウスと.draggable左上座標差分を取得
   const rect = draggable.getBoudingClientRect();
   const data = {
@@ -377,98 +377,94 @@ const onDragStartHandler = (ev) => {
 
 // ev.targetはdropゾーンの要素です注意
 const onDropHandler = (ev) => {
-  console.log("dropped");
+
   ev.preventDefault();
   // transfer data and move it
   const {classname, x, y} = JSON.parse(ev.dataTransfer.getData("text/plain"));
-  console.log(classname);
-  console.log(x);
-  console.log(y);
+
+
+
 
   const target = document.querySelector(`.${classname}`);
   // ...
 };
 ```
 
-
-#### boxを四辺と各頂点でリサイザブルにしたい
+#### box を四辺と各頂点でリサイザブルにしたい
 
 `./playground/resizable-box/`にて各頂点でリサイズできるボックスは作れるはず
 問題は四辺を基準にリサイズする場合である
 
 いったん四辺は無視してもいいなぁ...
 
+#### ここらでごちゃついてきた JavaScript を整理する
 
+mount 時：
 
-#### ここらでごちゃついてきたJavaScriptを整理する
+-   `mountDummyData()`: dummyData を HTML として挿入
 
-mount時：
+-   .draggable を初期表示は sidebar にするために initDraggableContainer()
+    updateDraggableStatus(): .draggable の className を更新する
+    calcHeight(): .draggable .transcript-main を正しく表示するために height を計算する
+-   .draggable .transcript-main を常に正しい表示にするために calcHeight()を onResize ではっかするようにする <--- 問題あり
 
-- `mountDummyData()`: dummyDataをHTMLとして挿入
+-   DND 機能を実現するためのリスナを設定する: initDragDropHandlers()
+    基本的に onDragstart 時にリスナを登録し、onDrop, onDragend 時にリスナを解除するので DND の最中だけしかリスナが登録されない
+    同様に onDragstart の時にすべて必要なリスナが登録される仕組みなので常に dragstart リスナだけは残しておく
 
-- .draggableを初期表示はsidebarにするためにinitDraggableContainer()
-    updateDraggableStatus(): .draggableのclassNameを更新する
-    calcHeight(): .draggable .transcript-mainを正しく表示するためにheightを計算する
-- .draggable .transcript-mainを常に正しい表示にするためにcalcHeight()をonResizeではっかするようにする <--- 問題あり
+resize 機能を実装するにあたって
 
-- DND機能を実現するためのリスナを設定する: initDragDropHandlers()
-    基本的にonDragstart時にリスナを登録し、onDrop, onDragend時にリスナを解除するのでDNDの最中だけしかリスナが登録されない
-    同様にonDragstartの時にすべて必要なリスナが登録される仕組みなので常にdragstartリスナだけは残しておく
+-   resize 機能は`.draggable.around`の時だけ機能するようにする
 
-resize機能を実装するにあたって
-
-- resize機能は`.draggable.around`の時だけ機能するようにする
-
-    つまりcalcHeight()はこれまで通りでおｋ
-    draggableStatus.aroundの間だけresize機能をONにする
-
+    つまり calcHeight()はこれまで通りでおｋ
+    draggableStatus.around の間だけ resize 機能を ON にする
 
 #### Make .draggable container Resizable
 
-**一旦resizeとdndは放置**
+**一旦 resize と dnd は放置**
 
-UIとtranscriptウィンドウの配置場所や運用方法が決まり次第利用するか廃棄するか決める...
+UI と transcript ウィンドウの配置場所や運用方法が決まり次第利用するか廃棄するか決める...
 
-いまさらだけどCSSのresizeでめっちゃ大きさ変更できた...
-あとさらに今更だけど、dndもresizeもいらない気がしてきた
+いまさらだけど CSS の resize でめっちゃ大きさ変更できた...
+あとさらに今更だけど、dnd も resize もいらない気がしてきた
 
 いやあればすこし便利だけど
-.draggableは次の配置だけでいい気がする
+.draggable は次の配置だけでいい気がする
 
-- sidebar
-- noSidebar
-- subtitle-position : 動画の字幕表示部分
+-   sidebar
+-   noSidebar
+-   subtitle-position : 動画の字幕表示部分
 
-ただし、提供する機能はsubtitle-positionでも字幕が1行ずつ表示できるわけではないので
+ただし、提供する機能は subtitle-position でも字幕が 1 行ずつ表示できるわけではないので
 ある程度のスペースの確保と好きな方向へ伸ばせる（または縮小できる）のがいいはず
 
-resizeするときに考慮すべきこと
+resize するときに考慮すべきこと
 
-- resizeしたら横幅は自由として、縦方向の変更があってもheaderとfooterを常に残す
-    つまり.transcript-mainの長さだけ変更される
-    というかUI変更したい...
+-   resize したら横幅は自由として、縦方向の変更があっても header と footer を常に残す
+    つまり.transcript-main の長さだけ変更される
+    というか UI 変更したい...
 
+#### transcript ウィンドウを 3 か所に配置する機能の実装
 
-#### transcriptウィンドウを3か所に配置する機能の実装
-
-Udemyの講義ページでの挙動と同じにで自動的に配置する機能と
+Udemy の講義ページでの挙動と同じにで自動的に配置する機能と
 ボタンクリックで移動する機能ほしい
 
-- 自動機能
+-   自動機能
 
-本家のtranscriptのclass名が`sidebar`であることを検知したらこちらもサイドバーに表示
+本家の transcript の class 名が`sidebar`であることを検知したらこちらもサイドバーに表示
 `no-sidebar`なら動画下部に表示
-そもそも講義ページでtranscriptを有効にしてくれないと拡張機能が使えないようにしないとうまくいかない
+そもそも講義ページで transcript を有効にしてくれないと拡張機能が使えないようにしないとうまくいかない
 
-上記はcontentScriptで実装するとして
+上記は contentScript で実装するとして
 
-#### sidebar と no-sidebarをウィンドウサイズで配置換えする
+#### sidebar と no-sidebar をウィンドウサイズで配置換えする
 
 sidebar
+
 ```
 div.has-sidebar
   div.app--row.app--header    // header
-  main.app--column-container  // 
+  main.app--column-container  //
     div.app--content-column
       div.app--row.app--body-container  // movie
       div.app--sidebar-column   // sidebar
@@ -483,12 +479,13 @@ div.has-sidebar
 ```
 
 no-sidebar
+
 ```diff
 
 - div.has-sidebar
 + div.app--no-sidebar
   div.app--row.app--header    // header
-  main.app--column-container  // 
+  main.app--column-container  //
     div.app--content-column
       div.app--row.app--body-container  // movie
 -      div.app--sidebar-column   // sidebar
@@ -505,14 +502,13 @@ no-sidebar
             section.dashboard-tabs-container
 ```
 
+sidebar の時は
+div.sidebar-content の height はウィンドウ Y 軸方向に対するリサイズに応じて再計算される
 
-sidebarの時は
-div.sidebar-contentのheightはウィンドウY軸方向に対するリサイズに応じて再計算される
+div.app--sidebar-column と div.app--body-container は x 軸に対して 25:75 の配分である
 
-div.app--sidebar-columnとdiv.app--body-containerはx軸に対して25:75の配分である
+sidebar, no-sidebar の切り替え条件：
+window.innerWidth < 975px で no-sidebar になる
 
-sidebar, no-sidebarの切り替え条件：
-window.innerWidth < 975pxでno-sidebarになる
-
-no-sidebarはウィンドウリサイズの影響を受けない
-高さはmin-height:300pxである
+no-sidebar はウィンドウリサイズの影響を受けない
+高さは min-height:300px である
