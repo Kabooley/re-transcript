@@ -1,5 +1,5 @@
 /**************************************************
- * constants which is common in Extensions
+ * CONSTANTS which are common in application.
  *
  *
  * ************************************************/
@@ -9,9 +9,9 @@ import { uError } from '../Error/Error';
 // Valid URL pattern.
 export const urlPattern: RegExp = /https:\/\/www.udemy.com\/course\/*/gm;
 
-// 
+//
 // --- RELATED TO MESSAGE PASSING -------------
-// 
+//
 
 // message passingで利用する拡張機能名称
 export const extensionNames = {
@@ -93,9 +93,9 @@ export interface iMessage extends iResponse {
     to: extensionsTypes;
 }
 
-// 
+//
 // --- OTHERS -----------------------------------
-// 
+//
 
 // Subtitle object interface
 export interface subtitle_piece {
@@ -109,9 +109,7 @@ export interface subtitle_piece {
 export const _key_of_model_state__ = '_key_of_model_state__@&%8=8';
 export const _key_of_localstorage__ = '__key__of_local_storage__@&%8=8';
 
-export const copies = {
-    
-}
+export const copies = {};
 
 // TODO: まだlocalStorageにこの情報が残っているかも...
 // const _key_of_localstorage__ = "__key__of_local_storage__";
@@ -133,96 +131,23 @@ type typeof_positionStatus = typeof positionStatus;
 export type keyof_positionStatus = keyof typeof_positionStatus;
 
 // Template message for alert.
+// export const messageTemplate = {
+//     appCannotExecute:
+//         'Problem occured that the extension not being able to run. Please turn off the extension or reload the page.',
+//     letPagePrepare:
+//         'Please turn on Transcript and choose English for subtitle language.',
+// };
+
 export const messageTemplate = {
     appCannotExecute:
-        'Problem occured that the extension not being able to run. Please turn off the extension or reload the page.',
+        '[re-transcript] 拡張機能が実行不可能なエラーが起こりました。お手数ですが拡張機能をOFFにして展開中のページをリロードしてください。',
     letPagePrepare:
-        'Please turn on Transcript and choose English for subtitle language.',
+        '[re-transcript] トランスクリプトと字幕表示をONにして、字幕言語を英語にしてから再度実行してください。',
 };
-
 
 // Used in Model, Events, Attributes, controller
 //
-// T型のオブジェクトのプロパティなら、その一部でも全部でも受け付ける
+// Accept part of T property or all of T either.
 export type iProps<T> = { [Property in keyof T]?: T[Property] };
-// iProps型のオブジェクトを受け付ける関数
+// callbacks which gets parameter with type iProps.
 export type Callback<T> = (prop: iProps<T>) => void;
-
-// --- Usage -------------------------------------
-// type _order = orderTypes[];
-
-// const oo: _order = [
-//   orderNames.sendStatus, orderNames.disconnect
-// ];
-
-//
-
-// const messageHandler = (m: iMessage): void => {
-//   const { from, to, order } = m;
-//   // もしもorderプロパティが含まれていて、中身があれば
-//   if (order && order.length) {
-//
-//     //
-//     // この時点だとorderが何者かわからないみたいだからincludes()メソッドなんて使えないよ
-//     // というエラーが出る
-//     // でも使えた
-//     // codesandboxでは
-//     if (order.includes(orderNames.sendStatus)) {
-//
-//     }
-//     if (order.includes(orderNames.disconnect)) {
-//
-//     }
-//   }
-// };
-
-// messageHandler({
-//   from: "background",
-//   to: "content script",
-//   order: [
-//     orderNames.sendStatus, orderNames.disconnect
-//   ]
-// });
-
-// messageHandler({
-//   from: "background",
-//   to: "content script",
-//   order: []
-// });
-
-// messageHandler({
-//   from: "background",
-//   to: "content script"
-// });
-
-/*
-## 変数がいくつかの特定の値を持つように強制する方法
-
-https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#literal-types
-
-```TypeScript
-
-// -- example 1 --
-
-let x: "hello" = "hello";
-// OK
-x = "hello";
-// ...
-x = "howdy";
-// Type '"howdy"' is not assignable to type '"hello"'.
-
-// -- example 2 --
-
-function printText(s: string, alignment: "left" | "right" | "center") {
-  // ...
-}
-printText("Hello, world", "left");
-printText("G'day, mate", "centre");
-Argument of type '"centre"' is not assignable to parameter of type '"left" | "right" | "center"'.
-```
-
-https://typescript-jp.gitbook.io/deep-dive/type-system/literal-types
-
-
-
-*/

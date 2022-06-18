@@ -3,7 +3,7 @@
  *
  * Background script as service worker in accordance with Manifest V3.
  *
- *
+ * alert
  * ********************************************************/
 
 import {

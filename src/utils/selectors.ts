@@ -1,7 +1,10 @@
 /***************************************************
  * SELECTORS
  *
- * TODO: data-*系を区別したい
+ * Including:
+ * - Udemy elements selectors.
+ * - re-transcript generated elements selectors.
+ * 
  * **************************************************/
 
 // --- Selectors related to Transcript ---------------------------
@@ -10,7 +13,7 @@
 // テキストページとかなら一致しない
 export const videoContainer : string = 'div.video-viewer--container--23VX7';
 
-// NOTE: new added. UdemyページのNavbarヘッダ
+// new added. UdemyページのNavbarヘッダ
 export const header: string = '.header--header--3k4a7';
 
 export const transcript = {
@@ -33,7 +36,7 @@ export const transcript = {
         "div.control-bar--control-bar--MweER[data-purpose='video-controls']",
     // Footer of Transcript when it is sidebar.
     footerOfSidebar: '.transcript--autoscroll-wrapper--oS-dz',
-    // NOTE: new added. 自動スクロールチェックボックス
+    // new added. 自動スクロールチェックボックス
     // AutoScroll Checkbox
     autoscroll: "[name='autoscroll-checkbox']",
 } as const;
@@ -86,9 +89,9 @@ export const EX = {
     sidebarContent: '.ex-sidebar__content',
     sidebarContentPanel: '.ex-transcript__panel',
     sidebarCueContainer: '.ex-transcript__cue-container',
-    // NOTE: recently added. '.ex-transcript__cue-container'の子要素のparagraphのclass名
+    // recently added. '.ex-transcript__cue-container'の子要素のparagraphのclass名
     sidebarCue: '.ex-transcript__cue',
-    // NOTE: recently added. .ex-transcript__cue'の子要素のspan要素のdata-purposeの指定値
+    // recently added. .ex-transcript__cue'の子要素のspan要素のdata-purposeの指定値
     sidebarCueSpan: 'ex-transcript__cue--text',
     sidebarFooter: '.ex-sidebar__footer',
     // sidebar width in case more than SIDEBAR_WIDTH_BOUNDARY
@@ -107,14 +110,7 @@ export const EX = {
     dashboardTranscriptCueText: 'ex--dashboard-cue-text',
     dashboardTranscriptBottom: '.ex-dashboard-transcript__footer',
 
-    // TODO: 要修正 クラス名を重ね掛けにするのかどうか、
-    // 命名も
     // To Highlight Transcriot Cue Container
     highlight: '.--highlight',
-    // NOTE: new added.
     closeButton: '.btn__close',
 } as const;
-
-// --- LEGACY -------------------------
-
-// sectionTitle: 'div.udlite-text-md.video-viewer--title-overlay--OoQ6e',

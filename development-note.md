@@ -8097,3 +8097,33 @@ module.exports = {
 https://dev.to/suhailkakar/remove-all-console-log-from-your-project-in-less-a-minutes-3glg
 
 #### VSCodeで開いているファイルの`TODO:`コメントを確認する方法
+
+
+#### TypeScript Tips: 変数がいくつかの特定の値を持つようにする
+
+https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#literal-types
+
+```TypeScript
+
+// -- example 1 --
+
+let x: "hello" = "hello";
+// OK
+x = "hello";
+// ...
+x = "howdy";
+// Type '"howdy"' is not assignable to type '"hello"'.
+
+// -- example 2 --
+
+function printText(s: string, alignment: "left" | "right" | "center") {
+  // ...
+}
+printText("Hello, world", "left");
+printText("G'day, mate", "centre");
+Argument of type '"centre"' is not assignable to parameter of type '"left" | "right" | "center"'.
+```
+
+https://typescript-jp.gitbook.io/deep-dive/type-system/literal-types
+
+
