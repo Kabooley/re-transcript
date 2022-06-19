@@ -1,18 +1,29 @@
+/*****************************************************
+ * Bottom ExTranscript View
+ *
+ * Features:
+ * - Generate ExTranscript on dashboard transcript position
+ * - Using template to set event listers to template DOMs before rendering them.
+ * - To insert generated template content, using parent.prepend()
+ * - To replace generated HTML, add position style parent element.
+ * - Everytime clear, delete added style on parent.
+ *
+ * ***************************************************/
 import * as selectors from '../utils/selectors';
 import { subtitle_piece } from '../utils/constants';
 import './exTranscript.scss';
 
 const BottomTranscriptView = function () {
-    // insert position for Element.insertAdjaccentHTML()
     this.insertPosition = 'afterbegin';
     this.insertParentSelector = selectors.EX.noSidebarParent;
-    // TODO: 配列じゃなくていい
     this.transcriptSelectors = [selectors.EX.dashboardTranscriptWrapper];
 };
 
-// ひとまずハードコーディングなんだわ...
-// <use>とか使えるようになるといいね...
-BottomTranscriptView.prototype.generateSVG = function (): string {
+/***
+ * Close button svg generator
+ *
+ * */
+BottomTranscriptView.prototype.generateCloseButton = function (): string {
     return `
     <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g clip-path="url(#clip0_2_8)">
@@ -52,7 +63,6 @@ BottomTranscriptView.prototype.generateSubtitleMarkup = function (
             </p>
         </div>
     `;
-        // concatでいいのかな...
         mu = mu.concat(_mu);
     }
     return mu;
@@ -61,7 +71,7 @@ BottomTranscriptView.prototype.generateSubtitleMarkup = function (
 BottomTranscriptView.prototype.generateMarkup = function (
     subtitleStrings?: string
 ) {
-    const closeButton: string = this.generateSVG();
+    const closeButton: string = this.generateCloseButton();
     return `
     <div class="${selectors.EX.dashboardTranscriptWrapper.slice(1)}">
         <div class="${selectors.EX.dashboardTranscriptHeader.slice(1)}">
@@ -77,29 +87,6 @@ BottomTranscriptView.prototype.generateMarkup = function (
     `;
 };
 
-// DEBUG: リファクタリングのために一時的に他の関数へアップデートする
-//
-//
-// BottomTranscriptView.prototype.render = function (
-//   subtitles?: subtitle_piece[]
-// ): void {
-//   //   親要素を`position: relative`にする
-//   const e: HTMLElement = document.querySelector<HTMLElement>(
-//     this.insertParentSelector
-//   );
-//   e.style.position = "relative";
-//   const p: InsertPosition = this.insertPosition;
-//   var html: string = "";
-//   if (subtitles.length > 0) {
-//     const s: string = this.generateSubtitleMarkup(subtitles);
-//     html = this.generateMarkup(s);
-//   } else {
-//     html = this.generateMarkup();
-//   }
-//   e.insertAdjacentHTML(p, html);
-// };
-//
-// DEBUG: この関数へアップデートする
 BottomTranscriptView.prototype.render = function (
     subtitles?: subtitle_piece[]
 ): void {
@@ -113,8 +100,8 @@ BottomTranscriptView.prototype.render = function (
     }
     const parent = document.querySelector<Element>(this.insertParentSelector);
     if (parent) {
-        // NOTE: bottomTranscriptViewでは特別以下のstyle指定が必要である
-        // その際、必ずHTMLElementで指定しなければならない
+        // NOTE: Parent element must have new position property to replace ExTranscript appropriately.
+        // To add style, querySelector must specified as HTMLElement.
         document.querySelector<HTMLElement>(
             this.insertParentSelector
         ).style.position = 'relative';
@@ -122,31 +109,20 @@ BottomTranscriptView.prototype.render = function (
     }
 };
 
-// Udemyページのコンテンツを間違っても消してしまわないように
 BottomTranscriptView.prototype.clear = function (): void {
     this.transcriptSelectors.forEach((s: string) => {
         const e: Element = document.querySelector(s);
         if (e) e.remove();
     });
-    //   親要素につけていた`position: relative`を解除する
+    // NOTE: Remove `position: relative` from parent element.
     const parent: HTMLElement = document.querySelector<HTMLElement>(
         this.insertParentSelector
     );
     parent.style.position = '';
 };
 
-BottomTranscriptView.prototype.renderSpinner = function (): void {};
-
-BottomTranscriptView.prototype.renderError = function (): void {};
-
-BottomTranscriptView.prototype.renderMessage = function (): void {};
+// BottomTranscriptView.prototype.renderSpinner = function (): void {};
+// BottomTranscriptView.prototype.renderError = function (): void {};
+// BottomTranscriptView.prototype.renderMessage = function (): void {};
 
 export default new BottomTranscriptView();
-
-/*
- */
-
-// ExTranscriptのfooterを切り取った
-// <div class="${selectors.EX.dashboardTranscriptBottom.slice(
-//     1
-// )}">Auto Scroll</div>

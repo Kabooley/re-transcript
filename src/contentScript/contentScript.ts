@@ -116,7 +116,7 @@ chrome.runtime.onMessage.addListener(
                     });
             }
 
-            // Require to make sure the page is including movie container or not.
+            // Is the page including Movie Container?
             if (order.includes(orderNames.isPageIncludingMovie)) {
                 repeatCheckQueryAcquired(selectors.videoContainer, true)
                     .then((r: boolean) => {
@@ -260,32 +260,31 @@ const isTranscriptOpen = (): boolean => {
     return toggleButton.getAttribute('aria-expanded') === 'true' ? true : false;
 };
 
-/****************************************************
- * Check Subtitle language is English or not.
+/***
+ * Is subtitle language is English?
  *
- * Get DOM everytime this function invoked.
  *
  * @returns {boolean}: True as it's English, false as not.
  * @throws {DomManipulationError} : When dom acquisition failes.
  * Exception might be happen when selector is not matches.
  *
+ * DOMs:
+ * - listParent: Parent element of CC popup menu.
+ * - checkButtons: Listed button elements on CC popup menu. It includes attributed that express selected or not.
+ * - menuList: child elements of checkButtons's button element. The innerText includes languages that express subtitle languages.
  *
- * checkButtons: CCポップアップメニューのリスト要素で、button要素。選択中であるかどうかの属性を含み、その順番を取得する。
- *
- * menuList: 上記button要素の子要素である。innertTextにメニューに表示されている文字列を含む。字幕の言語や字幕設定などの文字列。
- * 先の順番を基にmenuListのなかの要素のinenrTextをしらべて選択中の言を特定する
- *
- * TODO: Fix: 上記要素のうち言語と関係ないもの(字幕設定など)もリストに含まれているので
- * その時は無視するようにする
- *
- */
+ * Process:
+ * 1. Find out which language is selected by checking attribute boolean value.
+ * 2. If it was true, save the counter of loop.
+ * 3. Find out language by saved counter number.
+ * 4. If it was English, then return true. (If no, return false).
+ * */
 const isSubtitleEnglish = (): boolean => {
     const listParent: HTMLElement = document.querySelector<HTMLElement>(
         selectors.controlBar.cc.menuListParent
     );
     const checkButtons: NodeListOf<HTMLElement> =
         listParent.querySelectorAll<HTMLElement>(
-            // TODO: change selector to `selectors.controlBar.cc.checkButtons
             selectors.controlBar.cc.menuCheckButtons
         );
     const menuList: NodeListOf<HTMLElement> =
@@ -296,9 +295,6 @@ const isSubtitleEnglish = (): boolean => {
     if (!listParent || !checkButtons || !menuList)
         throw new DomManipulationError('Failed to manipulate DOM');
 
-    // 1. メニューリストのうちどの言語が選択中なのか調べる
-    // 選択中であるかどうかを示す属性のbooleanをチェックして
-    // trueであったときの順番を記憶する
     let counter: number = 0;
     let i: number = null;
     const els: HTMLElement[] = Array.from<HTMLElement>(checkButtons);
@@ -311,11 +307,10 @@ const isSubtitleEnglish = (): boolean => {
     }
     if (!i) {
         throw new Error(
-            'Error: [isSubtitleEnglish()] Something went wrong but No language is selected'
+            'Error: No language is selected or failed to retrieve DOM'
         );
     }
 
-    // 2. 1でしらべた順番にある要素の中のinnerTextから選択中の言語を特定する
     const currentLanguage: string = Array.from(menuList)[i].innerText;
     if (currentLanguage.includes('English') || currentLanguage.includes('英語'))
         return true;
@@ -326,40 +321,22 @@ const isSubtitleEnglish = (): boolean => {
 // --- OBSERVER METHODS -----------------------------------------
 //
 
-// コントロールバーの子要素だけ追加されたのか削除されたのか知りたいので
-// childListだけtrueにする
 const config: MutationObserverInit = {
     attributes: false,
     childList: true,
     subtree: false,
 };
 
-/*
-    NOTE: JavaScript Tips: NodeからElementを取得して、datasetを取得する方法
-
-    record.removedNodes.forEach((node) => {
-        
-        
-        
-        
-            node.childNodes[0].parentElement.firstElementChild
-        );
-        
-            node.childNodes[0].parentElement.firstElementChild
-                .attributes
-        );
-        
-            node.childNodes[0].parentElement.firstElementChild.getAttribute(
-                'data-purpose'
-            )
-        );
-*/
+/***
+ * Watch controlbar
+ * to find out transcript toggle button is appeared or disappeared.
+ * Everytime appearing and disappearing, then let background script to know.
+ *
+ * */
 const moCallback = (mr: MutationRecord[]): void => {
     let guard: boolean = false;
     mr.forEach((record) => {
         if (record.type === 'childList' && !guard) {
-            // NOTE: MutationRecord[0]だけしらべればいいので1週目だけでループを止める
-            // じゃぁforEach()を使うなという話ではあるけど...
             guard = true;
 
             // Added Nodes
@@ -375,7 +352,6 @@ const moCallback = (mr: MutationRecord[]): void => {
 
             // Removed Nodes
             record.removedNodes.forEach((node) => {
-                // これで取得できた！！！
                 const dataPurpose: string =
                     node.childNodes[0].parentElement.firstElementChild.getAttribute(
                         'data-purpose'
@@ -392,18 +368,19 @@ const moCallback = (mr: MutationRecord[]): void => {
 // ---- OTHER METHODS -------------------------------------------
 //
 
-/************************************************
- *
- * 与えられたselectorからDOMが存在するかしらべて
- * 真偽値を返す
- */
+/***
+ * Find out the element is exist which matches with passed selector.
+ * @param {string} selector - Seletor that about to find out.
+ * @return {boolean} - true as exist, false as not exist.
+ * */
 const investTheElementIncluded = (selector: string): boolean => {
     const e: HTMLElement = document.querySelector<HTMLElement>(selector);
     return e ? true : false;
 };
 
 /**************************************************
- * Repeat checking if DOM has been acquired.
+ * Repeat to run investTheElementIncluded function.
+ *
  * @param {string} selector : selector for dom about to acquire.
  * @param {boolean} timeoutAsResolve: If true, then timeout will not occure error.
  * @return {boolean} : Return boolean result. True as dom acquired. False as not.
@@ -433,10 +410,6 @@ const repeatCheckQueryAcquired = async (
  * @return {promise} represents HTMLElement as success.
  * @throws {DomManipulationError}
  *
- * repeatCheckQueryAcquired()でDOMが現れるまで待つ
- * 現れたらDOMを取得して返す
- *
- * 現れないでタイムアウトなら例外を投げる
  * */
 const repeatQuerySelector = async (selector: string): Promise<HTMLElement> => {
     try {
@@ -444,19 +417,21 @@ const repeatQuerySelector = async (selector: string): Promise<HTMLElement> => {
         return document.querySelector<HTMLElement>(selector);
     } catch (err) {
         throw new DomManipulationError(
-            `DomManipulationError: Could not get DOM by selector ${selector}`
+            `Error: Could not retrieve DOM with the selector ${selector}`
         );
     }
 };
 
 /***
- * 表示中のCC popup menuが、
- * 「字幕言語選択画面」なのか「字幕設定画面」なのか判定する
+ * Determine what the CC popup menu is showing.
  *
- * このCSSセレクタで取得できる要素があれば前者
- * nullなら後者という判定になる
+ * Menu might be...
+ * - "Select subtitle language"
+ * - "Setting of subtitle"
  *
- * NOTE: CC popup menu上でのonClickイベント時には必ず呼び出すこと
+ * @return {boolean} - True as the menu is showing "Select subtitle language" menu. False as "Setting of subtitle" menu.
+ *
+ * NOTE: DO INVOKE THIS FUNCTION everytime onClick event happend on CC popup menu!
  * */
 const isItSelectLanguageMenu = (): boolean => {
     const menu: HTMLElement = document.querySelector<HTMLElement>(
@@ -470,20 +445,23 @@ const isItSelectLanguageMenu = (): boolean => {
  *
  *  set up controlbar click event listener.
  *  set up MutationObserver of controlbar.
+ *
+ * Among initialize process, stop MutationObserver.
+ * And restart MutationObserver when done.
  * */
 const initialize = async (): Promise<void> => {
     try {
-        // いったんMutationObserverを停止してから...
+        // For a moment stop MutationObserevr.
         if (moControlbar) moControlbar.disconnect();
         moControlbar = null;
         moControlbar = new MutationObserver(moCallback);
-        // controlbarのDOMを再取得
+        // Retrieve controlbar DOM again.
         if (controlbar)
             controlbar.removeEventListener('click', handlerOfControlbar);
         controlbar = null;
         controlbar = await repeatQuerySelector(selectors.transcript.controlbar);
         controlbar.addEventListener('click', handlerOfControlbar);
-        // 再度、更新済のDOMに対してMutationObserverを設置する
+        // Restart MutationObserver with retrieved controlbar DOM.
         moControlbar.observe(controlbar, config);
     } catch (err) {
         if (err instanceof DomManipulationError)

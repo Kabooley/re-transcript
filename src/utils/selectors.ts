@@ -4,14 +4,14 @@
  * Including:
  * - Udemy elements selectors.
  * - re-transcript generated elements selectors.
- * 
+ *
  * **************************************************/
 
 // --- Selectors related to Transcript ---------------------------
 
 // Udemy講義ページが動画ページならこのセレクタが一致する
 // テキストページとかなら一致しない
-export const videoContainer : string = 'div.video-viewer--container--23VX7';
+export const videoContainer: string = 'div.video-viewer--container--23VX7';
 
 // new added. UdemyページのNavbarヘッダ
 export const header: string = '.header--header--3k4a7';

@@ -1,30 +1,16 @@
-/********************************************************
- * controller
- * ____________________________________________
+/*********************************************************
+ * CONTROLLER
  *
- * 本家Udemy講義ページのトランスクリプト機能と(ほぼ)同じものを生成する
- * 字幕データだけ、特別に生成された字幕データを取り扱う
+ * Controller of ExTranscript.
  *
- * 機能：
- * - background scriptからの要請に応じてExTranscriptを展開または非表示にする
- * - 字幕データはbackground scriptから送信されしだい展開する
- * - ExTranscriptの表示の仕方は本家トランスクリプトと同様の動きになるように制御する機能
- * - ブラウザの横幅が小さくなりすぎたかどうかもこちらで計算する機能
- *  これによりonWindowResizeHandler()の一部が実行されないように制限をかける
- *  これはbackground scriptからのorderとonWindowResizeHandler()がバッティングするのを防ぐ
- * 　応急処置である
+ * Features:
+ * - Communicate with background script.
+ * - Generate ExTranscript or disappear it by following background script order.
+ * - Receive retouched subtitles passively and then pass it to ExTranscript View.
+ * - Watch browser resize and scroll to display views appropriately for the situation.
+ * - Has Models
  *
- *
- * 制約：
- * - ExTranscriptの表示・非表示はbackground scriptの指示に従う
- * - 字幕データはこちらか要求しない
- *
- *
- * TODO:
- *  - TypeScriptの型定義は別のファイルに移動したい...
- *
- *
- * *******************************************************/
+ * */
 import * as selectors from '../utils/selectors';
 import {
     extensionNames,

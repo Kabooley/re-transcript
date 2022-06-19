@@ -1,8 +1,7 @@
-/********************************************************************
- * Model
+/*********************************************
+ * MODEL
  *
- * 今のところ、controller.tsのModelとして使われる
- * *******************************************************************/
+ * *******************************************/
 import { Attributes } from '../attributes/Attributes';
 import { Events } from '../events/Events';
 import { iProps } from '../utils/constants';
@@ -26,9 +25,5 @@ export class Model<T> {
         this.attributes.set(prop);
         // NOTE: DO PASS prop
         this.events.trigger('change', prop);
-        //
-        // DEBUG:
-        //
-        // Make sure how this.attributes.data changed
     }
 }

@@ -1,17 +1,27 @@
+/*****************************************************
+ * Sidebar ExTranscript View
+ *
+ * Features:
+ * - Generate ExTranscript on sidebar transcript position
+ * - Using template to set event listers to template DOMs before rendering them.
+ * - To insert generated template content, using parent.prepend()
+ * - updateContentTop and updateContentHeight to fix position and height appropriately,
+ *
+ * ***************************************************/
 import * as selectors from '../utils/selectors';
 import { subtitle_piece } from '../utils/constants';
 import './exTranscript.scss';
 
 const SidebarTranscriptView = function () {
-    // insert position for Element.insertAdjaccentHTML()
     this.insertPosition = 'afterbegin';
     this.insertParentSelector = selectors.EX.sidebarParent;
-    // TODO: 配列じゃなくていい
     this.transcriptSelectors = [selectors.EX.sidebarWrapper];
 };
 
-// ひとまずハードコーディングなんだわ...
-// <use>とか使えるようになるといいね...
+/***
+ * Generate Close button svg
+ *
+ * */
 SidebarTranscriptView.prototype.generateSVG = function (): string {
     return `
     <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -68,38 +78,11 @@ SidebarTranscriptView.prototype.generateSubtitleMarkup = function (
           </p>
         </div>
       `;
-        // concatでいいのかな...
         mu = mu.concat(_mu);
     }
     return mu;
 };
 
-// render
-//
-// 変更点
-// - 引数 subtitle を追加
-// - subtitles の中身の有無でgenerateMarkupの呼出を条件分岐させる
-//
-// これでsubtitleがあってもなくても両方の場合に対応できる
-//
-// DEBUG: リファクタリングのために、一時的に他の関数に置き換わる
-//
-// SidebarTranscriptView.prototype.render = function (
-//     subtitles?: subtitle_piece[]
-// ): void {
-//     const e: Element = document.querySelector(this.insertParentSelector);
-//     const p: InsertPosition = this.insertPosition;
-//     var html: string = '';
-//     if (subtitles.length > 0) {
-//         const s: string = this.generateSubtitleMarkup(subtitles);
-//         html = this.generateMarkup(s);
-//     } else {
-//         html = this.generateMarkup();
-//     }
-//     e.insertAdjacentHTML(p, html);
-// };
-
-// DEBUG: この関数に置き換わる
 SidebarTranscriptView.prototype.render = function (
     subtitles?: subtitle_piece[]
 ): void {
@@ -113,7 +96,7 @@ SidebarTranscriptView.prototype.render = function (
     }
     const parent = document.querySelector(this.insertParentSelector);
     if (parent) {
-        // parentの一番最初の子要素として登録される
+        // template.content registered as parent first child.
         parent.prepend(template.content);
     }
 };
@@ -125,7 +108,6 @@ SidebarTranscriptView.prototype.clear = function (): void {
     });
 };
 
-//
 SidebarTranscriptView.prototype.updateContentTop = function (
     top: number
 ): void {
@@ -166,70 +148,15 @@ SidebarTranscriptView.prototype.updateContentHeight = function (
             )
             .height.replace('px', '')
     );
-    // Transcript上辺とviewportの上辺までのギャップ
+    // Gap between upperside of transcript and upperside of viewport.
     const gap: number =
         window.scrollY < navHeaderHeight ? navHeaderHeight - window.scrollY : 0;
 
     content.style.height = height - gap + 'px';
 };
 
-// SidebarTranscriptView.prototype.updateContentHeight = function (): void {
-//   const content = document.querySelector<HTMLElement>(
-//     selectors.EX.sidebarContent
-//   );
-//   const footer: Element = document.querySelector<Element>(
-//     selectors.EX.sidebarFooter
-//   );
-//   const header: Element = document.querySelector<Element>(
-//     selectors.EX.sidebarHeader
-//   );
-//   const height =
-//     document.documentElement.clientHeight -
-//     parseInt(window.getComputedStyle(footer).height.replace("px", "")) -
-//     parseInt(window.getComputedStyle(header).height.replace("px", ""));
-
-//   content.style.height = height + "px";
-// };
-
-SidebarTranscriptView.prototype.renderSpinner = function () {};
-
-SidebarTranscriptView.prototype.renderError = function () {};
-
-SidebarTranscriptView.prototype.renderMessage = function () {};
+// SidebarTranscriptView.prototype.renderSpinner = function () {};
+// SidebarTranscriptView.prototype.renderError = function () {};
+// SidebarTranscriptView.prototype.renderMessage = function () {};
 
 export default new SidebarTranscriptView();
-
-// ------ LEGACY CODE ---------------------------------------
-
-// SidebarTranscriptView.prototype.generateMarkup = function (): string {
-//   return `
-//         <div class="${SELECTORS.EX.sidebarWrapper.slice(1)}">
-//             <section class="${SELECTORS.EX.sidebarSection.slice(1)}">
-//                 <div class="${SELECTORS.EX.sidebarHeader.slice(
-//                   1
-//                 )}">ExTranscript</div>
-//                 <div class="${SELECTORS.EX.sidebarContent.slice(1)}">
-//                     <p>
-//                     </p>
-//                 </div>
-//                 <div class="${SELECTORS.EX.sidebarFooter.slice(
-//                   1
-//                 )}">Auto Scroll</div>
-//             </section>
-//         </div>
-//     `;
-// };
-
-// SidebarTranscriptView.prototype.render = function (): void {
-//
-
-//   const e: Element = document.querySelector(this.insertParentSelector);
-//   const p: InsertPosition = this.insertPosition;
-//   const html: string = this.generateMarkup();
-//   e.insertAdjacentHTML(p, html);
-// };
-
-// ExTranscriptのfooterを切り取った
-// <div class="${selectors.EX.sidebarFooter.slice(
-//     1
-// )}">Auto Scroll</div>

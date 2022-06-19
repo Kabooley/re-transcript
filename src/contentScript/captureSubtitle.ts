@@ -1,17 +1,17 @@
 /*********************************************************
  * Capture Subtitles
- * 
+ *
  * Features:
  * 1. Retrieve subtitle data and retouch it at every request.
  * 2. Send retouched data to background script.
- * 
+ *
  * Prerequisities:
  * The web page this script will be injected must has been DOM loaded already.
- * 
+ *
  * This content script will be injected dynamically.
  * Exception error will be sent to background script.
- * 
- * ********************************************************/ 
+ *
+ * ********************************************************/
 import * as selectors from '../utils/selectors';
 import {
     iMessage,
@@ -82,56 +82,39 @@ const capturingSubtitle = (): subtitle_piece[] => {
     }
 };
 
-/*
-  subtitlePiecesToChunks
-  __________________________________________________
-    @param subtitles {subtitle_piece[]}
-    subtitle: Udemyの講義で流れてくる字幕一塊とその順番を表すindex
-
-    用語の意味：
-    piece: 破片  chunk: 塊
-    pieceはパンくずで、chunkは1斤パンである
-    chunksはスライスされた食パンのセットである
-
-    整形処理の流れ:
-    const chunks = subtitles.map( subtitle => {
-    })
-
-    subtitleの文末がピリオドまたはクエスチョンマークのsubtitleにであうまで、
-    buff[]へsubtitle.subtitleをpushし続ける
-
-    indexはbuff[]が空だった時だけ値を与える
-    そうすることでbuff[]へ一番初めにpushされたsubtitleのindexだけ記憶できる
-
-    このindex番号が後々字幕自動スクロールに必要になる
-
-    文末がピリオドまたはハテナのsubtitleにであったらbuff[]とindexがプロパティの
-    オブジェクトを生成して
-    chunksへ返す
-
-    以上が整形処理の流れ
-*/
 /***
  * subtitle pieces to chunks
- * 
+ *
  * @param {subtitle_piece[]} subtitles - Subtitle data just retrieved and not yet retouched.
  * @return {subtitle_piece[]} - Retouched subtitle data.
- * 
- * TODO: Size compare piece < chunk.なので名称を変更した方がいい。
- *  
- * */ 
-const subtitlePiecesToChunks = function (
+ *
+ * Variables name:
+ * - piece: An element in argument.
+ * - block: Retouched element.
+ *
+ * Retouch process:
+ *
+ * ```
+ *  const blocks = subtitles.map();
+ * ```
+ * 1. Keep push piece of subtitle into buff until its subtitle has period or question charactor at end of sentence.
+ * 2. If subtitle has period or question charactor, then make buff turn to element of block.
+ * 3. Then clear buff and go next.
+ *
+ * */
+const subtitlesPiecesToBlocks = function (
     subtitles: subtitle_piece[]
 ): subtitle_piece[] {
     var buff: string[] = [];
     var index: number = null;
 
-    const chunks: subtitle_piece[] = subtitles.map(
+    const blocks: subtitle_piece[] = subtitles.map(
         (subtitle: subtitle_piece): subtitle_piece => {
-            // 塊を作り始める最初だけindexに値を与える
+            // Give index if buff is emptry to keep the block has same index at each element.
             if (buff.length === 0) {
                 index = subtitle.index;
             }
+            // If sentence is period or question, then return buff and index as object.
             // TODO: substr() is DEPRECATED.
             const s = subtitle.subtitle.trim().substr(-1, 1);
             if (s === '.' || s === '?') {
@@ -139,21 +122,20 @@ const subtitlePiecesToChunks = function (
                     index: index,
                     subtitle: [...buff, subtitle.subtitle].join(' '),
                 };
-                // 次のchunkのためにリセットする
+                // Reset for next loop.
                 buff = [];
                 index = null;
 
                 return piece;
             } else {
-                // 文末ピリオドまたはハテナのsubtitleにであうまで
-                // subtitleをpushし続ける
+                // Keep pushing subtitle piece into buff until it has period or question charactor at end of sentence.
                 buff.push(subtitle.subtitle);
             }
         }
     );
 
-    // undefinedを取り除いて返す
-    return chunks.filter((chunk: subtitle_piece) => chunk !== undefined);
+    // Removing undefined element.
+    return blocks.filter((block: subtitle_piece) => block !== undefined);
 };
 
 /**
@@ -162,7 +144,7 @@ const subtitlePiecesToChunks = function (
  * */
 const mainProcess = (): subtitle_piece[] => {
     const subtitlePieces = capturingSubtitle();
-    const chunks: subtitle_piece[] = subtitlePiecesToChunks(subtitlePieces);
+    const chunks: subtitle_piece[] = subtitlesPiecesToBlocks(subtitlePieces);
 
     return chunks;
 };

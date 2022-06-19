@@ -8127,3 +8127,22 @@ Argument of type '"centre"' is not assignable to parameter of type '"left" | "ri
 https://typescript-jp.gitbook.io/deep-dive/type-system/literal-types
 
 
+#### JavaScript Tips: Nodeからelementを取得する方法
+
+```JavaScript
+
+record.removedNodes.forEach((node) => {
+    node.childNodes[0].parentElement.firstElementChild
+    );
+    
+        node.childNodes[0].parentElement.firstElementChild
+            .attributes
+    );
+    
+        node.childNodes[0].parentElement.firstElementChild.getAttribute(
+            'data-purpose'
+        )
+    );
+```
+
+なんかいろいろ情報がぬけおちている...
