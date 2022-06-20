@@ -34,35 +34,39 @@ import { Sidebar } from '../view/Sidebar';
 //
 chrome.runtime.sendMessage;
 
-// ----- Annotations -------------------------------------
-
-// Annotations of sStatus.
+/***
+ * Interface for statusBase object.
+ * 
+ * - position: Two places of Transcript position.
+ * - highlight: Index number of highlighted subtitle element on Transcript.
+ * - ExHighlight: Latest index number of highlighted subtitle element on ExTranscript.
+ * - indexList: Array consisting of subtitles index number.
+ * - isAutoscrollInitialized: Functionality of autoscroll has been initialized.
+ * - isWindowTooSmall: The window size of borwser is too small to display transcript or not.
+ * - isAutoscrollOn: Auto scroll is on or not on Transcript.
+ * 
+ * */ 
 export interface iController {
-    // 本家Transcriptのポジション2通り
     position: keyof_positionStatus;
-    // 本家Transcriptでハイライトされている字幕の要素の順番
     highlight: number;
-    // ExTranscriptの字幕要素のうち、いまハイライトしている要素の順番
     ExHighlight: number;
-    // _subtitlesのindexプロパティからなる配列
     indexList: number[];
-    // 自動スクロール機能が展開済かどうか
     isAutoscrollInitialized: boolean;
-    // ブラウザサイズが小さすぎる状態かどうか
     isWindowTooSmall: boolean;
-    // Udemyの自動スクロール機能がONかOFFか
     isAutoscrollOn: boolean;
 }
 
-// Annotation of sSubtitles.
+// Interface for subtitleBase.
+// Wrapper of subtitle_piece[].
 export interface iSubtitles {
     subtitles: subtitle_piece[];
 }
 
-// Base object of sStatus.
+// Base object of ExTranscriptModel.
+// 
+// This is required to generate model.
 const statusBase: iController = {
-    // NOTE: position, viewの初期値は意味をなさず、
-    // すぐに変更されることが前提である
+    // NOTE: position, view must be initialized immediately.
     position: null,
     highlight: null,
     ExHighlight: null,
@@ -72,7 +76,9 @@ const statusBase: iController = {
     isAutoscrollOn: false,
 };
 
-// Base object of sSubtitles
+// Base object of SubtitleModel.
+// 
+// This is required to generate mSubtitles.
 const subtitleBase: iSubtitles = {
     subtitles: [],
 };
@@ -84,12 +90,13 @@ let mSubtitles: SubtitleModel;
 let sidebar: Sidebar;
 let dashboard: Dashboard;
 
-// ウィンドウが小さすぎてトランスクリプトが表示されなくなる境界値
+// Boundary that if browser width less than this boundary, Transcript will be disappear.
 const MINIMUM_BOUNDARY = 600;
 let timerQueue: NodeJS.Timeout = null;
+// Mutation observer instance.
 let transcriptListObserver: MutationObserver_ = null;
 
-// Config of MutationObserver for auto high light.
+// Config of MutationObserver for auto highlight.
 const moConfig: MutationObserverInit = {
     attributes: true,
     childList: false,

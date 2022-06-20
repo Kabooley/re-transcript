@@ -8,6 +8,7 @@
  * - alertはpros.built && previousBuildingの時にtrueになる
  *
  * ********************************************************/
+// NOTE: React is required by Material UI.
 import * as React from 'react';
 import Button from '@mui/material/Button';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -20,7 +21,7 @@ import AlertMessage from './AlertMessage';
 /**
  * Slide timer for complete message.
  *
- * NOTE: alertTimer MUST BE OVER slideTimer + Slide timeout time
+ * NOTE: alertTimer > (slideTimer + Slide timeout time)
  * */
 const TIMERS = {
     alertLifeTimer: 2800,

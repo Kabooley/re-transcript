@@ -7,17 +7,21 @@
  *
  * 下部Usage確認のこと
  *
- * */
-
+ * **********************************************/
+// NOTE: React is required by Material UI.
 import React from 'react';
 import { useState, useEffect } from 'react';
 import Slide from '@mui/material/Slide';
 
-/**********************************
+/***
+ * Alert Message
+ *
  * @param props
- *  props.ref: Object of React.useRef();
- *  props.show: boolean;
- *  props.timer: number;
+ * @param {MutableRefObject} _ref -
+ * @param {boolean} show -
+ * @param {number} timer -
+ *
+ * This alert will be used for displaying complete rebuilding ExTranscript on popup.
  *
  * */
 const AlertMessage = (props): JSX.Element => {
