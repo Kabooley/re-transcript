@@ -1,10 +1,9 @@
-/*******************************************************
- *  POPUP
+/***************************************
+ * POPUP
  *
- * NOTE: Using Material UI.
- *******************************************************/
-
-// NOTE: 'React'の宣言はMaterial UIに必須なので消さないこと
+ * Using Material UI.
+ ***************************************/
+// NOTE: React is required by Material UI.
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import {
@@ -35,25 +34,34 @@ const theme = createTheme({
     },
 });
 
+
+/****
+ * Top JSX.ELement of popup
+ * 
+ * states:
+ * - correctUrl: Validity of the tab's URL that popup popped up.
+ * - building: While between REBUILD button pressed and complete deploying ExTranscript, it is true.
+ * - built: If ExTranscript is running, then true.
+ * - tabInfo: TabInfo that this extension is running on.
+ * - turningOn: Status of REBUILD (TURN OFF) Button.
+ * 
+ * Features:
+ * - Check the URL validity by verifyValidPage() when popped up.
+ * - Require background script to send status when popped up to fill each states.
+ * - When REBUILD button on popup clicked, run handlerOfRun that orders background script to deploy ExTranscript.
+ * - UI is styled by Material UI.
+ * */ 
 const Popup = (): JSX.Element => {
-    // popupが開かれたときのURLが、拡張機能が有効になるべきURLなのか
     const [correctUrl, setCorrectUrl] = useState<boolean>(false);
-    // RUNボタンが押されて、結果待ちの状態ならばtrue それ以外はfalse
     const [building, setBuilding] = useState<boolean>(false);
-    // 正常に拡張機能が実行されたらtrue
     const [built, setBuilt] = useState<boolean>(false);
-    // chrome.tabs.Tab情報
     const [tabInfo, setTabInfo] = useState<chrome.tabs.Tab>(null);
-    // toggleボタンがonならtrue
     const [turningOn, setTurningOn] = useState<boolean>(false);
 
     useEffect(() => {
-        // NOTE: DON'T USE AWAIT inside of useEffect().
-        
         verifyValidPage();
     }, []);
 
-    // Get current state from background script.
     useEffect(() => {
         sendMessagePromise({
             from: extensionNames.popup,
@@ -71,7 +79,6 @@ const Popup = (): JSX.Element => {
     //
     // If it's valid URL, save that chrome.tabs.Tab[0] into tabInfo
     const verifyValidPage = (): void => {
-        
         chrome.tabs
             .query({
                 active: true,
@@ -79,16 +86,10 @@ const Popup = (): JSX.Element => {
                 lastFocusedWindow: true,
             })
             .then((tabs: chrome.tabs.Tab[]) => {
-                
                 const r: RegExpMatchArray = tabs[0].url.match(urlPattern);
-                
-                    `Is this page valid?: ${r && r.length ? true : false}`
-                );
                 if (r && r.length) {
                     setCorrectUrl(true);
                     setTabInfo(tabs[0]);
-                    
-                    
                 } else {
                     setCorrectUrl(false);
                 }
@@ -103,7 +104,6 @@ const Popup = (): JSX.Element => {
     const handlerOfRun = (): void => {
         if (!tabInfo) throw new Error('Error: tabInfo is null');
         setBuilding(true);
-        
 
         sendMessagePromise({
             from: extensionNames.popup,
@@ -114,7 +114,6 @@ const Popup = (): JSX.Element => {
             // NOTE: !res.successはRUNするためのページ環境になっていないことを示し、実行不可能のエラーではない
             .then((res) => {
                 const { success } = res;
-                
                 setBuilt(success);
                 setBuilding(false);
             })
@@ -128,7 +127,6 @@ const Popup = (): JSX.Element => {
     };
 
     const handlerOfTurnOff = (): void => {
-        
         sendMessagePromise({
             from: extensionNames.popup,
             to: extensionNames.background,
@@ -142,16 +140,13 @@ const Popup = (): JSX.Element => {
             .catch((e) => {
                 setBuilt(false);
                 setBuilding(false);
-                setTurningOn(false);
-                // NOTE: 実行不可能であることはalertを出すのでpopupでは何も表示しない
-                console.error(e);
+                setTurningOn(false); 
             });
     };
 
     // toggles handler according to turningOn value.
     //
     const handlerOfToggle = (): void => {
-        
         turningOn
             ? (function () {
                   setTurningOn(false);

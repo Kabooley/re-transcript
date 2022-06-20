@@ -1,10 +1,10 @@
-/******************************************************
+/*******************************************
  * Annotations for background.ts
  *
  * Definition of annotation for background.ts.
  * Like header files for C.
  *
- * *****************************************************/
+ * ******************************************/
 import { subtitle_piece } from '../utils/constants';
 
 // interface for state saves progress
