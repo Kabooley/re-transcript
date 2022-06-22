@@ -36,7 +36,7 @@ chrome.runtime.sendMessage;
 
 /***
  * Interface for statusBase object.
- * 
+ *
  * - position: Two places of Transcript position.
  * - highlight: Index number of highlighted subtitle element on Transcript.
  * - ExHighlight: Latest index number of highlighted subtitle element on ExTranscript.
@@ -44,8 +44,8 @@ chrome.runtime.sendMessage;
  * - isAutoscrollInitialized: Functionality of autoscroll has been initialized.
  * - isWindowTooSmall: The window size of borwser is too small to display transcript or not.
  * - isAutoscrollOn: Auto scroll is on or not on Transcript.
- * 
- * */ 
+ *
+ * */
 export interface iController {
     position: keyof_positionStatus;
     highlight: number;
@@ -63,7 +63,7 @@ export interface iSubtitles {
 }
 
 // Base object of ExTranscriptModel.
-// 
+//
 // This is required to generate model.
 const statusBase: iController = {
     // NOTE: position, view must be initialized immediately.
@@ -77,7 +77,7 @@ const statusBase: iController = {
 };
 
 // Base object of SubtitleModel.
-// 
+//
 // This is required to generate mSubtitles.
 const subtitleBase: iSubtitles = {
     subtitles: [],
@@ -105,19 +105,19 @@ const moConfig: MutationObserverInit = {
 } as const;
 
 /**
- * Callback of MutationObserver for auto high light.
+ * Callback of MutationObserver which is watching highlighting element on transcript.
  *
- * @param {MutationObserver_} this -
- * @param {MutationRecord[]} mr - MutationObserverが発火したときに受け取るAPI既定の引数
+ * @param {MutationObserver_} this - To bind context.
+ * @param {MutationRecord[]} mr
  *
- * guard: 以下の理由で設けている変数
+ * MutationObserver reacts when highlighting element on transcript has been changed.
  *
- * NOTE: Udemyの字幕はまったく同じ字幕要素が2個も3個も生成されている
  *
- * つまりまったく同じ要素が同時に複数存在する状況が発生してしまっている
- * 多分バグだけど、同じ要素が何個も生成されてしまうとリスナが何度も
- * 反応してしまう可能性がある
+ * NOTE: Udemy generates the same subtitles over and over.
  *
+ * So a situation has arisen where there is more than one exactly the same element.
+ * Not to let this callback run redundantly, I put `guard` variable.
+ * Only one execution per element.
  * */
 const moCallback = function (
     this: MutationObserver_,
@@ -134,8 +134,6 @@ const moCallback = function (
             guard = true;
             try {
                 updateHighlightIndexes();
-                // updateExTranscriptHighlight();
-                // scrollToHighlight();
             } catch (e) {
                 chrome.runtime.sendMessage({
                     from: extensionNames.controller,
@@ -194,7 +192,7 @@ chrome.runtime.onMessage.addListener(
                 }
             }
         }
-        // 字幕データが送られてきたら
+        // If subtitle data has been sent.
         if (rest.subtitles) {
             try {
                 mSubtitles.set({ subtitles: rest.subtitles });
@@ -224,7 +222,7 @@ const renderSidebar = (): void => {
     const { subtitles } = mSubtitles.get();
     dashboard.clear();
     sidebar.render(subtitles);
-    // sidebarの時だけに必要
+    // This is needed when it renders sidebar.
     window.addEventListener('scroll', onWindowScrollHandler);
 };
 
@@ -236,7 +234,7 @@ const renderBottomTranscript = (): void => {
     const { subtitles } = mSubtitles.get();
     sidebar.clear();
     dashboard.render(subtitles);
-    // noSidebarの時は不要
+    // Remove scroll listener because it's not needed at rendering bottom transcript.
     window.removeEventListener('scroll', onWindowScrollHandler);
 };
 
@@ -247,6 +245,10 @@ const renderBottomTranscript = (): void => {
 /**
  * Handler of Turning off ExTranscript.
  *
+ * - Remove all event listeners.
+ * - Clear views.
+ * - Disconnect MutationObserver.
+ * - Reset models.
  * */
 const handlerOfTurnOff = (): void => {
     // REMOVAL Listeners
@@ -264,7 +266,7 @@ const handlerOfTurnOff = (): void => {
     // REMOVAL MutationObserver
     transcriptListObserver.disconnect();
 
-    // RESET ({ ...statusBase });
+    // RESET
     model.set({ ...statusBase });
     mSubtitles.set({ ...subtitleBase });
 };
@@ -290,8 +292,8 @@ const handlerOfReset = (): void => {
  * Window onScroll handler.
  *
  * When window scrolled,
- * update ExTranscript top position, and
- * update ExTranscript content height.
+ * - Update ExTranscript top position.
+ * - Update ExTranscript content height.
  * */
 const onWindowScrollHandler = (): void => {
     const header: HTMLElement = document.querySelector<HTMLElement>(
@@ -310,15 +312,17 @@ const onWindowScrollHandler = (): void => {
 /**
  * Window onResize handler.
  *
- * If window clientWidth straddle the MINIMUM_BOUNDARY, update state.
- * If window clientWidth straddle the RESIZE_BOUNDARY, update state.
- *
+ * - If window clientWidth straddle the MINIMUM_BOUNDARY,
+ * update `isWindowTooSmall` property.
+ * - If window clientWidth straddle the RESIZE_BOUNDARY,
+ * update state.
+ * - Always update content height of sidebar ExTranscript.
  * */
 const onWindowResizeHandler = (): void => {
     const w: number = document.documentElement.clientWidth;
     const { position, isWindowTooSmall } = model.get();
 
-    //  MINIMUM_BOUNDARYの境界値をまたいだ時は何もしない
+    // Straddle MINIMUM_BOUNDARY
     if (w < MINIMUM_BOUNDARY && !isWindowTooSmall) {
         model.set({ isWindowTooSmall: true });
         return;
@@ -327,17 +331,17 @@ const onWindowResizeHandler = (): void => {
         model.set({ isWindowTooSmall: false });
     }
 
-    // ブラウザの幅がRESIZE_BOUNDARYを上回るとき
-    // Transcriptをsidebarに設置する
-    if (w > RESIZE_BOUNDARY && position !== positionStatus.sidebar)
+    // Exceeds RESIZE_BOUNDARY ,
+    // replace ExTranscript on sidebar.
+    if (w > RESIZE_BOUNDARY && position !== positionStatus.sidebar) {
         model.set({ position: positionStatus.sidebar });
-
-    // ブラウザの幅がRESIZE＿BOUNDARYを下回るとき
-    // Transcriptを動画下部に表示する
+    }
+    // Straddling RESIZE_BOUNDARY below,
+    // replace ExTranscript on dashboard.
     if (w <= RESIZE_BOUNDARY && position !== positionStatus.noSidebar)
         model.set({ position: positionStatus.noSidebar });
 
-    // 最新のpositionを取得してから
+    // If position status is `sidebar`, always update content height.
     if (model.get().position === 'sidebar') sidebar.updateContentHeight();
 };
 
@@ -352,15 +356,13 @@ const reductionOfwindowResizeHandler = (): void => {
 };
 
 //
-// ----- METHODS RELATED TO AUTO SCROLL & HIGHLIGHT --------------------
+// ----- METHODS RELATED TO AUTO SCROLL & HIGHLIGHT --------
 //
 
 /**
- * Initialize sStatus.indexList
+ * Initialize `indexList` property.
  *
- * sSubtitles.subtitlesのindex番号からなる配列を
- * sStatus.indexListとして保存する
- *
+ * Save arrays consisting of subtitles index number as indexList.
  * */
 const initializeIndexList = (): void => {
     const { subtitles } = mSubtitles.get();
@@ -376,11 +378,8 @@ const initializeIndexList = (): void => {
  * @return {number} - Return index number of passed element in passed array.
  * NOTE: -1 as element was not contained.
  *
- * @throws {Error}
- * If "lookFor" param was null, then an exception is thrown to prevent next step.
+ * @throws {Error} - If failed to retrieve DOM.
  *
- * TODO: -1を返す以外の方法ないかしら
- * もしくは-1をenumでラベル付けにするとか
  * */
 /**
  * 例外発生検証結果：
@@ -403,7 +402,7 @@ const getElementIndexOfList = (
 /**
  * Update sStatus.highlight index number everytime transcriptListObserver has been observed.
  *
- * Save index number of latest highlighted element in Transcript.
+ * Save index number of latest highlightened element in Transcript.
  *
  * @throws {SyntaxError}:
  * SyntaxError possibly occures if DOM unable to caught.
