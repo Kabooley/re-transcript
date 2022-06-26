@@ -18,14 +18,7 @@
         "service_worker": "background.js",
         "type": "module"
     },
-    "permissions": [
-        "search",
-        "tabs",
-        "storage",
-        "tts",
-        "activeTab",
-        "scripting"
-    ],
+    "permissions": ["search", "tabs", "storage", "activeTab", "scripting"],
     "content_security_policy": {},
     "content_scripts": []
 }
