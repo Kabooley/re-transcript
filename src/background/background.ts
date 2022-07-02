@@ -47,17 +47,24 @@ const INTERVAL_TIME = 100;
  * - Represents details of install or update.
  *
  * */
+// chrome.runtime.onInstalled.addListener(
+//     async (details: chrome.runtime.InstalledDetails): Promise<void> => {
+//         try {
+//             state.clearAll();
+//             state.set(modelBase);
+//         } catch (err) {
+//             alertHandler(
+//                 (await tabQuery()).id,
+//                 messageTemplate.appCannotExecute
+//             );
+//         }
+//     }
+// );
 chrome.runtime.onInstalled.addListener(
     async (details: chrome.runtime.InstalledDetails): Promise<void> => {
-        try {
-            state.clearAll();
-            state.set(modelBase);
-        } catch (err) {
-            alertHandler(
-                (await tabQuery()).id,
-                messageTemplate.appCannotExecute
-            );
-        }
+        // DEBUG:
+        console.log('[background] installed');
+        await initialize();
     }
 );
 
@@ -885,4 +892,47 @@ const state: iStateModule<iModel> = (function () {
             }
         },
     };
+})();
+
+// DEBUG: 2022/07/02 FIX Extension does not activate when reboot browser.
+/**
+ * 初回起動以降にchromeブラウザを起動すると、
+ *
+ * このbackground scriptのchrome.runtime.onInstalledが働かないために
+ * 拡張機能が使えない
+ *
+ * chorme.runtime.onInstalledが実行されないため、onInstalledでやるべき処理が実行されていない
+ *
+ * なので即時関数を用意してそこで実行させる
+ *
+ * それでだめなら別のトリガーを用意するしかない
+ *
+ * */
+
+/**
+ *
+ *
+ * NOTE: clearAllするからなんど呼出しても大丈夫
+ * */
+const initialize = async (): Promise<void> => {
+    try {
+        // DEBUG:
+        console.log('[background] initialized');
+        state.clearAll();
+        state.set(modelBase);
+    } catch (err) {
+        alertHandler((await tabQuery()).id, messageTemplate.appCannotExecute);
+    }
+};
+
+/***
+ * TODO: make sure this function runs every time the browser has been booted.
+ *
+ * 
+ * - rebuild押すと永遠にcompleteにならない場合
+ * - initializeしていないけど実行出来て正常関する場合
+ * がある...
+ * */
+(async function () {
+    await initialize();
 })();
