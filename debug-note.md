@@ -33,5 +33,17 @@ branch: activatge-by-popup
 
 ブラウザが起動して初めて拡張機能のPOPUPが開かれたときに、拡張機能が起動するようにする
 
-- 毎回POPUPを開くたびに初回起動をされると困る（初回だけ実行するようにする）
-- 以降はbackground scriptのstateが起動しているのか確認するようにする
+条件分岐を追加した：
+
+popupから`orderNames.sendStatus`を受信したときにstateが空かどうかを確認する工程を追加した
+
+その時にstateが空のオブジェクトを返したらstateへmodelBaseを渡し、
+
+そうでないならば続行する
+
+
+
+
+```TypeScript
+
+```

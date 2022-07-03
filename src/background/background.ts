@@ -64,7 +64,7 @@ chrome.runtime.onInstalled.addListener(
     async (details: chrome.runtime.InstalledDetails): Promise<void> => {
         // DEBUG:
         console.log('[background] installed');
-        await initialize();
+        // await initialize();
     }
 );
 
@@ -258,6 +258,13 @@ const handlerOfPopupMessage = async (
         // SEND STATUS
         if (order.includes(orderNames.sendStatus)) {
             try {
+                // NOTE: FIEXED 2022/07/03 ----------------------
+                //
+                // debug-note.md::Activate by popup参照
+                //
+                const current = await state.get();
+                if (!Object.keys(current).length) await initialize();
+                // ------------------------------------------------------
                 const { isSubtitleCapturing, isExTranscriptStructured } =
                     await state.get();
                 response.state = {
@@ -896,19 +903,6 @@ const state: iStateModule<iModel> = (function () {
 
 // DEBUG: 2022/07/02 FIX Extension does not activate when reboot browser.
 /**
- * 初回起動以降にchromeブラウザを起動すると、
- *
- * このbackground scriptのchrome.runtime.onInstalledが働かないために
- * 拡張機能が使えない
- *
- * chorme.runtime.onInstalledが実行されないため、onInstalledでやるべき処理が実行されていない
- *
- * なので即時関数を用意してそこで実行させる
- *
- * それでだめなら別のトリガーを用意するしかない
- *
- * */
-/**
  *
  *
  * NOTE: clearAllするからなんど呼出しても大丈夫
@@ -918,25 +912,25 @@ const initialize = async (): Promise<void> => {
         // DEBUG:
         console.log('[background] initialized');
         state.clearAll();
-        state.set(modelBase);
+        await state.set(modelBase);
     } catch (err) {
         alertHandler((await tabQuery()).id, messageTemplate.appCannotExecute);
     }
 };
 
-/***
- *
- * - rebuild押すと永遠にcompleteにならない場合
- * - initializeしていないけど実行出来て正常関する場合
- * がある...
- *
- * 異常が発生するトリガーを見出す必要がある
- *
- * 翌日udemyから拡張機能を実行したけど問題なく動いた...う～ん
- * 
- * しばらくPCを放置したのち、作業再開すると、ExTranscriptが展開中のまま、勝手にinitializeされている...しかもページリロードしても拡張機能がruntime.lastError起こす...
- *
- * */
+// /***
+//  *
+//  * - rebuild押すと永遠にcompleteにならない場合
+//  * - initializeしていないけど実行出来て正常関する場合
+//  * がある...
+//  *
+//  * 異常が発生するトリガーを見出す必要がある
+//  *
+//  * 翌日udemyから拡張機能を実行したけど問題なく動いた...う～ん
+//  *
+//  * しばらくPCを放置したのち、作業再開すると、ExTranscriptが展開中のまま、勝手にinitializeされている...しかもページリロードしても拡張機能がruntime.lastError起こす...
+//  *
+//  * */
 // (async function () {
 //     await initialize();
 // })();
