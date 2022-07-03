@@ -928,10 +928,15 @@ const initialize = async (): Promise<void> => {
 /***
  * TODO: make sure this function runs every time the browser has been booted.
  *
- * 
+ *
  * - rebuild押すと永遠にcompleteにならない場合
  * - initializeしていないけど実行出来て正常関する場合
  * がある...
+ *
+ * 異常が発生するトリガーを見出す必要がある
+ *
+ * 翌日udemyから拡張機能を実行したけど問題なく動いた...う～ん
+ *
  * */
 (async function () {
     await initialize();
