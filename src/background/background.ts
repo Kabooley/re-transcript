@@ -936,6 +936,8 @@ const initialize = async (): Promise<void> => {
  * 異常が発生するトリガーを見出す必要がある
  *
  * 翌日udemyから拡張機能を実行したけど問題なく動いた...う～ん
+ * 
+ * しばらくPCを放置したのち、作業再開すると、ExTranscriptが展開中のまま、勝手にinitializeされている...しかもページリロードしても拡張機能がruntime.lastError起こす...
  *
  * */
 (async function () {
