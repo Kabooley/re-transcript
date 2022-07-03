@@ -25,3 +25,13 @@
 -   popup が開かれたときに background script の state を initialize させる
 
 -   それ以外（情報収集）
+
+
+##### Activate by popup
+
+branch: activatge-by-popup
+
+ブラウザが起動して初めて拡張機能のPOPUPが開かれたときに、拡張機能が起動するようにする
+
+- 毎回POPUPを開くたびに初回起動をされると困る（初回だけ実行するようにする）
+- 以降はbackground scriptのstateが起動しているのか確認するようにする

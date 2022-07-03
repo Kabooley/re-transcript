@@ -908,7 +908,6 @@ const state: iStateModule<iModel> = (function () {
  * それでだめなら別のトリガーを用意するしかない
  *
  * */
-
 /**
  *
  *
@@ -926,8 +925,6 @@ const initialize = async (): Promise<void> => {
 };
 
 /***
- * TODO: make sure this function runs every time the browser has been booted.
- *
  *
  * - rebuild押すと永遠にcompleteにならない場合
  * - initializeしていないけど実行出来て正常関する場合
@@ -940,6 +937,6 @@ const initialize = async (): Promise<void> => {
  * しばらくPCを放置したのち、作業再開すると、ExTranscriptが展開中のまま、勝手にinitializeされている...しかもページリロードしても拡張機能がruntime.lastError起こす...
  *
  * */
-(async function () {
-    await initialize();
-})();
+// (async function () {
+//     await initialize();
+// })();
