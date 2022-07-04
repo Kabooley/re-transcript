@@ -74,3 +74,7 @@ chrome.tabs.onRemoved.addListener(
     }
 );
 ```
+
+上記 onREmoved の時に代わりに state.clearAll()を使ってみた
+
+次回起動時に挙動を確認する

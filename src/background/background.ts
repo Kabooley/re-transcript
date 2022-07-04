@@ -173,11 +173,13 @@ chrome.tabs.onRemoved.addListener(
         removeInfo: chrome.tabs.TabRemoveInfo
     ): Promise<void> => {
         try {
-            // DEBUG:
+            // DEBUG: ------
             console.log('on removed');
             const { tabId } = await state.get();
             if (_tabId !== tabId) return;
-            await state.set(modelBase);
+            // await state.set(modelBase);
+            await state.clearAll();
+            // ---------------
         } catch (err) {
             console.error(err);
         }
@@ -869,6 +871,8 @@ const state: iStateModule<iModel> = (function () {
             [Property in keyof iModel]?: iModel[Property];
         }): Promise<void> => {
             try {
+                // DEBUG: ----
+                console.log('state set');
                 const s: iModel = await _getLocalStorage(
                     _key_of_localstorage__
                 );
@@ -879,6 +883,7 @@ const state: iStateModule<iModel> = (function () {
                 await chrome.storage.local.set({
                     [_key_of_localstorage__]: newState,
                 });
+                // ---------------------
             } catch (e) {
                 throw e;
             }
@@ -897,7 +902,12 @@ const state: iStateModule<iModel> = (function () {
 
         clearAll: async (): Promise<void> => {
             try {
+                // DEBUG: ----
+                console.log('state clear all');
                 await chrome.storage.local.remove(_key_of_localstorage__);
+                const current = await state.get();
+                console.log(current);
+                // --------------
             } catch (e) {
                 throw e;
             }
