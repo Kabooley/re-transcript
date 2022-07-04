@@ -173,6 +173,8 @@ chrome.tabs.onRemoved.addListener(
         removeInfo: chrome.tabs.TabRemoveInfo
     ): Promise<void> => {
         try {
+            // DEBUG:
+            console.log('on removed');
             const { tabId } = await state.get();
             if (_tabId !== tabId) return;
             await state.set(modelBase);
@@ -263,7 +265,9 @@ const handlerOfPopupMessage = async (
                 // debug-note.md::Activate by popup参照
                 //
                 const current = await state.get();
+                console.log(current);
                 if (!Object.keys(current).length) await initialize();
+                else console.log('no need to initialize');
                 // ------------------------------------------------------
                 const { isSubtitleCapturing, isExTranscriptStructured } =
                     await state.get();

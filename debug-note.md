@@ -26,24 +26,51 @@
 
 -   それ以外（情報収集）
 
-
 ##### Activate by popup
 
 branch: activatge-by-popup
 
-ブラウザが起動して初めて拡張機能のPOPUPが開かれたときに、拡張機能が起動するようにする
+ブラウザが起動して初めて拡張機能の POPUP が開かれたときに、拡張機能が起動するようにする
 
 条件分岐を追加した：
 
-popupから`orderNames.sendStatus`を受信したときにstateが空かどうかを確認する工程を追加した
+popup から`orderNames.sendStatus`を受信したときに state が空かどうかを確認する工程を追加した
 
-その時にstateが空のオブジェクトを返したらstateへmodelBaseを渡し、
+その時に state が空のオブジェクトを返したら state へ modelBase を渡し、
 
 そうでないならば続行する
 
-
-
-
 ```TypeScript
 
+```
+
+しばらく実際に使ってみて問題なければ再リリース
+
+確認できた問題：
+
+-   拡張機能を実行中に chorme を閉じてからしばらくののち chrome を再度開いてみると、initialize()は実行されなかった
+
+たぶん state がクリアされていないんだと思う。
+
+```TypeScript
+chrome.tabs.onRemoved.addListener(
+    async (
+        _tabId: number,
+        removeInfo: chrome.tabs.TabRemoveInfo
+    ): Promise<void> => {
+        try {
+            // DEBUG:
+            console.log('on removed');
+            const { tabId } = await state.get();
+            if (_tabId !== tabId) return;
+            //
+            // ここでmodelBaseをわたすので、次回起動時にすでに「初期化済」であるのだ..
+            // TODO: state.clearAll()をかわりにつかってみよう
+            //
+            await state.set(modelBase);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+);
 ```
