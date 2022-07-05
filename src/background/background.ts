@@ -3,7 +3,11 @@
  *
  * Background script as service worker in accordance with Manifest V3.
  *
- * alert
+ * UPDATE:
+ *
+ * - 2022/07/03: Fixed activation process.
+ *  Modified HandlerOfPopupMessage and onRemoved handler.
+ *
  * ********************************************************/
 
 import {
@@ -37,10 +41,7 @@ const INTERVAL_TIME = 100;
 //
 
 /**
- * Set up state module and clear previous storage information that state use.
- * Set modelBase as initial value of state module.
- *
- * Everytime this fires, this clears state.
+ * NO LONGER NEEDED...
  *
  * @callback
  * @param {chrome.runtime.InstalledDetails} details
@@ -48,25 +49,10 @@ const INTERVAL_TIME = 100;
  *
  * */
 // chrome.runtime.onInstalled.addListener(
-//     async (details: chrome.runtime.InstalledDetails): Promise<void> => {
-//         try {
-//             state.clearAll();
-//             state.set(modelBase);
-//         } catch (err) {
-//             alertHandler(
-//                 (await tabQuery()).id,
-//                 messageTemplate.appCannotExecute
-//             );
-//         }
+//     (details: chrome.runtime.InstalledDetails): void => {
+//         console.log("Extension 'Re Transcript' has been installed/updated.");
 //     }
 // );
-chrome.runtime.onInstalled.addListener(
-    async (details: chrome.runtime.InstalledDetails): Promise<void> => {
-        // DEBUG:
-        console.log('[background] installed');
-        // await initialize();
-    }
-);
 
 /**
  * Monitor events of interest by filtering all events on the browser.
@@ -173,13 +159,11 @@ chrome.tabs.onRemoved.addListener(
         removeInfo: chrome.tabs.TabRemoveInfo
     ): Promise<void> => {
         try {
-            // DEBUG: ------
-            console.log('on removed');
+            // NOTE: UPDATED: 2022/07/03 -----
             const { tabId } = await state.get();
             if (_tabId !== tabId) return;
-            // await state.set(modelBase);
             await state.clearAll();
-            // ---------------
+            // -----------------------
         } catch (err) {
             console.error(err);
         }
@@ -262,15 +246,11 @@ const handlerOfPopupMessage = async (
         // SEND STATUS
         if (order.includes(orderNames.sendStatus)) {
             try {
-                // NOTE: FIEXED 2022/07/03 ----------------------
-                //
-                // debug-note.md::Activate by popup参照
+                // NOTE: UPDATED 2022/07/03 ----------------
                 //
                 const current = await state.get();
-                console.log(current);
                 if (!Object.keys(current).length) await initialize();
-                else console.log('no need to initialize');
-                // ------------------------------------------------------
+                // --------------------------------------------------
                 const { isSubtitleCapturing, isExTranscriptStructured } =
                     await state.get();
                 response.state = {
@@ -519,7 +499,7 @@ const handlerOfControllerMessage = async (
  * 4. Inject controller.ts to controll ExTranscript.
  * 5. Send subtitle data to controller.ts to display new subtitles.
  *
- * TODO: Too huge. Need refactor.
+ * NOTE: Too huge...
  * */
 const handlerOfRun = async (tabInfo: chrome.tabs.Tab): Promise<boolean> => {
     try {
@@ -871,8 +851,6 @@ const state: iStateModule<iModel> = (function () {
             [Property in keyof iModel]?: iModel[Property];
         }): Promise<void> => {
             try {
-                // DEBUG: ----
-                console.log('state set');
                 const s: iModel = await _getLocalStorage(
                     _key_of_localstorage__
                 );
@@ -883,7 +861,6 @@ const state: iStateModule<iModel> = (function () {
                 await chrome.storage.local.set({
                     [_key_of_localstorage__]: newState,
                 });
-                // ---------------------
             } catch (e) {
                 throw e;
             }
@@ -902,12 +879,8 @@ const state: iStateModule<iModel> = (function () {
 
         clearAll: async (): Promise<void> => {
             try {
-                // DEBUG: ----
-                console.log('state clear all');
                 await chrome.storage.local.remove(_key_of_localstorage__);
                 const current = await state.get();
-                console.log(current);
-                // --------------
             } catch (e) {
                 throw e;
             }
@@ -915,36 +888,16 @@ const state: iStateModule<iModel> = (function () {
     };
 })();
 
-// DEBUG: 2022/07/02 FIX Extension does not activate when reboot browser.
 /**
+ * Always invoke this extension every first time the browser starts up.
  *
  *
- * NOTE: clearAllするからなんど呼出しても大丈夫
  * */
 const initialize = async (): Promise<void> => {
     try {
-        // DEBUG:
-        console.log('[background] initialized');
         state.clearAll();
         await state.set(modelBase);
     } catch (err) {
         alertHandler((await tabQuery()).id, messageTemplate.appCannotExecute);
     }
 };
-
-// /***
-//  *
-//  * - rebuild押すと永遠にcompleteにならない場合
-//  * - initializeしていないけど実行出来て正常関する場合
-//  * がある...
-//  *
-//  * 異常が発生するトリガーを見出す必要がある
-//  *
-//  * 翌日udemyから拡張機能を実行したけど問題なく動いた...う～ん
-//  *
-//  * しばらくPCを放置したのち、作業再開すると、ExTranscriptが展開中のまま、勝手にinitializeされている...しかもページリロードしても拡張機能がruntime.lastError起こす...
-//  *
-//  * */
-// (async function () {
-//     await initialize();
-// })();
