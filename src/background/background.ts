@@ -86,6 +86,7 @@ chrome.tabs.onUpdated.addListener(
         changeInfo: chrome.tabs.TabChangeInfo,
         Tab: chrome.tabs.Tab
     ): Promise<void> => {
+        console.log(`on updated: ${changeInfo.status}`);
         const { url, tabId, isExTranscriptStructured } = await state.get();
 
         try {
@@ -101,10 +102,12 @@ chrome.tabs.onUpdated.addListener(
             if (isExTranscriptStructured && tabIdUpdatedOccured === tabId) {
                 // おなじURLでのリロードか？
                 if (changeInfo.url === undefined) {
-                    await state.set(modelBase);
+                    // await state.set(modelBase);
+                    await state.clearAll();
                 } else if (!changeInfo.url.match(urlPattern)) {
                     // Udemy講義ページ以外に移動した
-                    await state.set(modelBase);
+                    // await state.set(modelBase);
+                    await state.clearAll();
                 }
 
                 // 展開中のtabIdである && changeInfo.urlが講義ページである
@@ -159,11 +162,9 @@ chrome.tabs.onRemoved.addListener(
         removeInfo: chrome.tabs.TabRemoveInfo
     ): Promise<void> => {
         try {
-            // NOTE: UPDATED: 2022/07/03 -----
             const { tabId } = await state.get();
             if (_tabId !== tabId) return;
             await state.clearAll();
-            // -----------------------
         } catch (err) {
             console.error(err);
         }
@@ -246,11 +247,8 @@ const handlerOfPopupMessage = async (
         // SEND STATUS
         if (order.includes(orderNames.sendStatus)) {
             try {
-                // NOTE: UPDATED 2022/07/03 ----------------
-                //
                 const current = await state.get();
                 if (!Object.keys(current).length) await initialize();
-                // --------------------------------------------------
                 const { isSubtitleCapturing, isExTranscriptStructured } =
                     await state.get();
                 response.state = {
@@ -814,8 +812,12 @@ const circulateCaptureSubtitles: iClosureOfCirculater<subtitle_piece[]> =
  * Alert
  *
  * Embeds alert function into content script.
+ *
+ * UPDATED:
+ *  Add state.clearAll() to clear state object everytime exception thrown.
  */
 const alertHandler = (tabId: number, msg: string): void => {
+    state.clearAll();
     chrome.scripting.executeScript({
         target: { tabId: tabId },
         func: function (msg) {
@@ -879,6 +881,9 @@ const state: iStateModule<iModel> = (function () {
 
         clearAll: async (): Promise<void> => {
             try {
+                // DEBUG: ----
+                console.log('state: clear all');
+                // --------------
                 await chrome.storage.local.remove(_key_of_localstorage__);
                 const current = await state.get();
             } catch (e) {

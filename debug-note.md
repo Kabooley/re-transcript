@@ -4,7 +4,13 @@
 
 ## 目次
 
+[確認できた問題](#確認できた問題)
 [拡張機能が起動しない問題](#拡張機能が起動しない問題)
+[ページをリロードすると REBUILD できなくなる問題](#ページをリロードするとREBUILDできなくなる問題)
+
+#### 確認できた未解決問題
+
+-   動画を含まない講義ページに移動してから次の動画を含む講義ページへ移動すると拡張機能が OFF になっている（ただし REBUILD ボタンで再度展開可能）
 
 #### 拡張機能が起動しない問題
 
@@ -78,3 +84,35 @@ chrome.tabs.onRemoved.addListener(
 上記 onREmoved の時に代わりに state.clearAll()を使ってみた
 
 次回起動時に挙動を確認する
+
+#### 例外が起こってからページをリロードすると REBUILD できなくなる問題
+
+多分リロード時に state を初期化していない
+
+あと例外起こったのにキャッチできてないよどうなってんの
+
+予想で結論書いちゃうと、拡張機能をいったん展開してから、例外が起こって、同じページで拡張機能展開中にリロードをすると、state にデータがなぜか保存されたままになっている
+問題が、content script はインジェクトされたままですよと state を読み取って判断されてしまうから
+content script がある体で処理を進めてエラーになっている...
+
+つまり、先の update で追加した popup 開いたときに state.get が返すオブジェクトがからどうかで条件分岐する方法だとこの問題は見つけることができない...
+
+なので、
+
+例外が発生したときは「例外なく」state.clearAll するようにすればいい
+
+やること：
+
+-   済）例外がおこったときに state.clearAll()を必ずする
+-   content script へアクセスできなことの例外をキャッチする仕組みの確認と修正
+-   済）chrome.tabs.onUpdated()での「展開中の講義ページでリロード」「展開中のタブが別のＵＲＬへ移動した」ときに state.clearAll する
+
+##### Gotta execute state.clearAll() when catching exception.
+
+background script では`alertHandler()`を catch{}内で呼出しているので
+
+この`alertHandler()`のなかに state.clearAll()を突っ込む
+
+各処理系(handlerOfRUn, handlerOfReset, handlerOfHide など)は呼び出し元が
+
+background script 内の関数だからすぐさま alertHandler()を呼び出さないで throw するだけにしている点は注意
