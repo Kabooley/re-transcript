@@ -4,6 +4,7 @@
  * Definition of annotation for background.ts.
  * Like header files for C.
  *
+ * Udemy
  * ******************************************/
 import { subtitle_piece } from '../utils/constants';
 
@@ -83,11 +84,11 @@ export const modelBase: iModel = {
     isSubtitleCaptured: false,
     // ExTranscript is structured or not.
     isExTranscriptStructured: false,
-    // There is Udemy Transcript shown or not.
+    // There is Transcript shown or not on the page.
     // Not means turining on or not.
     // If not shown, ExTranscript also not to be either.
     isTranscriptDisplaying: false,
-    // Udemy subtitle language is English or not.
+    // Subtitle language is English or not.
     isEnglish: false,
     // Tab id that this extension is now running.
     tabId: null,

@@ -28,12 +28,6 @@ const TIMERS = {
     slideTimer: 1600,
 } as const;
 
-// // DEBUG:
-// const TIMERS = {
-//     alertLifeTimer: 28000,
-//     slideTimer: 16000,
-// } as const;
-
 /**
  * Copies for POPUP display
  *
@@ -43,7 +37,7 @@ const copies = {
     rebuilding: 'REBUILDING...',
     turnOff: 'TURN OFF',
     rebuild: 'REBUILD',
-    invalidPage: '拡張機能はUdemyの講義ページでのみ有効です',
+    invalidPage: '本機能はここではお使いいただけません',
 } as const;
 
 /**
@@ -194,8 +188,8 @@ export default function Content(props): JSX.Element {
 
     /****
      * Generater sort
-     * 
-     * */ 
+     *
+     * */
     const content = (): JSX.Element => {
         let generated: JSX.Element = null;
         if (alert && props.built) {
@@ -232,4 +226,3 @@ export default function Content(props): JSX.Element {
         </Box>
     );
 }
-

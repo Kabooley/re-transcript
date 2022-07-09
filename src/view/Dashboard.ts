@@ -1,6 +1,6 @@
 import { ExTranscriptView } from './View';
 import { subtitle_piece, extensionNames, orderNames } from '../utils/constants';
-import '../contentScript/exTranscript.scss';
+import './exTranscript.scss';
 
 export class Dashboard extends ExTranscriptView {
     templates(subtitle?: subtitle_piece[]): string {

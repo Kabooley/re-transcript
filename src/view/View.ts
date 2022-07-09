@@ -36,7 +36,7 @@ export abstract class ExTranscriptView {
     this.render = this.render.bind(this);
     this.clear = this.clear.bind(this);
     this.bindEvents = this.bindEvents.bind(this);
-    // TODO: make sure that this binding abstract method way is correct...
+    // This way might not correct...
     this.templates = this.templates.bind(this);
     this.eventsMap = this.eventsMap.bind(this);
   }

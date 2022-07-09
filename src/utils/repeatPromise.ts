@@ -3,6 +3,7 @@
  * or with multiple or singular arguments unknown.
  *
  * NOTE: Generics type T must be same as unknownConditionFunc.
+ * 
  * */
 export type unknownAsyncCallback<T> = (...args: any[]) => Promise<T>;
 /**

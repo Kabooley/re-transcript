@@ -6,7 +6,7 @@
  * 2. Watch if subtitle language is English.
  * 3. Send result of 1 and 2 to background script.
  *
- * Watch control bar on Udemy movie container to detect click event on it.
+ * Watch control bar on movie container to detect click event on it.
  * Watch toggle buttons on control bar appeared or dispappeared by using moControlbar.
  * This content script will be injected dynamically.
  * Communicate with background script by using single message passing.

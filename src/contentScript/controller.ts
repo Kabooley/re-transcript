@@ -10,7 +10,7 @@
  * - Watch browser resize and scroll to display views appropriately for the situation.
  * - Has Models
  *
- * */
+ * *******************************************************/
 import * as selectors from '../utils/selectors';
 import {
     extensionNames,
@@ -113,7 +113,7 @@ const moConfig: MutationObserverInit = {
  * MutationObserver reacts when highlighting element on transcript has been changed.
  *
  *
- * NOTE: Udemy generates the same subtitles over and over.
+ * NOTE: Ud*my generates the same subtitles over and over.
  *
  * So a situation has arisen where there is more than one exactly the same element.
  * Not to let this callback run redundantly, I put `guard` variable.
@@ -547,9 +547,9 @@ const scrollToHighlight = (): void => {
  *
  * Reset based on sStatus.isAutroscrollInitialized.
  *
- * Udemyの自動スクロール機能と同じ機能をセットアップする関数
+ * Ud*myの自動スクロール機能と同じ機能をセットアップする関数
  *
- * NOTE: Udemyの字幕はまったく同じ字幕要素が2個も3個も生成されている
+ * NOTE: Ud*myの字幕はまったく同じ字幕要素が2個も3個も生成されている
  *
  * つまりまったく同じ要素が同時に複数存在する状況が発生してしまっている
  * 多分バグだけど、同じ要素が何個も生成されてしまうとリスナが何度も

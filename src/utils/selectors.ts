@@ -2,18 +2,18 @@
  * SELECTORS
  *
  * Including:
- * - Udemy elements selectors.
+ * - Ud*my elements selectors.
  * - re-transcript generated elements selectors.
  *
  * **************************************************/
 
 // --- Selectors related to Transcript ---------------------------
 
-// Udemy講義ページが動画ページならこのセレクタが一致する
+// Ud*my講義ページが動画ページならこのセレクタが一致する
 // テキストページとかなら一致しない
 export const videoContainer: string = 'div.video-viewer--container--23VX7';
 
-// new added. UdemyページのNavbarヘッダ
+// new added. Ud*myページのNavbarヘッダ
 export const header: string = '.header--header--3k4a7';
 
 export const transcript = {
@@ -74,7 +74,7 @@ export const controlBar = {
 // --- Selectors related ex-transcript -----------------------
 
 export const EX = {
-    // Udemy page-specific selector
+    // Ud*my page-specific selector
 
     sidebarParent: '.app--content-column--HC_i1',
     noSidebarParent: '.app--dashboard-content--r2Ce9',

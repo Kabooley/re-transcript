@@ -25,7 +25,7 @@ const theme = createTheme({
             light: '#a200a2',
             dark: '#5e005e',
         },
-        // Udemy theme color
+        // Ud*my theme color
         secondary: {
             main: '#5624d0',
             light: '#6939dd',

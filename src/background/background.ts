@@ -97,7 +97,7 @@ chrome.tabs.onUpdated.addListener(
             // 拡張機能が展開済だとして、tabIdが展開済のtabId以外に切り替わったなら無視する
             if (tabIdUpdatedOccured !== tabId) return;
 
-            // 展開中のtabId && chnageInfo.urlがUdemy講義ページ以外のURLならば
+            // 展開中のtabId && chnageInfo.urlが講義ページ以外のURLならば
             // 拡張機能OFFの処理へ
             if (isExTranscriptStructured && tabIdUpdatedOccured === tabId) {
                 // おなじURLでのリロードか？
@@ -105,7 +105,7 @@ chrome.tabs.onUpdated.addListener(
                     // await state.set(modelBase);
                     await state.clearAll();
                 } else if (!changeInfo.url.match(urlPattern)) {
-                    // Udemy講義ページ以外に移動した
+                    // 講義ページ以外に移動した
                     // await state.set(modelBase);
                     await state.clearAll();
                 }
@@ -795,7 +795,7 @@ const captureSubtitles = repeatPromiseGenerator<subtitle_piece[]>(
  * condition()の条件を満たせば即終了し、
  * repeactCaptureSubtitles()が取得した最後の戻り値を返す
  *
- * UdemyのDOMローディングの時間がかかりすぎる場合に対処するための関数
+ * 埋め込みページのDOMローディングの時間がかかりすぎる場合に対処するための関数
  *
  * @returns function - Async function that repeats given function untile given times.
  * */

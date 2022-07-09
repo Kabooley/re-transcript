@@ -1,6 +1,6 @@
 # Update Information
 
-## 2022/07/03
+## 2022/07/03 ver0002
 
 Fixed: Activateion process.
 
@@ -14,3 +14,9 @@ Fixed: Activateion process.
 と変更した。
 
 これでいつクロームを開いても、閉じても拡張機能を起動できる。
+
+## 2022/07/09 ver0003
+
+-   拡張機能展開中の window またはタブを閉じたときに、background.ts で state.set(baseModel)じゃなくて state.clearAll()するようにした
+-   ver0002 が承認拒否されたので違反項目を手探りで修正した(spam policy)
+-   不要なファイルが含まれていたのでそれらを削除した

@@ -2,6 +2,8 @@
  * Main Content
  *
  * High order component of popup contents.
+ *
+ * IN CASE: Rejected due to spam policy, then rebuild popup style and delete description so not to use keywords excessively.
  * ******************************************/
 // NOTE: React is required by Material UI.
 import * as React from 'react';
@@ -21,7 +23,7 @@ import Content from './Content';
 const copies = {
     title: 'Re Transcript',
     description:
-        'Udemyのトランスクリプト上の英語字幕を再構成し、より正確な翻訳出力を助けます。好みの翻訳拡張機能とともに使用して下さい',
+        'トランスクリプト上の英語字幕を再構成し、より正確な翻訳出力を助けます。好みの翻訳拡張機能とともに使用して下さい',
     running: '😎 実行中... 💨💨',
     standby: '😎 ',
 } as const;

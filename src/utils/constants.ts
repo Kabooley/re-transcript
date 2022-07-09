@@ -1,7 +1,6 @@
 /**************************************************
  * CONSTANTS which are common in application.
  *
- *
  * ************************************************/
 import { iModel } from '../background/annotations';
 import { uError } from '../Error/Error';
@@ -62,7 +61,7 @@ export interface iResponse {
     title?: string;
     // sendResponseを送信するときに必須
     complete?: boolean;
-    // Udemy講義ページのURLかどうかの判定
+    // Ud*my講義ページのURLかどうかの判定
     correctUrl?: boolean;
     // 何かしらの成功を示す
     success?: boolean;
@@ -70,7 +69,7 @@ export interface iResponse {
     failureReason?: string;
     // ExTranscriptが展開されたかどうか
     isExTranscriptDeployed?: boolean;
-    // Udemy講義ページでトランスクリプトが表示されているかどうか
+    // Ud*my講義ページでトランスクリプトが表示されているかどうか
     isTranscriptDisplaying?: boolean;
     // Is page including movie container?
     isPageIncludingMovie?: boolean;
@@ -130,19 +129,11 @@ export const positionStatus = {
 type typeof_positionStatus = typeof positionStatus;
 export type keyof_positionStatus = keyof typeof_positionStatus;
 
-// Template message for alert.
-// export const messageTemplate = {
-//     appCannotExecute:
-//         'Problem occured that the extension not being able to run. Please turn off the extension or reload the page.',
-//     letPagePrepare:
-//         'Please turn on Transcript and choose English for subtitle language.',
-// };
-
 export const messageTemplate = {
     appCannotExecute:
-        '[re-transcript] 拡張機能が実行不可能なエラーが起こりました。お手数ですが拡張機能をOFFにして展開中のページをリロードしてください。',
+        '[拡張機能:Re Transcript] 拡張機能が実行不可能なエラーが起こりました。お手数ですが拡張機能をOFFにして展開中のページをリロードしてください。',
     letPagePrepare:
-        '[re-transcript] トランスクリプトと字幕表示をONにして、字幕言語を英語にしてから再度実行してください。',
+        '[拡張機能:Re Transcript] トランスクリプトと字幕表示をONにして、字幕言語を英語にしてから再度実行してください。',
 };
 
 // Used in Model, Events, Attributes, controller
