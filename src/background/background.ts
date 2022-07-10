@@ -47,12 +47,14 @@ const INTERVAL_TIME = 100;
  * @param {chrome.runtime.InstalledDetails} details
  * - Represents details of install or update.
  *
+ * DO state.clearAll() everytime updated/installed
+ * so that it can delete previous data.
  * */
-// chrome.runtime.onInstalled.addListener(
-//     (details: chrome.runtime.InstalledDetails): void => {
-//         console.log("Extension 'Re Transcript' has been installed/updated.");
-//     }
-// );
+chrome.runtime.onInstalled.addListener(
+    (details: chrome.runtime.InstalledDetails): void => {
+        state.clearAll();
+    }
+);
 
 /**
  * Monitor events of interest by filtering all events on the browser.
@@ -162,6 +164,7 @@ chrome.tabs.onRemoved.addListener(
         removeInfo: chrome.tabs.TabRemoveInfo
     ): Promise<void> => {
         try {
+            console.log('ON REMOVED');
             const { tabId } = await state.get();
             if (_tabId !== tabId) return;
             await state.clearAll();

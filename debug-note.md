@@ -8,6 +8,7 @@
 [CWS承認拒否案件](#CWS承認拒否案件)
 [拡張機能が起動しない問題](#拡張機能が起動しない問題)
 [ページをリロードすると REBUILD できなくなる問題](#ページをリロードするとREBUILDできなくなる問題)
+[以前のstateがいまだに残り続けている問題](#以前のstateがいまだに残り続けている問題)
 
 ## 確認できた未解決問題
 
@@ -148,3 +149,20 @@ background script では`alertHandler()`を catch{}内で呼出しているの�
 各処理系(handlerOfRUn, handlerOfReset, handlerOfHide など)は呼び出し元が
 
 background script 内の関数だからすぐさま alertHandler()を呼び出さないで throw するだけにしている点は注意
+
+#### 以前のstateがいまだに残り続けている問題
+
+なぜか以前のstateが残り続けている
+
+onRemovedが万全に機能していない模様
+
+あと、関係ないけど関係ないURLで拡張機能をPOPUPさせるとbackground scriptでstateをclearAll()してしまっている
+
+一旦clearAll()したら、次の電源OFFまでは多分大丈夫。
+
+なので一旦再起動してみて挙動を確認する
+
+**教訓：updateしたら前回のデータがローカルファイルに残っている可能性からonInstalledで必ずstate.clearAll()すること**
+
+しばらく様子見
+
