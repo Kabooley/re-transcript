@@ -13,5 +13,14 @@ body {
         NOTE: Default for Material UI 
         fonst-size: 75% 
     */
-  width: 500px;
+  width: 420px;
 }
+
+.main-content {
+  width: 100%;
+}
+
+.box-primary {
+  width: 100%;
+}
+
