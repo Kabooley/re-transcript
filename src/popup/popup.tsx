@@ -35,7 +35,7 @@ const theme = createTheme({
 });
 
 /****
- * Top JSX.ELement of popup
+ * Top JSX.Element of popup
  *
  * states:
  * - correctUrl: Validity of the tab's URL that popup popped up.
