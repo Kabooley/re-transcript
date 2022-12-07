@@ -292,7 +292,7 @@ const isSubtitleEnglish = (): boolean => {
             selectors.controlBar.cc.menuList
         );
 
-    if (!listParent || !checkButtons || !menuList)
+    if (!listParent || !checkButtons.length || !menuList.length)
         throw new DomManipulationError('Failed to manipulate DOM');
 
     let counter: number = 0;

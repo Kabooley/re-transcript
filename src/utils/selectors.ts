@@ -55,7 +55,7 @@ export const controlBar = {
         // 言語リストを取得するには一旦languageButtonsを取得してからそれからquerySelectorする
         // いらないかも
         menuCheckButtons: 'button',
-        menuList: '.udlite-block-list-item-content',
+        menuList: '.ud-block-list-item-content',
         menuListParent:
             "ul[role='menu'][data-purpose='captions-dropdown-menu']",
         // 上記のセレクタのラッパーボタン。
