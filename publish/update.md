@@ -20,3 +20,7 @@ Fixed: Activateion process.
 -   拡張機能展開中の window またはタブを閉じたときに、background.ts で state.set(baseModel)じゃなくて state.clearAll()するようにした
 -   ver0002 が承認拒否されたので違反項目を手探りで修正した(spam policy)
 -   不要なファイルが含まれていたのでそれらを削除した
+
+## 2022/12/07 ver0005
+
+- セレクタの更新: controlBar.cc.menuListのCSSセレクタの変更に対応した
