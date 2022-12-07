@@ -61,14 +61,26 @@ BUTTON だけ表示させる。
 
 リセット機能も実装してみる。
 
-TODO: 手動リセット機能の実装
+TODO: 手動リセット機能の実装の検討...
+
+そこまでしなくていいややっぱり。
+
+それよりも新しいものを作ることを始めた方が自分のためになる
+
+- chrome.WebRequest API
+
+https://developer.chrome.com/docs/extensions/reference/webRequest/
+
+- chrome.windows.onRemoved
+
+https://developer.chrome.com/docs/extensions/reference/windows/#event-onRemoved
+
 TODO: UI 変更
 
-UI 変更
+    余計なコンポーネントを削ってもよくなった。
+    TypographyとCardMediaなど。
 
-material-ui のサンプルを丸っと...
-
-https://mui.com/material-ui/react-card/
+    TODO: 見た目をGoogle翻訳みたいにする
 
 #### 拡張機能が起動しない問題
 

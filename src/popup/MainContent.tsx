@@ -66,14 +66,15 @@ export default function MainContent(props): JSX.Element {
     };
 
     return (
-        <Card sx={{ display: 'flex' }}>
+        <Card sx={{ display: 'flex', flexDirection: 'column' }}>
             <Box
+                className="box-primary"
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
                 }}
             >
-                <CardContent
+                {/* <CardContent
                     sx={{ flex: '1 0 auto', padding: '16px 16px 8px' }}
                 >
                     <Typography component="div" variant="h6">
@@ -86,7 +87,7 @@ export default function MainContent(props): JSX.Element {
                     >
                         {copies.description}
                     </Typography>
-                </CardContent>
+                </CardContent> */}
                 {generateStateMessage()}
                 <Content
                     correctUrl={props.correctUrl}
@@ -95,24 +96,24 @@ export default function MainContent(props): JSX.Element {
                     handlerOfToggle={props.handlerOfToggle}
                 />
             </Box>
-            <CardContent
-                sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    paddingLeft: 0,
-                }}
-            >
-                <CardMedia
-                    component="img"
-                    // NOTE: height is required to display.
-                    sx={{
-                        width: 80,
-                        height: 80,
-                    }}
-                    image="./re-transcript-128.svg"
-                    alt="Re Transcript icon"
-                />
-            </CardContent>
+            {/* <CardContent
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          paddingLeft: 0,
+        }}
+      >
+        <CardMedia
+          component="img"
+          // NOTE: height is required to display.
+          sx={{
+            width: 80,
+            height: 80,
+          }}
+          image="./re-transcript-128.svg"
+          alt="Re Transcript icon"
+        />
+      </CardContent> */}
         </Card>
     );
 }

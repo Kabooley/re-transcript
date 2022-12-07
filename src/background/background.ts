@@ -174,6 +174,15 @@ chrome.tabs.onRemoved.addListener(
     }
 );
 
+// DEBUG: windowが閉じられたら必ずstateをclearAllする機能を追加したい
+//
+// しかしこれを使うことになると、windowIdも管理しないといけなくなる...
+chrome.windows.onRemoved.addListener(
+    async (windowId: number): Promise<void> => {
+        console.log('[window] onRemoved');
+    }
+);
+
 /**
  * Handler of onMessage
  *
