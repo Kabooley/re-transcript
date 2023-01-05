@@ -4,11 +4,12 @@
 
 ## 目次
 
-[確認できた問題](#確認できた問題)
-[CWS 承認拒否案件](#CWS承認拒否案件)
-[拡張機能が起動しない問題](#拡張機能が起動しない問題)
-[ページをリロードすると REBUILD できなくなる問題](#ページをリロードするとREBUILDできなくなる問題)
-[以前の state がいまだに残り続けている問題](#以前のstateがいまだに残り続けている問題)
+-   [確認できた問題](#確認できた問題)
+-   [CWS 承認拒否案件](#CWS承認拒否案件)
+-   [拡張機能が起動しない問題](#拡張機能が起動しない問題)
+-   [ページをリロードすると REBUILD できなくなる問題](#ページをリロードするとREBUILDできなくなる問題)
+-   [以前の state がいまだに残り続けている問題](#以前のstateがいまだに残り続けている問題)
+-   [ページ遷移時にエラーになる問題](#ページ遷移時にエラーになる問題)
 
 ## 確認できた未解決問題
 
@@ -67,11 +68,11 @@ TODO: 手動リセット機能の実装の検討...
 
 それよりも新しいものを作ることを始めた方が自分のためになる
 
-- chrome.WebRequest API
+-   chrome.WebRequest API
 
 https://developer.chrome.com/docs/extensions/reference/webRequest/
 
-- chrome.windows.onRemoved
+-   chrome.windows.onRemoved
 
 https://developer.chrome.com/docs/extensions/reference/windows/#event-onRemoved
 
@@ -202,3 +203,7 @@ onRemoved が万全に機能していない模様
 **教訓：update したら前回のデータがローカルファイルに残っている可能性から onInstalled で必ず state.clearAll()すること**
 
 しばらく様子見
+
+## ページ遷移時にエラーになる問題
+
+確認：2023/1/5
