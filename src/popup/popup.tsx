@@ -173,6 +173,23 @@ const Popup = (): JSX.Element => {
               })();
     };
 
+    /***
+     * NOTE: fix/202404 experiment
+     * 
+     */
+    const handleClickReload = (e: React.MouseEvent<HTMLButtonElement>) => {
+        console.log('[popup] reload clicked');
+
+        e.preventDefault();
+        e.stopPropagation();
+        // reloadしたら自動的にstateは初期化されるか？
+        sendMessagePromise({
+            from: extensionNames.popup,
+            to: extensionNames.background,
+            order: [orderNames.reload],
+        });
+    };
+
     return (
         <ThemeProvider theme={theme}>
             <MainContent
@@ -181,6 +198,7 @@ const Popup = (): JSX.Element => {
                 correctUrl={correctUrl}
                 handlerOfToggle={handlerOfToggle}
             />
+            <button onClick={handleClickReload}>reload</button>
         </ThemeProvider>
     );
 };

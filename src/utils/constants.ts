@@ -40,6 +40,8 @@ export const orderNames = {
     isPageIncludingMovie: 'isPageIncludingMovie',
     // Alert
     alert: 'alert',
+    // NOTE: fix/202404 new added.
+    reload: 'reload',
 } as const;
 
 type et = typeof extensionNames;

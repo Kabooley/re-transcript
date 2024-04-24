@@ -333,6 +333,10 @@ const handlerOfPopupMessage = async (
                 sendResponse(response);
             }
         }
+        
+        if (order.includes(orderNames.reload)) {
+            chrome.runtime.reload();
+        }
     }
 };
 
