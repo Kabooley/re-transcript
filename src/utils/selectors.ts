@@ -11,11 +11,11 @@
 
 // Ud*my講義ページが動画ページならこのセレクタが一致する
 // updated: 2024/4/23
-export const videoContainer: string = 'video-viewer--container--3yIje';
+export const videoContainer: string = '.video-viewer--container--3yIje';
 // export const videoContainer: string = 'div.video-viewer--container--23VX7';
 
 // Ud*my講義ページがテキストページならこのセレクタが一致する
-export const textContainer = 'text-viewer--container--TFOCA';
+export const textContainer = '.text-viewer--container--TFOCA';
 
 // new added. Ud*myページのヘッダ
 // updated: 2024/4/23

@@ -102,22 +102,11 @@ chrome.tabs.onUpdated.addListener(
             // 展開中のtabId && chnageInfo.urlが講義ページ以外のURLならば
             // 拡張機能OFFの処理へ
             if (isExTranscriptStructured && tabIdUpdatedOccured === tabId) {
-                // DEBUG:
-                console.log('[on update] This is tab running extension.');
-
                 // おなじURLでのリロードか？
                 if (changeInfo.url === undefined) {
-                    // DEBUG:
-                    console.log('[on update] same url');
-
                     // await state.set(modelBase);
                     await state.clearAll();
                 } else if (!changeInfo.url.match(urlPattern)) {
-                    // DEBUG:
-                    console.log(
-                        '[on update] moved to other than lecture page.'
-                    );
-
                     // 講義ページ以外に移動した
                     // await state.set(modelBase);
                     await state.clearAll();
@@ -130,9 +119,6 @@ chrome.tabs.onUpdated.addListener(
                     changeInfo.url.match(urlPattern) &&
                     exciseBelowHash(changeInfo.url) !== exciseBelowHash(url)
                 ) {
-                    // DEBUG:
-                    console.log('[on update] this is lecture page.');
-
                     //NOTE: MUST Update URL. ページが切り替わったから
                     await state.set({ url: exciseBelowHash(changeInfo.url) });
 
@@ -146,31 +132,14 @@ chrome.tabs.onUpdated.addListener(
                         }
                     );
 
-                    if (res.isPageIncludingMovie) {
-                        // DEBUG:
-                        console.log('[on update] moved to next lecture.');
-
-                        await handlerOfReset(
-                            tabIdUpdatedOccured,
-                            await circulateCaptureSubtitles()
-                        );
-                    } else {
-                        // DEBUG:
-                        console.log(
-                            '[on update] moved to next lecture. Not including video.'
-                        );
-
-                        await handlerOfHide(tabIdUpdatedOccured);
-                    }
-
-                    // res.isPageIncludingMovie
-                    //     ? // 次の動画に移った
-                    //       await handlerOfReset(
-                    //           tabIdUpdatedOccured,
-                    //           await circulateCaptureSubtitles()
-                    //       )
-                    //     : // 動画を含まないページへ移った
-                    //       await handlerOfHide(tabIdUpdatedOccured);
+                    res.isPageIncludingMovie
+                        ? // 次の動画に移った
+                          await handlerOfReset(
+                              tabIdUpdatedOccured,
+                              await circulateCaptureSubtitles()
+                          )
+                        : // 動画を含まないページへ移った
+                          await handlerOfHide(tabIdUpdatedOccured);
                 }
             }
         } catch (e) {
@@ -178,71 +147,6 @@ chrome.tabs.onUpdated.addListener(
         }
     }
 );
-// chrome.tabs.onUpdated.addListener(
-//     async (
-//         tabIdUpdatedOccured: number,
-//         changeInfo: chrome.tabs.TabChangeInfo,
-//         Tab: chrome.tabs.Tab
-//     ): Promise<void> => {
-//         console.log(`on updated: ${changeInfo.status}`);
-//         const { url, tabId, isExTranscriptStructured } = await state.get();
-
-//         try {
-//             // 拡張機能が未展開、changeInfo.statusがloadingでないなら無視する
-//             if (changeInfo.status !== 'loading' || !isExTranscriptStructured)
-//                 return;
-
-//             // 拡張機能が展開済だとして、tabIdが展開済のtabId以外に切り替わったなら無視する
-//             if (tabIdUpdatedOccured !== tabId) return;
-
-//             // 展開中のtabId && chnageInfo.urlが講義ページ以外のURLならば
-//             // 拡張機能OFFの処理へ
-//             if (isExTranscriptStructured && tabIdUpdatedOccured === tabId) {
-//                 // おなじURLでのリロードか？
-//                 if (changeInfo.url === undefined) {
-//                     // await state.set(modelBase);
-//                     await state.clearAll();
-//                 } else if (!changeInfo.url.match(urlPattern)) {
-//                     // 講義ページ以外に移動した
-//                     // await state.set(modelBase);
-//                     await state.clearAll();
-//                 }
-
-//                 // 展開中のtabIdである && changeInfo.urlが講義ページである
-//                 // その上でURLが変化した
-//                 // NOTE: Compare URL WITHOUT below hash.
-//                 else if (
-//                     changeInfo.url.match(urlPattern) &&
-//                     exciseBelowHash(changeInfo.url) !== exciseBelowHash(url)
-//                 ) {
-//                     //NOTE: MUST Update URL. ページが切り替わったから
-//                     await state.set({ url: exciseBelowHash(changeInfo.url) });
-
-//                     // 動画ページ以外に切り替わった？
-//                     const res: iResponse = await sendMessageToTabsPromise(
-//                         tabId,
-//                         {
-//                             from: extensionNames.background,
-//                             to: extensionNames.contentScript,
-//                             order: [orderNames.isPageIncludingMovie],
-//                         }
-//                     );
-
-//                     res.isPageIncludingMovie
-//                         ? // 次の動画に移った
-//                           await handlerOfReset(
-//                               tabIdUpdatedOccured,
-//                               await circulateCaptureSubtitles()
-//                           )
-//                         : // 動画を含まないページへ移った
-//                           await handlerOfHide(tabIdUpdatedOccured);
-//                 }
-//             }
-//         } catch (e) {
-//             alertHandler(tabId, messageTemplate.appCannotExecute);
-//         }
-//     }
-// );
 
 /**
  * Handler for onRemoved event.

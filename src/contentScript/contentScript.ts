@@ -118,6 +118,9 @@ chrome.runtime.onMessage.addListener(
 
             // Is the page including Movie Container?
             if (order.includes(orderNames.isPageIncludingMovie)) {
+
+                console.log('[contentScript] ordered is page including movie?');
+                
                 repeatCheckQueryAcquired(selectors.videoContainer, true)
                     .then((r: boolean) => {
                         response.isPageIncludingMovie = r;
