@@ -513,7 +513,7 @@ const handlerOfControllerMessage = async (
  * 4. Inject controller.ts to controll ExTranscript.
  * 5. Send subtitle data to controller.ts to display new subtitles.
  *
- * NOTE: Too huge...
+ * 
  * */
 const handlerOfRun = async (tabInfo: chrome.tabs.Tab): Promise<boolean> => {
     try {
