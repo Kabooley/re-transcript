@@ -261,11 +261,13 @@ const handlerOfPopupMessage = async (
             try {
                 const current = await state.get();
                 if (!Object.keys(current).length) await initialize();
-                const { isSubtitleCapturing, isExTranscriptStructured } =
+                const { isSubtitleCapturing, isExTranscriptStructured, isEnglish, isTranscriptDisplaying } =
                     await state.get();
                 response.state = {
                     isSubtitleCapturing: isSubtitleCapturing,
                     isExTranscriptStructured: isExTranscriptStructured,
+                    isEnglish: isEnglish,
+                    isTranscriptDisplaying: isTranscriptDisplaying
                 };
                 response.complete = true;
             } catch (e) {

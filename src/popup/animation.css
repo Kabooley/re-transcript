@@ -1,0 +1,53 @@
+.animation-container {
+    box-sizing: border-box;
+    /* border: 4px solid #777; */
+    display: flex;
+    height: 173px;
+    width: 330px;
+    position: absolute;
+    top: 55.5px;
+    left: 0;
+    z-index: 10;
+}
+
+.box {
+    position: absolute;
+    background-color: #25125f;
+    color: #fff;
+    width: 90%;
+    height: 85%;
+    border-radius: 10px;
+    border: 4px solid #25125f;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 120px;
+}
+
+.animate {
+    animation: slide-in-out 5s both;
+    top: 50%;
+    left: 50%;
+}
+
+@keyframes slide-in-out {
+    0% {
+        transform: translate(1000px, -50%);
+    }
+    20% {
+        transform: translate(-50%, -50%);
+    }
+    80% {
+        transform: translate(-50%, -50%);
+    }
+    83% {
+        transform: translate(-47%, -50%);
+    }
+    100% {
+        transform: translate(-1000px, -50%);
+    }
+}

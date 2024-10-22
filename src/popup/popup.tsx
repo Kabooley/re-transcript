@@ -3,7 +3,6 @@
  *
  * Using Material UI.
  ***************************************/
-// NOTE: React is required by Material UI.
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import {
@@ -14,8 +13,13 @@ import {
 } from '../utils/constants';
 import { sendMessagePromise } from '../utils/helpers';
 import './popup.css';
-import MainContent from './MainContent';
+// import MainContent from './MainContent';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+import InvalidPanel from './InvalidPanel';
+import ValidPanel from './ValidPanel';
+import SlideAnimation from './SlideAnimation';
+import { usePrevious } from '../hooks/usePrevious';
 
 const theme = createTheme({
     palette: {
@@ -34,8 +38,9 @@ const theme = createTheme({
     },
 });
 
+const $ANIMATION_TIMER = 6000;
+
 /****
- * Top JSX.Element of popup
  *
  * states:
  * - correctUrl: Validity of the tab's URL that popup popped up.
@@ -51,12 +56,39 @@ const theme = createTheme({
  * - UI is styled by Material UI.
  *
  * */
-const Popup = (): JSX.Element => {
+
+/*****
+ * 202404
+ * state管理：
+ *
+ * これまでcorrectUrlでありさえすれば、「ビルド中」「ビルド済」「展開中」の３つのstate管理で運用していたが
+ * 今回から「トランスクリプトがONであるか否か」「字幕は英語であるか否か」もpopupに表示することになったので
+ * transcript、subtitleの状態も取得する
+ *
+ * 各状態について：
+ *    待機中でかつボタンを無効にする条件：   correctUrl && !isTranscriptEnabled || !isSubtitleEnabled
+ *    待機中でかつボタンを有効にする条件：   correctUrl && isTanscriptEnabled && isSubtitleEnabled
+ *    （ExTranscriptを）生成中にする条件：  correctUrl && isTanscriptEnabled && isSubtitleEnabled
+ *                                        && building && !isBuilt && !turningOn
+ *    展開中にする条件：                   correctUrl && isTanscriptEnabled && isSubtitleEnabled
+ *                                        && !building && isBuilt && turningOn
+ *    一時的に展開をオフにする条件：        correctUrl&& !building && !isBuilt && !turningOn
+ *
+ * ****/
+const Popup = () => {
     const [correctUrl, setCorrectUrl] = useState<boolean>(false);
     const [building, setBuilding] = useState<boolean>(false);
     const [built, setBuilt] = useState<boolean>(false);
     const [tabInfo, setTabInfo] = useState<chrome.tabs.Tab>(null);
     const [turningOn, setTurningOn] = useState<boolean>(false);
+
+    // iModelの`isTranscriptDisplaying`
+    const [isTranscriptEnabled, setTranscriptEnabled] =
+        useState<boolean>(false);
+    // iModelの`isEnglish`
+    const [isSubtitleEnabled, setSubtitleEnabled] = useState<boolean>(false);
+    const [alertSuccess, setAlertSuccess] = useState<boolean>(false);
+    const previousBuilt = usePrevious<boolean>(built);
 
     useEffect(() => {
         verifyValidPage();
@@ -68,12 +100,43 @@ const Popup = (): JSX.Element => {
             to: extensionNames.background,
             order: [orderNames.sendStatus],
         }).then((res: iResponse) => {
-            const { isSubtitleCapturing, isExTranscriptStructured } = res.state;
+            const {
+                isSubtitleCapturing,
+                isExTranscriptStructured,
+                isTranscriptDisplaying,
+                isEnglish,
+            } = res.state;
+
+            // DEBUG:
+            console.log('mounted');
+            console.log(`transcript on: ${isTranscriptDisplaying}`);
+            console.log(`subtitle on: ${isEnglish}`);
+
             setBuilding(isSubtitleCapturing);
             setBuilt(isExTranscriptStructured);
             setTurningOn(isExTranscriptStructured);
+            setTranscriptEnabled(isTranscriptDisplaying);
+            setSubtitleEnabled(isEnglish);
         });
     }, []);
+
+    // これ前回のstateとも比較しないと無限ループになる
+    useEffect(() => {
+        if (!building && built && !previousBuilt) {
+            setAlertSuccess(true);
+        }
+    }, [building, built, previousBuilt]);
+
+    useEffect(() => {
+        let timer: number = 0;
+        if (alertSuccess) {
+            timer = window.setTimeout(
+                () => setAlertSuccess(false),
+                $ANIMATION_TIMER
+            );
+        }
+        return () => clearTimeout(timer);
+    }, [alertSuccess]);
 
     const verifyValidPage = (): void => {
         chrome.tabs
@@ -175,7 +238,7 @@ const Popup = (): JSX.Element => {
 
     /***
      * NOTE: fix/202404 experiment
-     * 
+     *
      */
     const handleClickReload = (e: React.MouseEvent<HTMLButtonElement>) => {
         console.log('[popup] reload clicked');
@@ -190,17 +253,42 @@ const Popup = (): JSX.Element => {
         });
     };
 
+    const enableRebuildButton = isTranscriptEnabled && isSubtitleEnabled;
+
     return (
         <ThemeProvider theme={theme}>
-            <MainContent
-                built={built}
-                building={building}
-                correctUrl={correctUrl}
-                handlerOfToggle={handlerOfToggle}
-            />
-            <button onClick={handleClickReload}>reload</button>
+            {alertSuccess && <SlideAnimation animate={alertSuccess} />}
+            {correctUrl ? (
+                <ValidPanel
+                    isTranscriptEnabled={isTranscriptEnabled}
+                    isSubtitleEnabled={isSubtitleEnabled}
+                    building={building}
+                    built={built}
+                    turningOn={turningOn}
+                    // setTranscriptEnabled={setTranscriptEnabled}
+                    // setSubtitleEnabled={setSubtitleEnabled}
+                    // setCorrectUrl={setCorrectUrl}
+                    setBuilding={setBuilding}
+                    setBuilt={setBuilt}
+                    setTurningOn={setTurningOn}
+                />
+            ) : (
+                <InvalidPanel />
+            )}
         </ThemeProvider>
     );
+
+    // return (
+    //     <ThemeProvider theme={theme}>
+    //         <MainContent
+    //             built={built}
+    //             building={building}
+    //             correctUrl={correctUrl}
+    //             handlerOfToggle={handlerOfToggle}
+    //         />
+    //         <button onClick={handleClickReload}>reload</button>
+    //     </ThemeProvider>
+    // );
 };
 
 const root = document.createElement('div');
